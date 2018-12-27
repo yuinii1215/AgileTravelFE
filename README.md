@@ -40,17 +40,19 @@ If you have found an issue with this template, please report the problem in the 
 We love PRs, and accept them gladly. Feel free to propose changes and new ideas. We will review and discuss, so that they can be accepted and better integrated.
 
 ## 添加Android和IOS环境
-tns platform add android
-tns platform add ios
+ - tns platform add android
+ - tns platform add ios
 
 ## 运行
-tns run android
-tns run ios
-
-## 模拟运行
-tns run android --emulator
-tns run ios --emulator
- - tns build android --bundle
- - tns build ios --bundle
+ - tns run android
+ - tns run ios
  - tns run android --bundle
  - tns run ios --bundle
+
+## 模拟运行
+ - tns run android --emulator
+ - tns run ios --emulator
+
+## 构建
+ - tns build android --bundle
+ - tns build ios --bundle
