@@ -17,7 +17,7 @@
     export default {
         data() {
             return {
-                message: "已成功登录，此为首页"
+                message: "已成功登录，此为普通用户首页"
             };
         },
         methods: {

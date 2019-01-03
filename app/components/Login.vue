@@ -51,6 +51,7 @@
 
 <script>
     import Home from "./Home";
+    import ManagerHome from "./Manager/Home";
 
     export default {
         data() {
@@ -89,8 +90,13 @@
                 // this.$backendService
                 //     .login(this.user)
                 //     .then(() => {
-                        this.processing = false;
-                        this.$navigateTo(Home, { clearHistory: true });
+                    this.processing = false;
+                    //如果是管理员，跳转至管理员页面
+                    
+                        if(this.user.username=="admin"&&this.user.password=="admin123")
+                            this.$navigateTo(ManagerHome, { clearHistory: true });
+                        else
+                            this.$navigateTo(Home, { clearHistory: true });
                     // })
                     // .catch(() => {
                     //     this.processing = false;
