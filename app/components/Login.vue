@@ -8,16 +8,16 @@
 
                 <GridLayout rows="auto, auto, auto">
                     <StackLayout row="0" class="input-field">
-                        <TextField class="input" hint="Email" :isEnabled="!processing"
-                            keyboardType="email" autocorrect="false"
-                            autocapitalizationType="none" v-model="user.email"
+                        <TextField class="input" hint="用户名" :isEnabled="!processing"
+                            autocorrect="false"
+                            autocapitalizationType="none" v-model="user.username"
                             returnKeyType="next" @returnPress="focusPassword"></TextField>
                         <StackLayout class="hr-light"></StackLayout>
                     </StackLayout>
 
                     <StackLayout row="1" class="input-field">
                         <TextField class="input" ref="password" :isEnabled="!processing"
-                            hint="Password" secure="true" v-model="user.password"
+                            hint="密码" secure="true" v-model="user.password"
                             :returnKeyType="isLoggingIn ? 'done' : 'next'"
                             @returnPress="focusConfirmPassword"></TextField>
                         <StackLayout class="hr-light"></StackLayout>
@@ -25,7 +25,7 @@
 
                     <StackLayout row="2" v-show="!isLoggingIn" class="input-field">
                         <TextField class="input" ref="confirmPassword" :isEnabled="!processing"
-                            hint="Confirm password" secure="true" v-model="user.confirmPassword"
+                            hint="再次输入密码" secure="true" v-model="user.confirmPassword"
                             returnKeyType="done"></TextField>
                         <StackLayout class="hr-light"></StackLayout>
                     </StackLayout>
@@ -58,9 +58,9 @@
                 isLoggingIn: true,
                 processing: false,
                 user: {
-                    email: "shaodong@nju.edu.cn",
-                    password: "123456",
-                    confirmPassword: "123456"
+                    username: "",
+                    password: "",
+                    confirmPassword: ""
                 }
             };
         },
@@ -70,9 +70,9 @@
             },
 
             submit() {
-                if (!this.user.email || !this.user.password) {
+                if (!this.user.username || !this.user.password) {
                     this.alert(
-                        "Please provide both an email address and password."
+                        "请输入用户名和密码"
                     );
                     return;
                 }
@@ -102,7 +102,7 @@
 
             register() {
                 if (this.user.password != this.user.confirmPassword) {
-                    this.alert("Your passwords do not match.");
+                    this.alert("请保证密码一致");
                     this.processing = false;
                     return;
                 }
@@ -112,7 +112,7 @@
                 //     .then(() => {
                         this.processing = false;
                         this.alert(
-                            "Your account was successfully created.");
+                            "您的账户已创建成功，可尝试登录");
                         this.isLoggingIn = true;
                     // })
                     // .catch(() => {
@@ -134,8 +134,8 @@
 
             alert(message) {
                 return alert({
-                    title: "APP NAME",
-                    okButtonText: "OK",
+                    title: "提示",
+                    okButtonText: "好的",
                     message: message
                 });
             }

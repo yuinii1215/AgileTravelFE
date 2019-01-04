@@ -17,7 +17,7 @@
     export default {
         data() {
             return {
-                message: "已成功登录，此为首页。 试一下热替换."
+                message: "已成功登录，此为首页"
             };
         },
         methods: {
