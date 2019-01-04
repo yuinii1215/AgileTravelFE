@@ -59,8 +59,8 @@
                 isLoggingIn: true,
                 processing: false,
                 user: {
-                    username: "",
-                    password: "",
+                    username: "admin",
+                    password: "admin123",
                     confirmPassword: ""
                 }
             };
@@ -175,7 +175,7 @@
         font-weight: 600;
         margin-bottom: 70;
         text-align: center;
-        color: rgb(33, 135, 202);
+        color: #3d7def;
     }
 
     .input-field {

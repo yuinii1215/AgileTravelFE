@@ -1,41 +1,39 @@
 <template>
-    <Page class="page" >
-        <ActionBar title="去玩吧"></ActionBar>
-        <DockLayout stretchLastChild="true" >
-            <StackLayout dock="top">
-                <SegmentedBar  v-model="selectedItem" @selectedIndexChange="onSelectedIndexChange" >
-                    <SegmentedBarItem title="审核用户" />
-                    <SegmentedBarItem title="审核活动" />
-                </SegmentedBar>
-            </StackLayout>
-            <StackLayout dock="bottom">
-                <Button class="btn btn-primary" text="注销" @tap="logout"></Button>
-            </StackLayout>
-            <StackLayout >
-                <AuthUser v-if="selectedItem==0"/>
-                <label  v-if="selectedItem==1" text="审核活动aaa"/>
-            </StackLayout>
-        </DockLayout>
+    <Page class="page" actionBarHidden="true">
+        <StackLayout orientation="vertical">
+            <FlexboxLayout flexDirection="column" height="100%" width="100%">
+                <Header class="header" :canBack="canBack" />
+                <StackLayout flexGrow="1">
+                    <TabView :selectedTabTextColor="textColor" >
+                        <TabViewItem title="审核用户">
+                            <AuthUser/>
+                        </TabViewItem>
+                        <TabViewItem title="审核活动">
+                            <label text="敬请期待"/>
+                        </TabViewItem>
+                    </TabView>
+                </StackLayout>
+            </FlexboxLayout>            
+        </StackLayout>
     </Page>
 </template>
 
 <script>
     import AuthUser from './AuthUser'
     import Login from "../Login"
+    import Header from "../Header"
     export default {
         name:"manager-home",
         components: {
-            AuthUser
+            AuthUser,Header
         },
         data() {
             return {
-               selectedItem:'0'
+                textColor:"#3d7def",
+                canBack:true
             };
         },
         methods: {
-            onSelectedIndexChange(){
-                console.log(this.selectedItem)
-            },
             logout(){
                 this.$backendService.logout();
                 this.$navigateTo(Login, {
@@ -47,8 +45,10 @@
 </script>
 
 <style scoped>
+
 .page{
     font-size: 16px;
+    
 }
  .btn-primary {
     margin: 30 5 15 5;
