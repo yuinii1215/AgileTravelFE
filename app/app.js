@@ -1,5 +1,6 @@
 import Vue from "nativescript-vue";
 import Home from "./components/Home";
+import ActivityList from "./components/ActivityList";
 import store from './store';
 import routes from "./routes";
 import BackendService from "./constants/index";
@@ -10,12 +11,12 @@ Vue.prototype.$backendService = backendService;
 new Vue({
     template: `
         <Frame>
-            <Home />
+            <ActivityList />
         </Frame>`,
     store,
     routes,
     components: {
-        Home
+        ActivityList
     },
-    render: h => h("frame", [h(backendService.isLoggedIn() ? routes.home : routes.login)])
+    // render: h => h("frame", [h(backendService.isLoggedIn() ? routes.home : routes.login)])
 }).$start();
