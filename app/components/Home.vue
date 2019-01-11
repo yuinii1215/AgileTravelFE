@@ -1,60 +1,62 @@
 <template>
 	<page actionBarHidden="true" backgroundSpanUnderStatusBar="true">
 		<!-- @loaded="onLoaded" -->
+		<GridLayout>
+			<GridLayout rows="auto,auto,*,auto" columns="auto" :class="{ shareDialogOpen: shareDialogOpen }">
 
-		<GridLayout rows="auto,auto,*,auto" columns="auto">
-
-			<GridLayout row="0" ref="navStatusBar" class="navStatusBar" backgroundColor="#3d7def" verticalAlignment="top" height="40"
-			 width="100%" rows="auto" columns="*,auto,auto,auto">
-				<Label col="0" row="0" text="首页" class="status-title"/>
-				<Image col="1" row="0" @tap="search" horizontalAlignment="right" class="status-img"
-						src="~/assets/images/search.png" />
-				<Image col="2" row="0" @tap="bell" horizontalAlignment="right" class="status-img"
-						src="~/assets/images/bell.png" />
-				<Image horizontalAlignment="right" stretch="aspectFill" col="3"
-						row="0" class="status-profile" src="~/assets/images/me.jpg" />
-			</GridLayout>
-
-			<GridLayout  row="1" ref="navTab" class="navTab" verticalAlignment="top"
-					width="100%"  rows="*,auto" columns="auto,auto">
-				<GridLayout class="tabview" :class="selectedTabview==0?'active':''"
-						@tap="showActivity" rows="auto" cols="auto,auto" col="0" row="0" 
-						verticalAlignment="middle" horizontalAlignment="center" width="50%">
-					<Image v-show="selectedTabview==0"  row="0" col="0" class="navIcon" 
-							:src="selectedTabview==0?'~/assets/images/activity.png':''"/>
-					<Label :class="selectedTabview==0?'active':''" row="0"  col="1" 
-							text="活动" class="tabviewText"/>
+				<GridLayout row="0" ref="navStatusBar" class="navStatusBar" backgroundColor="#3d7def" verticalAlignment="top" height="40"
+				width="100%" rows="auto" columns="*,auto,auto,auto">
+					<Label col="0" row="0" text="首页" class="status-title"/>
+					<Image col="1" row="0" @tap="search" horizontalAlignment="right" class="status-img"
+							src="~/assets/images/search.png" />
+					<Image col="2" row="0" @tap="bell" horizontalAlignment="right" class="status-img"
+							src="~/assets/images/bell.png" />
+					<Image horizontalAlignment="right" stretch="aspectFill" col="3"
+							row="0" class="status-profile" src="~/assets/images/me.jpg" />
 				</GridLayout>
-				<GridLayout class="tabview" :class="selectedTabview==1?'active':''"
-						@tap="showShare" rows="auto" cols="auto,auto" col="1" row="0"
-						verticalAlignment="middle" horizontalAlignment="center" width="50%">
-					<Image v-show="selectedTabview == 1" row="0" col="0" class="navIcon"
-							:src="selectedTabview==1?'~/assets/images/share.png':''"/>
-					<Label :class="selectedTabview==1?'active':''" row="0"  col="1" 
-							text="分享" class="tabviewText"/>						
+
+				<GridLayout  row="1" ref="navTab" class="navTab" verticalAlignment="top"
+						width="100%"  rows="*,auto" columns="auto,auto">
+					<GridLayout class="tabview" :class="selectedTabview==0?'active':''"
+							@tap="showActivity" rows="auto" cols="auto,auto" col="0" row="0" 
+							verticalAlignment="middle" horizontalAlignment="center" width="50%">
+						<Image v-show="selectedTabview==0"  row="0" col="0" class="navIcon" 
+								:src="selectedTabview==0?'~/assets/images/activity.png':''"/>
+						<Label :class="selectedTabview==0?'active':''" row="0"  col="1" 
+								text="活动" class="tabviewText"/>
+					</GridLayout>
+					<GridLayout class="tabview" :class="selectedTabview==1?'active':''"
+							@tap="showShare" rows="auto" cols="auto,auto" col="1" row="0"
+							verticalAlignment="middle" horizontalAlignment="center" width="50%">
+						<Image v-show="selectedTabview == 1" row="0" col="0" class="navIcon"
+								:src="selectedTabview==1?'~/assets/images/share.png':''"/>
+						<Label :class="selectedTabview==1?'active':''" row="0"  col="1" 
+								text="分享" class="tabviewText"/>						
+					</GridLayout>
 				</GridLayout>
+
+				<GridLayout v-show="selectedTabview == 0" row="2" width="100%" backgroundColor="white">
+					<ListView ref="listview" separatorColor="transparent" for="item in items" :key="index">
+						<v-template>
+							<item :item="item" @clicked="showItem(item)" @openShareDialogEvent="openShareDialog(item)"/>
+						</v-template>
+					</ListView>
+				</GridLayout>
+
+				<GridLayout v-show="selectedTabview == 1" row="2" width="100%" backgroundColor="white">		
+					<ListView ref="listview" separatorColor="transparent" for="item in itemsCategory" :key="index">
+						<v-template>
+							<Category :item="item"> </Category>
+						</v-template>
+					</ListView>
+				</GridLayout>
+
+				<!-- <navBottom row="3" /> -->
 			</GridLayout>
 
-			<GridLayout v-show="selectedTabview == 0" row="2" width="100%" backgroundColor="white">
-				<ListView ref="listview" separatorColor="transparent" for="item in items" :key="index">
-					<v-template>
-						<item :item="item" @clicked="showItem(item)" />
-					</v-template>
-				</ListView>
-			</GridLayout>
-
-			<GridLayout v-show="selectedTabview == 1" row="2" width="100%" backgroundColor="white">		
-				<ListView ref="listview" separatorColor="transparent" for="item in itemsCategory" :key="index">
-					<v-template>
-						<Category :item="item"> </Category>
-					</v-template>
-				</ListView>
-			</GridLayout>
-
-			<!-- <navBottom row="3" /> -->
-
+			<share-dialog  :item="sharePayload" :dialogOpen="shareDialogOpen" @closeShareDialogEvent="closeShareDialog"/>
 		</GridLayout>
-</page>
+	</page>
 </template>
 <script>
 	// import { SwissArmyKnife } from "nativescript-swiss-army-knife";
@@ -62,7 +64,8 @@
 	import navBottom from "./common/NavBottom";
 	import Item from "./common/Item";
 	import Category from "./common/Category";
-    import ItemDetails from "./common/ItemDetails";
+	import ItemDetails from "./common/ItemDetails";
+	import ShareDialog from './common/ShareDialog';
 	const gestures = require("ui/gestures"); 
 	const app = require("application");
 
@@ -70,19 +73,21 @@ export default {
 	components: {
 		navBottom,
 		Item,
-		Category
+		Category,
+		ShareDialog
 	},
 	computed: {
 		itemsCategory(){
 			return this.category.slice().reverse();
 		}
 	},
-
 	mounted () {
-		// SwissArmyKnife.setAndroidStatusBarColor("#b51213");
+		
 	},
 	data() {
 		return {
+			sharePayload:{},
+			shareDialogOpen:false,
 			lastDelY: 0,
 			headerCollapsed: false,
 			selectedTab: 0,
@@ -102,7 +107,7 @@ export default {
 				},
 				cover:"~/assets/images/food/burger/burger1.jpg",
 				comments:10,
-				canShare:false 
+				canShare:true 
 			},
 			{
 				id:2000,
@@ -184,6 +189,13 @@ export default {
 		};
 	},
 	methods: {
+		openShareDialog(item){
+			this.sharePayload = item
+            this.shareDialogOpen = true
+        },
+        closeShareDialog(){
+            this.shareDialogOpen = false
+        },
 		search(){
 			console.log('search')
 		},
@@ -191,6 +203,7 @@ export default {
 			console.log('bell')
 		},
 		showItem(payload) {
+			this.sharePayload = payload
 			this.$navigateTo(ItemDetails,{
 				props: {
 					item: payload

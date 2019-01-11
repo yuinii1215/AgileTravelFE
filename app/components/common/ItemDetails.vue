@@ -1,127 +1,126 @@
 <template>
     <Page actionBarHidden="true" class="anim-page"
         backgroundSpanUnderStatusBar="true" @loaded="onLoaded">
-        <StackLayout class="main" verticalAlignment="top">
+        <GridLayout class="main" verticalAlignment="top" >
 
-
-            <GridLayout class="anim-cover" rows="auto" columns="*">
-                <Image row="0" col="0" marginTop="-40" height="180" stretch="aspectFill"
-                    class="card-img" :src="item.cover" />
-                <Label row="0" col="0" verticalAlignment="top"
-                    horizontalAlignment="left" @tap="close" :text="'fa-arrow-left' | fonticon"
-                    class="fa close" fontSize="24" />
-            </GridLayout>
-
-            <ScrollView class="anim-images" orientation="horizontal">
-                <StackLayout orientation="horizontal" class="">
-                    <GridLayout v-for="image in detailInfo.descriptions.images" :key="image.id" rows="auto"
-                        columns="*">
-                        <Image class="card-img-thumb" row="0" col="0" :src="image.src"
-                            stretch="aspectFill" />
-                    </GridLayout>
-                </StackLayout>
-            </ScrollView>
-            
-            
-
-            <GridLayout rows="auto,auto,auto,auto" columns="auto" class="content">
-                <basic-info-block showMore="true" :item="item" :detailInfo="detailInfo" class="anim-itemInfo"  marginTop="15" />
-
-                <StackLayout class="line anim-likes lineBasic" row="2" width="100%" marginTop="10" />
-
-                <GridLayout class="anim-likes" marginTop="5" width="100%" row="3"
-                    columns="55,*,60,90" rows="auto,auto,auto,auto" marginBottom="-10">
-                    <!-- <GridLayout row="0" col="0" rows="auto,auto" columns="auto,auto"> -->
-                        <Label col="0" row="0" rowSpan="2" text="组织者:" class="user-type" verticalAlignment="top"/>
-                        <GridLayout col="1" row="0" rows="auto,auto" columns="auto" class="user-info-wrap" horizontalAlignment="left" >
-                            <Image horizontalAlignment="center"  verticalAlignment="top" stretch="aspectFill" col="0"
-                                            row="0" class="status-profile" :src="item.originator.avaUrl" />
-                            <Label col="0" row="1" class="patipacter-name" horizontalAlignment="center"  verticalAlignment="bottom"
-                             :text="item.originator.username"/>
-                        </GridLayout>
-                    <!-- </GridLayout> -->
-                     <!-- <GridLayout row="1" col="0" rows="auto,auto" columns="auto,auto" width="100%" marginTop="5"> -->
-                        <Label col="0" row="1" rowSpan="2" text="参与者:" class="user-type" verticalAlignment="top" marginTop="8"/>
-                        <GridLayout colSpan="3"  col="1" row="1" rows="auto,auto" columns="auto" class="user-info-wrap" width="100%" horizontalAlignment="left"  marginTop="6">
-                            <ScrollView class="anim-images" orientation="horizontal" width="100%">
-                                <StackLayout orientation="horizontal" class="">
-                                    <GridLayout v-for="patipacter in detailInfo.patipacters" :key="patipacter.id" 
-                                        rows="auto,auto" columns="*" marginRight="5">
-                                        <Image horizontalAlignment="center"  verticalAlignment="top" stretch="aspectFill" 
-                                            col="0" row="0" class="status-profile" :src="patipacter.avaUrl" />
-                                        <Label col="0" row="1" class="patipacter-name" horizontalAlignment="center"  verticalAlignment="bottom" 
-                                           :text="patipacter.username"/>
-                                    </GridLayout>
-                                </StackLayout>
-                            </ScrollView>
-                            
-                        </GridLayout>
-                    <!-- </GridLayout> -->
-                    <!-- <GridLayout col="0" rows="auto" columns="auto,auto" @tap="toggleLike">
-                        <Label col="0" row="0" ref="like" class="like-icon fa"
-                            :class="[isLike ? 'liked-active' : 'default']"
-                            :text="isLike ? 'fa-thumbs-up':'fa-thumbs-o-up' | fonticon" />
-                        <Label col="1" row="0" class="layout" :text="item.likes"></Label>
-                    </GridLayout> -->
-                    <!-- <StackLayout col="1" orientation="horizontal" marginLeft="15">
-                        <Label ref="" class="like-icon layout fa" :text="'fa-comment-o' | fonticon" />
-                        <Label class="layout" :text="item.comments"></Label>
-                    </StackLayout> -->
-                    <!-- <GridLayout col="2" rows="auto" columns="auto,auto" marginRight="15">
-                        <Label col="0" row="0" ref="favorite" class="like-icon  fa"
-                            :class="[isHeart ? 'heart-active' : 'default']"
-                            :text="isHeart ? 'fa-heart':'fa-heart-o' | fonticon" />
-                        <Label col="1" row="0" class="layout" text="Favorite"></Label>
-                    </GridLayout> -->
-                    <StackLayout row="0" col="2" orientation="horizontal" horizontalAlignment="right" verticalAlignment="top" v-if="item.canShare">
-                        <Label ref="" class="like-icon layout fa" :text="'fa-share-square-o' | fonticon" />
-                        <Label class="layout" text="分享"></Label>
-                    </StackLayout>
-                    <StackLayout row="0" col="3" orientation="horizontal" horizontalAlignment="right" verticalAlignment="top" >
-                        <Label ref="" class="like-icon layout fa" :text="'fa-user-plus' | fonticon" />
-                        <Label class="layout" text="申请加入"></Label>
-                    </StackLayout>
-                </GridLayout>
-            </GridLayout>
-
-            <StackLayout width="100%" class="lineBreak anim-likes lineBasic" />
-
-            <Gridlayout rows="auto,auto" class="content anim-content" marginTop="15" >
-
-                <GridLayout row="0" rows="auto" marginBottom="5" columns="auto, auto,auto">
-                    <Label col="0" :text="'fa-tags' | fonticon" class="fa description-icon"
-                        textWrap="true" />
-                    <Label col="1" class="description-text" text="评论"
-                        textWrap="true" />
-                    <Label col="2" class="comment-num" :text="'共'+item.comments+'条'" 
-                         verticalAlignment="bottom" textWrap="true" />
+            <StackLayout :class="{ shareDialogOpen: shareDialogOpen }">
+                <GridLayout class="anim-cover" rows="auto" columns="*">
+                    <Image row="0" col="0" marginTop="-40" height="180" stretch="aspectFill"
+                        class="card-img" :src="item.cover" />
+                    <Label row="0" col="0" verticalAlignment="top"
+                        horizontalAlignment="left" @tap="close" :text="'fa-arrow-left' | fonticon"
+                        class="fa close" fontSize="24" />
                 </GridLayout>
 
-                <StackLayout row="1" height="100%" marginTop="10">
-                    <ScrollView>
-                        <StackLayout>
-                            <GridLayout v-for="comment in detailInfo.comments" :key="comment.id" 
-                                rows="*" columns="auto">
-                                <single-comment-block :comment="comment"/>
+                <ScrollView class="anim-images" orientation="horizontal">
+                    <StackLayout orientation="horizontal" class="">
+                        <GridLayout v-for="image in detailInfo.descriptions.images" :key="image.id" rows="auto"
+                            columns="*">
+                            <Image class="card-img-thumb" row="0" col="0" :src="image.src"
+                                stretch="aspectFill" />
+                        </GridLayout>
+                    </StackLayout>
+                </ScrollView>
+
+                <GridLayout rows="auto,auto,auto,auto" columns="auto" class="content">
+                    <basic-info-block hasMore=1 :showMore="showMore" :item="item" :detailInfo="detailInfo" @showMoreChangeEvent="showMoreChange()" class="anim-itemInfo"  marginTop="15" />
+
+                    <StackLayout v-if="showMore==1"   class="line anim-likes lineBasic" row="2" width="100%" marginTop="10" />
+
+                    <GridLayout v-if="showMore==1"  class="anim-likes"  marginTop="5" width="100%" row="3"
+                        :columns="item.canShare?'55,*,60':'55,*,90'" rows="auto,auto,auto,auto" marginBottom="-10">
+                        <!-- <GridLayout row="0" col="0" rows="auto,auto" columns="auto,auto"> -->
+                            <Label col="0" row="0" rowSpan="2" text="组织者:" class="user-type" verticalAlignment="top"/>
+                            <GridLayout col="1" row="0" rows="auto,auto" columns="auto" class="user-info-wrap" horizontalAlignment="left" >
+                                <Image horizontalAlignment="center"  verticalAlignment="top" stretch="aspectFill" col="0"
+                                                row="0" class="status-profile" :src="item.originator.avaUrl" />
+                                <Label col="0" row="1" class="patipacter-name" horizontalAlignment="center"  verticalAlignment="bottom"
+                                :text="item.originator.username"/>
                             </GridLayout>
+                        <!-- </GridLayout> -->
+                        <!-- <GridLayout row="1" col="0" rows="auto,auto" columns="auto,auto" width="100%" marginTop="5"> -->
+                            <Label col="0" row="1" rowSpan="2" text="参与者:" class="user-type" verticalAlignment="top" marginTop="8"/>
+                            <GridLayout colSpan="3"  col="1" row="1" rows="auto,auto" columns="auto" class="user-info-wrap" width="100%" horizontalAlignment="left"  marginTop="6">
+                                <ScrollView  orientation="horizontal" width="100%">
+                                    <StackLayout orientation="horizontal" class="">
+                                        <GridLayout v-for="patipacter in detailInfo.patipacters" :key="patipacter.id" 
+                                            rows="auto,auto" columns="*" marginRight="5">
+                                            <Image horizontalAlignment="center"  verticalAlignment="top" stretch="aspectFill" 
+                                                col="0" row="0" class="status-profile" :src="patipacter.avaUrl" />
+                                            <Label col="0" row="1" class="patipacter-name" horizontalAlignment="center"  verticalAlignment="bottom" 
+                                            :text="patipacter.username"/>
+                                        </GridLayout>
+                                    </StackLayout>
+                                </ScrollView>
+                                
+                            </GridLayout>
+                        <!-- </GridLayout> -->
+                        <!-- <GridLayout col="0" rows="auto" columns="auto,auto" @tap="toggleLike">
+                            <Label col="0" row="0" ref="like" class="like-icon fa"
+                                :class="[isLike ? 'liked-active' : 'default']"
+                                :text="isLike ? 'fa-thumbs-up':'fa-thumbs-o-up' | fonticon" />
+                            <Label col="1" row="0" class="layout" :text="item.likes"></Label>
+                        </GridLayout> -->
+                        <!-- <StackLayout col="1" orientation="horizontal" marginLeft="15">
+                            <Label ref="" class="like-icon layout fa" :text="'fa-comment-o' | fonticon" />
+                            <Label class="layout" :text="item.comments"></Label>
+                        </StackLayout> -->
+                        <!-- <GridLayout col="2" rows="auto" columns="auto,auto" marginRight="15">
+                            <Label col="0" row="0" ref="favorite" class="like-icon  fa"
+                                :class="[isHeart ? 'heart-active' : 'default']"
+                                :text="isHeart ? 'fa-heart':'fa-heart-o' | fonticon" />
+                            <Label col="1" row="0" class="layout" text="Favorite"></Label>
+                        </GridLayout> -->
+                        <StackLayout row="0" col="2" orientation="horizontal" horizontalAlignment="right" verticalAlignment="top" v-if="item.canShare" @tap="openShareDialog()">
+                            <Label ref="" class="like-icon layout fa" :text="'fa-share-square-o' | fonticon" />
+                            <Label class="layout" text="分享"></Label>
                         </StackLayout>
-                    </ScrollView>
-                </StackLayout>
-                
-                <!-- <StackLayout row="1">
-                    <ScrollView>
-                        <StackLayout verticalAlignment="top"
-                            horizontalAlignment="left">
-                            <Textview editable="false" class="description-value"
-                                textWrap="true" :text="description" />
+                        <StackLayout row="0" col="2" orientation="horizontal" horizontalAlignment="right" verticalAlignment="top" v-if="!item.canShare">
+                            <Label ref="" class="like-icon layout fa" :text="'fa-user-plus' | fonticon" />
+                            <Label class="layout" text="申请加入"></Label>
                         </StackLayout>
-                    </ScrollView>
-                </StackLayout> -->
+                    </GridLayout>
+                </GridLayout>
+
+                <StackLayout width="100%" class="lineBreak anim-likes lineBasic" />
+
+                <Gridlayout rows="auto,auto" class="content anim-content" marginTop="15" >
+
+                    <GridLayout row="0" rows="auto" marginBottom="5" columns="auto, auto,auto">
+                        <Label col="0" :text="'fa-tags' | fonticon" class="fa description-icon"
+                            textWrap="true" />
+                        <Label col="1" class="description-text" text="评论"
+                            textWrap="true" />
+                        <Label col="2" class="comment-num" :text="'共'+item.comments+'条'" 
+                            verticalAlignment="bottom" textWrap="true" />
+                    </GridLayout>
+
+                    <StackLayout row="1" height="100%" marginTop="10">
+                        <ScrollView>
+                            <StackLayout>
+                                <GridLayout v-for="comment in detailInfo.comments" :key="comment.id" 
+                                    rows="*" columns="auto">
+                                    <single-comment-block :comment="comment"/>
+                                </GridLayout>
+                            </StackLayout>
+                        </ScrollView>
+                    </StackLayout>
+                    
+                    <!-- <StackLayout row="1">
+                        <ScrollView>
+                            <StackLayout verticalAlignment="top"
+                                horizontalAlignment="left">
+                                <Textview editable="false" class="description-value"
+                                    textWrap="true" :text="description" />
+                            </StackLayout>
+                        </ScrollView>
+                    </StackLayout> -->
 
 
-            </Gridlayout>
-
-        </StackLayout>
+                </Gridlayout>
+            </StackLayout>
+            <share-dialog  :item="item" :dialogOpen="shareDialogOpen" @closeShareDialogEvent="closeShareDialog"/>
+        </GridLayout>
     </Page>
 </template>
 
@@ -129,11 +128,15 @@
  import ItemLike from "./ItemLike";
  import BasicInfoBlock from "./BasicInfoBlock";
  import SingleCommentBlock from "./SingleCommentBlock";
+ import ShareDialog from './ShareDialog';
+
     export default {
-        components: {BasicInfoBlock,SingleCommentBlock,ItemLike},
+        components: {BasicInfoBlock,SingleCommentBlock,ItemLike,ShareDialog},
         props: ["item" ],
         data() {
 		    return {
+                shareDialogOpen:false,
+                showMore:1,
                 images: null,
                 isLike: false,
                 isHeart: false,
@@ -312,21 +315,23 @@
                 }
             }
         },
-        computed: {
-          
-        },
         created() {
             this.images = this.detailInfo.images;
             this.isLike = this.item.isLike;
             this.isHeart = this.item.isFavorite;
         },
-        mounted() {
-            //通过id 获得单个活动详细信息
-            console.log(this.item.id)
-
-
-        },
-        methods: {
+        methods: { 
+            openShareDialog(){
+                this.shareDialogOpen = true
+            },
+            closeShareDialog(){
+                this.shareDialogOpen = false
+            },
+            showMoreChange(){
+                if(this.showMore==0)
+                    this.showMore = 1
+                else this.showMore = 0
+            },
             onLoaded() {
                 // this.animateFrom()
             },
@@ -757,6 +762,30 @@
     }
 
     @keyframes key-content {
+        0% {
+            opacity: 0;
+            transform: translate(50, 50);
+            animation-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translate(0, 0);
+            animation-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
+    }
+
+    .anim-more {
+        opacity: 0;
+        animation-name: key-more;
+        animation-duration: 0.4;
+        animation-delay: 0.2;
+        animation-fill-mode: forwards;
+        animation-iteration-count: 1;
+        animation-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
+    }
+
+    @keyframes key-more {
         0% {
             opacity: 0;
             transform: translate(50, 50);

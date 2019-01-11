@@ -1,0 +1,98 @@
+<template>
+    <AbsoluteLayout v-if="dialogOpen" class="dialog-wrapper">
+		<StackLayout class="dialog" verticalAlignment="middle" horizontalAlignment="center">
+            <TextView class="text-field" v-model="textFieldValue" hint="这一刻的想法..." width="100%"/>
+            <GridLayout rows="auto" columns="auto,*" width="100%" class="item-info">
+                <Image row="0" col="0" class="item-image"  :src="item.cover" stretch="aspectFill" />
+                <Label row="0" col="1" class="item-title" textWrap="true" :text="item.title" verticalAlignment="middle" horizontalAlignment="left"/>
+            </GridLayout>
+            <StackLayout  class="line lineBasic" width="100%" marginTop="10" marginBottom="10"/>
+            <GridLayout rows="auto" columns="*,*" width="100%" horizontalAlignment="center">
+                <Button row="0" col="0" class="btn btn-primary" text="分享"  horizontalAlignment="right"></Button>
+                <Button row="0" col="1" class="btn btn-primary" text="取消" horizontalAlignment="left" @tap="closeDialog"></Button>
+            </GridLayout>
+		</StackLayout>
+	</AbsoluteLayout>
+</template>
+<script>
+export default {
+     props: {
+        "dialogOpen":Boolean,
+        "item":Object
+    },
+    data(){
+        return{
+            textFieldValue:""
+        }
+    },
+    watch:{
+        textFieldValue(){
+            // console.log(this.textFieldValue)
+        }
+    },
+    methods: {
+        showDialog() {
+            this.dialogOpen = true;
+        },
+        closeDialog() {
+            this.dialogOpen = false;
+            this.$emit("closeShareDialogEvent")
+        }
+    }
+}
+</script>
+
+<style scoped>
+    @keyframes show {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
+	}
+
+	.dialog-wrapper {
+        width:100%;
+        height:100%;
+		animation-name: show;
+		animation-duration: 0.3s;
+		animation-fill-mode: forwards;
+    }
+
+	.dialog {
+		border-width: 1 0 1 0;
+		border-color: #c9c9c9;
+		background-color: #fff;
+        width: 100%;
+        margin:auto;
+        padding: 20;
+	}
+    .text-field{
+        font-size:16;
+        height:80;
+    }
+    .item-info{
+        margin-top:10;
+        background-color: #e0e0e0;
+        border:none;
+        border-radius: 5;
+    }
+    .item-title{
+        font-size:14;
+        color:#000;
+        margin-right:5
+    }
+     .item-image {
+        background-color: #828282;
+        vertical-align: center;
+        border-radius: 5;
+        width: 50;
+        height: 50;
+        margin: 10;
+    }
+
+    .line{
+        height:0.5
+    }
+</style>

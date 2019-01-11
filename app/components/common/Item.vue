@@ -4,14 +4,15 @@
 
             <Image stretch="aspectFill" class="card-img" @tap="onClickButton()"
                 :src="item.cover" />
-            <basic-info-block showMore="false" :item="item"/>
+            <basic-info-block hasMore=0 showMore=1 :item="item"/>
             <StackLayout width="100%" marginTop="5" class="line lineBasic" />
 
             <!-- Here the problem in scroll transistion -->
-            <ItemLike :item="item"></ItemLike>
+            <ItemLike :item="item" @openShareDialogEvent="openShareDialogEvent"></ItemLike>
         </StackLayout>
 
         <StackLayout width="100%" class="lineBreak lineBasic" />
+
 
     </StackLayout>
 </template>
@@ -19,16 +20,26 @@
 <script>
     import ItemLike from "./ItemLike";
     import BasicInfoBlock from "./BasicInfoBlock";
+	
     import {
         isIOS,
         isAndroid
     } from "tns-core-modules/platform";
     export default {
-        props: ["item"],
         components: {
             ItemLike,BasicInfoBlock
         },
+        props: ["item"],
+        data() {
+            return {
+                isLike: false,
+                isHeart: false
+            };
+        },
         methods: {
+            openShareDialogEvent(){
+                this.$emit("openShareDialogEvent")
+            },
             animateLike() {
                 if (isIOS) {
                     return;
@@ -113,13 +124,8 @@
             onClickButton() {
                 this.$emit("clicked", this.item);
             }
-        },
-        data() {
-            return {
-                isLike: false,
-                isHeart: false
-            };
         }
+        
     };
 </script>
 <style scoped>

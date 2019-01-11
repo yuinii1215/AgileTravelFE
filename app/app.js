@@ -12,6 +12,7 @@ import { isAndroid, isIOS } from 'tns-core-modules/platform';
 
 Vue.prototype.$isAndroid = isAndroid;
 Vue.prototype.$isIOS = isIOS;
+Vue.prototype.$bus = new Vue()
 
 const backendService = new BackendService();
 Vue.prototype.$backendService = backendService;
@@ -24,6 +25,8 @@ TNSFontIcon.paths = {
 };
 TNSFontIcon.loadCss();
 Vue.filter('fonticon', fonticon);
+
+
 
 new Vue({
     template: `
