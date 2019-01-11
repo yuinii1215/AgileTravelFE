@@ -28,7 +28,7 @@
                     <StackLayout v-if="showMore==1"   class="line anim-likes lineBasic" row="2" width="100%" marginTop="10" />
 
                     <GridLayout v-if="showMore==1"  class="anim-likes"  marginTop="5" width="100%" row="3"
-                        :columns="item.canShare?'55,*,60':'55,*,90'" rows="auto,auto,auto,auto" marginBottom="-10">
+                        :columns="item.isMember?'55,*,60':'55,*,90'" rows="auto,auto,auto,auto" marginBottom="-10">
                         <!-- <GridLayout row="0" col="0" rows="auto,auto" columns="auto,auto"> -->
                             <Label col="0" row="0" rowSpan="2" text="组织者:" class="user-type" verticalAlignment="top"/>
                             <GridLayout col="1" row="0" rows="auto,auto" columns="auto" class="user-info-wrap" horizontalAlignment="left" >
@@ -71,11 +71,11 @@
                                 :text="isHeart ? 'fa-heart':'fa-heart-o' | fonticon" />
                             <Label col="1" row="0" class="layout" text="Favorite"></Label>
                         </GridLayout> -->
-                        <StackLayout row="0" col="2" orientation="horizontal" horizontalAlignment="right" verticalAlignment="top" v-if="item.canShare" @tap="openShareDialog()">
+                        <StackLayout row="0" col="2" orientation="horizontal" horizontalAlignment="right" verticalAlignment="top" v-if="item.isMember" @tap="openShareDialog()">
                             <Label ref="" class="like-icon layout fa" :text="'fa-share-square-o' | fonticon" />
                             <Label class="layout" text="分享"></Label>
                         </StackLayout>
-                        <StackLayout row="0" col="2" orientation="horizontal" horizontalAlignment="right" verticalAlignment="top" v-if="!item.canShare">
+                        <StackLayout row="0" col="2" orientation="horizontal" horizontalAlignment="right" verticalAlignment="top" v-if="!item.isMember"  @tap="joinInActivity">
                             <Label ref="" class="like-icon layout fa" :text="'fa-user-plus' | fonticon" />
                             <Label class="layout" text="申请加入"></Label>
                         </StackLayout>
@@ -96,7 +96,9 @@
                     </GridLayout>
 
                     <StackLayout row="1" height="100%" marginTop="10">
-                        <ScrollView>
+                        <Label  v-if="!item.isMember" class="comment-no" text="快快加入活动，查看所有评论！"
+                            textWrap="true" />
+                        <ScrollView v-if="item.isMember">
                             <StackLayout>
                                 <GridLayout v-for="comment in detailInfo.comments" :key="comment.id" 
                                     rows="*" columns="auto">
@@ -132,7 +134,13 @@
 
     export default {
         components: {BasicInfoBlock,SingleCommentBlock,ItemLike,ShareDialog},
-        props: ["item" ],
+        props: {
+            "item" :Object,
+        },
+        mounted(){
+            // 请求：通过id获得详细信息
+            // 请求：通过ID获得所有评论信息
+        },
         data() {
 		    return {
                 shareDialogOpen:false,
@@ -321,6 +329,17 @@
             this.isHeart = this.item.isFavorite;
         },
         methods: { 
+            joinInActivity(){
+                //加入活动请求
+                confirm({
+                    title: "活动加入申请",
+                    message: "您确定要加入该活动吗？",
+                    okButtonText: "确定",
+                    cancelButtonText: "取消"
+                }).then(result => {
+                    console.log(result);
+                });
+            },
             openShareDialog(){
                 this.shareDialogOpen = true
             },
@@ -478,6 +497,11 @@
     };
 </script>
 <style scoped>
+    .comment-no{
+        font-size: 14;
+        font-weight: bold;
+        color: #828282;
+    }
     .status-profile {
         margin-right: 0;
     }
@@ -529,29 +553,6 @@
     .description-value {
         font-size: 14;
         color: black;
-    }
-
-    .rate {
-        padding-top: 3;
-        margin: 0;
-        color: #FFE900;
-        font-size: 18;
-    }
-
-    .rating-value {
-        margin-left: 5;
-    }
-
-    .liked-active {
-        color: #4080FF;
-    }
-
-    .heart-active {
-        color: #b51213;
-    }
-
-    .default {
-        color: #828282;
     }
 
     .layout {

@@ -44,9 +44,9 @@
 				</GridLayout>
 
 				<GridLayout v-show="selectedTabview == 1" row="2" width="100%" backgroundColor="white">		
-					<ListView ref="listview" separatorColor="transparent" for="item in itemsCategory" :key="index">
+					<ListView ref="listview" separatorColor="transparent" for="shareInfo in shareInfos" :key="index">
 						<v-template>
-							<Category :item="item"> </Category>
+							<single-share-block :shareInfo="shareInfo"/>
 						</v-template>
 					</ListView>
 				</GridLayout>
@@ -63,7 +63,7 @@
 	import { isIOS, isAndroid } from 'tns-core-modules/platform'
 	import navBottom from "./common/NavBottom";
 	import Item from "./common/Item";
-	import Category from "./common/Category";
+	import SingleShareBlock from "./common/SingleShareBlock";
 	import ItemDetails from "./common/ItemDetails";
 	import ShareDialog from './common/ShareDialog';
 	const gestures = require("ui/gestures"); 
@@ -73,7 +73,7 @@ export default {
 	components: {
 		navBottom,
 		Item,
-		Category,
+		SingleShareBlock,
 		ShareDialog
 	},
 	computed: {
@@ -82,7 +82,8 @@ export default {
 		}
 	},
 	mounted () {
-		
+		//请求：获得所有活动信息
+		//请求：获得所有分享列表
 	},
 	data() {
 		return {
@@ -107,11 +108,11 @@ export default {
 				},
 				cover:"~/assets/images/food/burger/burger1.jpg",
 				comments:10,
-				canShare:true 
+				isMember:false 
 			},
 			{
 				id:2000,
-				title:"上海两日游",
+				title:"上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游",
 				startDateTime:"2019-01-19 08:00:00",
 				endDateTime:"2019-01-21 20:00:00",
 				address:"中国上海",
@@ -123,7 +124,7 @@ export default {
 				},
 				cover:"~/assets/images/food/nju/nju1.png",
 				comments:9,
-				canShare:false 
+				isMember:true 
 			},
 			{
 				id:3000,
@@ -139,7 +140,7 @@ export default {
 				},
 				cover:"~/assets/images/food/cake/cake1.jpg",
 				comments:6,
-				canShare:false 
+				isMember:false 
 			},
 			{
 				id:4000,
@@ -155,36 +156,110 @@ export default {
 				},
 				cover:"~/assets/images/food/pancake/pancake1.jpg",
 				comments:25,
-				canShare:true 
+				isMember:true 
 			},
 			],
-			category: [
-			{
-				cover: "~/assets/images/food/burger640.jpg",
-				category: "BURGER",
-				count: "13",
-			},
-			{
-				cover: "~/assets/images/food/nju/nju1.png",
-				category: "NJU",
-				count: "4",
-			},
-			{
-				cover: "~/assets/images/food/pancake640.jpg",
-				category: "PANCAKE",
-				count: "5",
-			},
-			{
-				cover: "~/assets/images/food/cake640.jpg",
-				category: "CAKE",
-				count: "9",
-			},
-			{
-				cover: "~/assets/images/food/beer640.jpg",
-				category: "BEER",
-				count: "7",
-			},
-		
+			shareInfos: [
+				{
+					id:1,
+                    user:{
+                        id:3,
+                        username:"王爱思",
+                        email:"john@edu.cn",
+                        avaUrl:"~/assets/images/johndoe.jpg"
+					},
+					contents:{
+						text:"111厉害的不行"
+					},
+                    activity:{
+						id:1000,
+						title: "湖滨轰趴",
+						cover: "~/assets/images/food/burger/burger1.jpg"
+					},
+					likeNum:11,
+					isLike:false,
+                    dateTime:"2019-01-01 19:31:00" 
+				},
+				{
+					id:2,
+                    user:{
+                        id:3,
+                        username:"王爱思",
+                        email:"john@edu.cn",
+                        avaUrl:"~/assets/images/johndoe.jpg"
+					},
+					contents:{
+						text:"222快来参加"
+					},
+                    activity:{
+						id:1000,
+						title: "湖滨轰趴湖滨轰趴湖滨轰趴湖滨轰趴湖滨轰趴湖滨轰趴湖滨轰趴湖滨轰趴湖滨轰趴湖滨轰滨轰趴湖滨轰趴湖滨轰趴湖滨轰趴湖滨轰趴湖滨轰趴湖滨轰趴湖滨轰趴",
+						cover: "~/assets/images/food/nju/nju2.png"
+					},
+					likeNum:12,
+					isLike:true,
+                    dateTime:"2019-01-01 19:31:00" 
+				},
+				{
+					id:3,
+                    user:{
+                        id:3,
+                        username:"王爱思",
+                        email:"john@edu.cn",
+                        avaUrl:"~/assets/images/johndoe.jpg"
+					},
+					contents:{
+						text:"333有很多小姐姐哦小姐姐小姐姐小姐姐小姐姐小姐姐小姐姐小姐姐小姐姐小姐姐小姐姐小姐姐小姐姐小姐姐小姐姐小姐姐小姐姐小姐姐小姐姐小姐姐小姐姐小姐姐"
+					},
+                    activity:{
+						id:1000,
+						title: "湖滨轰趴是的",
+						cover: "~/assets/images/food/nju/nju1.png"
+					},
+					likeNum:0,
+					isLike:false,
+                    dateTime:"2019-01-01 19:31:00" 
+				},
+				{
+					id:4,
+                    user:{
+                        id:3,
+                        username:"王爱思",
+                        email:"john@edu.cn",
+                        avaUrl:"~/assets/images/johndoe.jpg"
+					},
+					contents:{
+						text:"444快快上车"
+					},
+                    activity:{
+						id:1000,
+						title: "湖滨轰趴",
+						cover: "~/assets/images/food/cake/cake1.jpg"
+					},
+					likeNum:1,
+					isLike:false,
+                    dateTime:"2019-01-01 19:31:00" 
+				},
+				{
+					id:5,
+                    user:{
+                        id:3,
+                        username:"刘鑫",
+                        email:"john@edu.cn",
+                        avaUrl:"~/assets/images/me.jpg"
+					},
+					contents:{
+						text:"444快快上车\n了不得了不得\n有好吃的、有好玩的！"
+					},
+                    activity:{
+						id:1000,
+						title: "湖滨轰趴dhshsj是电话费灰色空间佛挡杀佛开会",
+						cover: "~/assets/images/food/burger/burger1.jpg"
+					},
+					likeNum:0,
+					isLike:true,
+                    dateTime:"2019-01-01 19:31:00" 
+				}
 			]
 		};
 	},

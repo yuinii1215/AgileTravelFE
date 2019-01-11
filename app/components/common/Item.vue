@@ -165,13 +165,6 @@
         padding: 5 5 5 5;
     }
 
-    .content {
-        margin-left: 16;
-        margin-right: 16;
-        margin-bottom: 3;
-        margin-top: 16;
-    }
-
     .card-img {
         width: 100%;
         height: 150;

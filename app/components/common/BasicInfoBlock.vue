@@ -5,7 +5,7 @@
                     :text="item.title" @tap="showCompleteTitle()"/>
                 <Label v-if="hasMore==1" row="0" col="1" class="fa show-more-btn" verticalAlignment="top" horizontalAlignment="right"
                         :text="'fa-list-ul' | fonticon" @tap="changeShowState()"/>
-                <Textview  row="1" col="0" v-if="hasMore==1&&showMore==1&&detailInfo" editable="false" 
+                <TextView  row="1" col="0" v-if="hasMore==1&&showMore==1&&detailInfo" editable="false" 
                         class="item-block item-desc" :class="[hasMore==1?'anim-more':'']"
                         textWrap="true" :text="detailInfo.descriptions.text" />
                 <GridLayout row="2" col="0" width="100%" columns="auto,auto" rows="auto,auto" 

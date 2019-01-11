@@ -16,11 +16,11 @@
                 :class="[item.isFavorite ? 'heart-active' : 'default']" :text="item.isFavorite ? 'fa-heart':'fa-heart-o' | fonticon" />
             <Label col="1" row="0" class="layout" text="Favorite"></Label>
         </GridLayout> -->
-        <StackLayout col="2" orientation="horizontal" horizontalAlignment="right"  v-if="!item.canShare">
+        <StackLayout col="2" orientation="horizontal" horizontalAlignment="right"  v-if="!item.isMember" @tap="joinInActivity">
             <Label ref="" class="like-icon layout fa" :text="'fa-user-plus' | fonticon" />
             <Label class="layout" text="申请加入"></Label>
         </StackLayout>
-        <StackLayout col="2" orientation="horizontal" v-if="item.canShare" @tap="openShareDialog()">
+        <StackLayout col="2" orientation="horizontal" v-if="item.isMember" @tap="openShareDialog()">
             <Label ref="" class="like-icon layout fa" :text="'fa-share-square-o' | fonticon" />
             <Label class="layout" text="分享" ></Label>
         </StackLayout>
@@ -66,6 +66,17 @@
         },
         mounted() {},
         methods: {
+            joinInActivity(){
+                //加入活动请求
+                confirm({
+                    title: "活动加入申请",
+                    message: "您确定要加入该活动吗？",
+                    okButtonText: "确定",
+                    cancelButtonText: "取消"
+                }).then(result => {
+                    console.log(result);
+                });
+            },
             openShareDialog(){
                 this.$emit("openShareDialogEvent");
             },
