@@ -1,68 +1,71 @@
 <template>
 	<page actionBarHidden="true" backgroundSpanUnderStatusBar="true">
 		<!-- @loaded="onLoaded" -->
+		<GridLayout>
+			<GridLayout rows="auto,auto,*,auto" columns="auto" :class="{ shareDialogOpen: shareDialogOpen }">
 
-		<GridLayout rows="auto,auto,*,auto" columns="auto">
-
-			<GridLayout row="0" ref="navStatusBar" class="navStatusBar" backgroundColor="#3d7def" verticalAlignment="top" height="40"
-			 width="100%" rows="auto" columns="*,auto,auto,auto">
-				<Label col="0" row="0" text="首页" class="status-title"/>
-				<Image col="1" row="0" @tap="search" horizontalAlignment="right" class="status-img"
-						src="~/assets/images/search.png" />
-				<Image col="2" row="0" @tap="bell" horizontalAlignment="right" class="status-img"
-						src="~/assets/images/bell.png" />
-				<Image horizontalAlignment="right" stretch="aspectFill" col="3"
-						row="0" class="status-profile" src="~/assets/images/me.jpg" />
-			</GridLayout>
-
-			<GridLayout  row="1" ref="navTab" class="navTab" verticalAlignment="top"
-					width="100%"  rows="*,auto" columns="auto,auto">
-				<GridLayout class="tabview" :class="selectedTabview==0?'active':''"
-						@tap="showActivity" rows="auto" cols="auto,auto" col="0" row="0" 
-						verticalAlignment="middle" horizontalAlignment="center" width="50%">
-					<Image v-show="selectedTabview==0"  row="0" col="0" class="navIcon" 
-							:src="selectedTabview==0?'~/assets/images/activity.png':''"/>
-					<Label :class="selectedTabview==0?'active':''" row="0"  col="1" 
-							text="活动" class="tabviewText"/>
+				<GridLayout row="0" ref="navStatusBar" class="navStatusBar" backgroundColor="#3d7def" verticalAlignment="top" height="40"
+				width="100%" rows="auto" columns="*,auto,auto,auto">
+					<Label col="0" row="0" text="首页" class="status-title"/>
+					<Image col="1" row="0" @tap="search" horizontalAlignment="right" class="status-img"
+							src="~/assets/images/search.png" />
+					<Image col="2" row="0" @tap="bell" horizontalAlignment="right" class="status-img"
+							src="~/assets/images/bell.png" />
+					<Image horizontalAlignment="right" stretch="aspectFill" col="3"
+							row="0" class="status-profile" src="~/assets/images/me.jpg" />
 				</GridLayout>
-				<GridLayout class="tabview" :class="selectedTabview==1?'active':''"
-						@tap="showShare" rows="auto" cols="auto,auto" col="1" row="0"
-						verticalAlignment="middle" horizontalAlignment="center" width="50%">
-					<Image v-show="selectedTabview == 1" row="0" col="0" class="navIcon"
-							:src="selectedTabview==1?'~/assets/images/share.png':''"/>
-					<Label :class="selectedTabview==1?'active':''" row="0"  col="1" 
-							text="分享" class="tabviewText"/>						
+
+				<GridLayout  row="1" ref="navTab" class="navTab" verticalAlignment="top"
+						width="100%"  rows="*,auto" columns="auto,auto">
+					<GridLayout class="tabview" :class="selectedTabview==0?'active':''"
+							@tap="showActivity" rows="auto" cols="auto,auto" col="0" row="0" 
+							verticalAlignment="middle" horizontalAlignment="center" width="50%">
+						<Image v-show="selectedTabview==0"  row="0" col="0" class="navIcon" 
+								:src="selectedTabview==0?'~/assets/images/activity.png':''"/>
+						<Label :class="selectedTabview==0?'active':''" row="0"  col="1" 
+								text="活动" class="tabviewText"/>
+					</GridLayout>
+					<GridLayout class="tabview" :class="selectedTabview==1?'active':''"
+							@tap="showShare" rows="auto" cols="auto,auto" col="1" row="0"
+							verticalAlignment="middle" horizontalAlignment="center" width="50%">
+						<Image v-show="selectedTabview == 1" row="0" col="0" class="navIcon"
+								:src="selectedTabview==1?'~/assets/images/share.png':''"/>
+						<Label :class="selectedTabview==1?'active':''" row="0"  col="1" 
+								text="分享" class="tabviewText"/>						
+					</GridLayout>
 				</GridLayout>
+
+				<GridLayout v-show="selectedTabview == 0" row="2" width="100%" backgroundColor="white">
+					<ListView ref="listview" separatorColor="transparent" for="item in items" :key="index">
+						<v-template>
+							<item :item="item" @clicked="showItem(item)" @openShareDialogEvent="openShareDialog(item)"/>
+						</v-template>
+					</ListView>
+				</GridLayout>
+
+				<GridLayout v-show="selectedTabview == 1" row="2" width="100%" backgroundColor="white">		
+					<ListView ref="listview" separatorColor="transparent" for="shareInfo in shareInfos" :key="index">
+						<v-template>
+							<single-share-block :shareInfo="shareInfo"/>
+						</v-template>
+					</ListView>
+				</GridLayout>
+
+				<!-- <navBottom row="3" /> -->
 			</GridLayout>
 
-			<GridLayout v-show="selectedTabview == 0" row="2" width="100%" backgroundColor="white">
-				<ListView ref="listview" separatorColor="transparent" for="item in items" :key="index">
-					<v-template>
-						<item :item="item" @clicked="showItem(item)" />
-					</v-template>
-				</ListView>
-			</GridLayout>
-
-			<GridLayout v-show="selectedTabview == 1" row="2" width="100%" backgroundColor="white">		
-				<ListView ref="listview" separatorColor="transparent" for="item in itemsCategory" :key="index">
-					<v-template>
-						<Category :item="item"> </Category>
-					</v-template>
-				</ListView>
-			</GridLayout>
-
-			<!-- <navBottom row="3" /> -->
-
+			<share-dialog  :item="sharePayload" :dialogOpen="shareDialogOpen" @closeShareDialogEvent="closeShareDialog"/>
 		</GridLayout>
-</page>
+	</page>
 </template>
 <script>
 	// import { SwissArmyKnife } from "nativescript-swiss-army-knife";
 	import { isIOS, isAndroid } from 'tns-core-modules/platform'
 	import navBottom from "./common/NavBottom";
 	import Item from "./common/Item";
-	import Category from "./common/Category";
-    import ItemDetails from "./common/ItemDetails";
+	import SingleShareBlock from "./common/SingleShareBlock";
+	import ItemDetails from "./common/ItemDetails";
+	import ShareDialog from './common/ShareDialog';
 	const gestures = require("ui/gestures"); 
 	const app = require("application");
 
@@ -70,19 +73,22 @@ export default {
 	components: {
 		navBottom,
 		Item,
-		Category
+		SingleShareBlock,
+		ShareDialog
 	},
 	computed: {
 		itemsCategory(){
 			return this.category.slice().reverse();
 		}
 	},
-
 	mounted () {
-		// SwissArmyKnife.setAndroidStatusBarColor("#b51213");
+		//请求：获得所有活动信息
+		//请求：获得所有分享列表
 	},
 	data() {
 		return {
+			sharePayload:{},
+			shareDialogOpen:false,
 			lastDelY: 0,
 			headerCollapsed: false,
 			selectedTab: 0,
@@ -102,11 +108,11 @@ export default {
 				},
 				cover:"~/assets/images/food/burger/burger1.jpg",
 				comments:10,
-				canShare:false 
+				isMember:false 
 			},
 			{
 				id:2000,
-				title:"上海两日游",
+				title:"上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游",
 				startDateTime:"2019-01-19 08:00:00",
 				endDateTime:"2019-01-21 20:00:00",
 				address:"中国上海",
@@ -118,7 +124,7 @@ export default {
 				},
 				cover:"~/assets/images/food/nju/nju1.png",
 				comments:9,
-				canShare:false 
+				isMember:true 
 			},
 			{
 				id:3000,
@@ -134,7 +140,7 @@ export default {
 				},
 				cover:"~/assets/images/food/cake/cake1.jpg",
 				comments:6,
-				canShare:false 
+				isMember:false 
 			},
 			{
 				id:4000,
@@ -150,40 +156,121 @@ export default {
 				},
 				cover:"~/assets/images/food/pancake/pancake1.jpg",
 				comments:25,
-				canShare:true 
+				isMember:true 
 			},
 			],
-			category: [
-			{
-				cover: "~/assets/images/food/burger640.jpg",
-				category: "BURGER",
-				count: "13",
-			},
-			{
-				cover: "~/assets/images/food/nju/nju1.png",
-				category: "NJU",
-				count: "4",
-			},
-			{
-				cover: "~/assets/images/food/pancake640.jpg",
-				category: "PANCAKE",
-				count: "5",
-			},
-			{
-				cover: "~/assets/images/food/cake640.jpg",
-				category: "CAKE",
-				count: "9",
-			},
-			{
-				cover: "~/assets/images/food/beer640.jpg",
-				category: "BEER",
-				count: "7",
-			},
-		
+			shareInfos: [
+				{
+					id:1,
+                    user:{
+                        id:3,
+                        username:"王爱思",
+                        email:"john@edu.cn",
+                        avaUrl:"~/assets/images/johndoe.jpg"
+					},
+					contents:{
+						text:"111厉害的不行"
+					},
+                    activity:{
+						id:1000,
+						title: "湖滨轰趴",
+						cover: "~/assets/images/food/burger/burger1.jpg"
+					},
+					likeNum:11,
+					isLike:false,
+                    dateTime:"2019-01-01 19:31:00" 
+				},
+				{
+					id:2,
+                    user:{
+                        id:3,
+                        username:"王爱思",
+                        email:"john@edu.cn",
+                        avaUrl:"~/assets/images/johndoe.jpg"
+					},
+					contents:{
+						text:"222快来参加"
+					},
+                    activity:{
+						id:1000,
+						title: "湖滨轰趴湖滨轰趴湖滨轰趴湖滨轰趴湖滨轰趴湖滨轰趴湖滨轰趴湖滨轰趴湖滨轰趴湖滨轰滨轰趴湖滨轰趴湖滨轰趴湖滨轰趴湖滨轰趴湖滨轰趴湖滨轰趴湖滨轰趴",
+						cover: "~/assets/images/food/nju/nju2.png"
+					},
+					likeNum:12,
+					isLike:true,
+                    dateTime:"2019-01-01 19:31:00" 
+				},
+				{
+					id:3,
+                    user:{
+                        id:3,
+                        username:"王爱思",
+                        email:"john@edu.cn",
+                        avaUrl:"~/assets/images/johndoe.jpg"
+					},
+					contents:{
+						text:"333有很多小姐姐哦小姐姐小姐姐小姐姐小姐姐小姐姐小姐姐小姐姐小姐姐小姐姐小姐姐小姐姐小姐姐小姐姐小姐姐小姐姐小姐姐小姐姐小姐姐小姐姐小姐姐小姐姐"
+					},
+                    activity:{
+						id:1000,
+						title: "湖滨轰趴是的",
+						cover: "~/assets/images/food/nju/nju1.png"
+					},
+					likeNum:0,
+					isLike:false,
+                    dateTime:"2019-01-01 19:31:00" 
+				},
+				{
+					id:4,
+                    user:{
+                        id:3,
+                        username:"王爱思",
+                        email:"john@edu.cn",
+                        avaUrl:"~/assets/images/johndoe.jpg"
+					},
+					contents:{
+						text:"444快快上车"
+					},
+                    activity:{
+						id:1000,
+						title: "湖滨轰趴",
+						cover: "~/assets/images/food/cake/cake1.jpg"
+					},
+					likeNum:1,
+					isLike:false,
+                    dateTime:"2019-01-01 19:31:00" 
+				},
+				{
+					id:5,
+                    user:{
+                        id:3,
+                        username:"刘鑫",
+                        email:"john@edu.cn",
+                        avaUrl:"~/assets/images/me.jpg"
+					},
+					contents:{
+						text:"444快快上车\n了不得了不得\n有好吃的、有好玩的！"
+					},
+                    activity:{
+						id:1000,
+						title: "湖滨轰趴dhshsj是电话费灰色空间佛挡杀佛开会",
+						cover: "~/assets/images/food/burger/burger1.jpg"
+					},
+					likeNum:0,
+					isLike:true,
+                    dateTime:"2019-01-01 19:31:00" 
+				}
 			]
 		};
 	},
 	methods: {
+		openShareDialog(item){
+			this.sharePayload = item
+            this.shareDialogOpen = true
+        },
+        closeShareDialog(){
+            this.shareDialogOpen = false
+        },
 		search(){
 			console.log('search')
 		},
@@ -191,6 +278,7 @@ export default {
 			console.log('bell')
 		},
 		showItem(payload) {
+			this.sharePayload = payload
 			this.$navigateTo(ItemDetails,{
 				props: {
 					item: payload

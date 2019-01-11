@@ -14,3 +14,34 @@
     color:#fff;
     cursor: pointer;
 }
+
+.shareDialogOpen{
+    opacity: 0.2;
+}
+
+
+.lineBasic {
+    border: none;
+    color: #e0e0e0;
+    background-color: #e0e0e0;
+ }
+
+ .content {
+    margin-left: 16;
+    margin-right: 16;
+    margin-bottom: 3;
+    margin-top: 16;
+}
+
+.liked-active {
+    color: #4080FF;
+}
+
+.heart-active {
+    color: #b51213;
+}
+
+.default {
+    color: #828282;
+}
+
