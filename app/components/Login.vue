@@ -1,36 +1,43 @@
 <template>
-    <Page actionBarHidden="true">
+    <Page actionBarHidden="true" >
         <FlexboxLayout class="page">
             <StackLayout class="form">
                 <!-- <Label class="logo" >🐳</Label> -->
-                <Image class="logo" src="~/images/logo.png"></Image>
+                <Image class="logo" src="~/assets/images/logo.png"></Image>
                 <Label class="header" text="去玩吧"></Label>
 
-                <GridLayout rows="auto, auto, auto">
-                    <StackLayout row="0" class="input-field">
-                        <TextField class="input" hint="用户名" :isEnabled="!processing"
+                <GridLayout rows="auto, auto, auto, auto">
+                    <StackLayout row="0" class="input-field" v-show="!isLoggingIn" >
+                        <TextField class="input" hint="昵称" :isEnabled="!processing"
                             autocorrect="false"
                             autocapitalizationType="none" v-model="user.username"
                             returnKeyType="next" @returnPress="focusPassword"></TextField>
                         <StackLayout class="hr-light"></StackLayout>
                     </StackLayout>
 
-                    <StackLayout row="1" class="input-field">
+                    <StackLayout :row="isLoggingIn? 0 : 1"   class="input-field">
+                        <TextField class="input" ref="email" :isEnabled="!processing" keyboardType="email" 
+                            hint="学院邮箱" v-model="user.email"
+                            returnKeyType="next"></TextField>
+                        <StackLayout class="hr-light"></StackLayout>
+                    </StackLayout>
+
+                    <StackLayout :row="isLoggingIn? 1 : 2" class="input-field">
                         <TextField class="input" ref="password" :isEnabled="!processing"
                             hint="密码" secure="true" v-model="user.password"
                             :returnKeyType="isLoggingIn ? 'done' : 'next'"
                             @returnPress="focusConfirmPassword"></TextField>
                         <StackLayout class="hr-light"></StackLayout>
                     </StackLayout>
-
-                    <StackLayout row="2" v-show="!isLoggingIn" class="input-field">
+ 
+                    <StackLayout row="3" v-show="!isLoggingIn" class="input-field">
                         <TextField class="input" ref="confirmPassword" :isEnabled="!processing"
                             hint="再次输入密码" secure="true" v-model="user.confirmPassword"
                             returnKeyType="done"></TextField>
                         <StackLayout class="hr-light"></StackLayout>
                     </StackLayout>
 
-                    <ActivityIndicator rowSpan="3" :busy="processing"></ActivityIndicator>
+                    <ActivityIndicator rowSpan="4" :busy="processing"></ActivityIndicator>
                 </GridLayout>
 
                 <Button :text="isLoggingIn ? '登录' : '注册'" :isEnabled="!processing"
@@ -51,6 +58,7 @@
 
 <script>
     import Home from "./Home";
+    import ManagerHome from "./Manager/Home"
 
     export default {
         data() {
@@ -58,17 +66,17 @@
                 isLoggingIn: true,
                 processing: false,
                 user: {
-                    username: "",
-                    password: "",
-                    confirmPassword: ""
+                    username: "shaodong",
+                    email: "shaodong@nju.edu.cn",
+                    password: "123456",
+                    confirmPassword: "123456"
                 }
-            };
+            }
         },
         methods: {
             toggleForm() {
                 this.isLoggingIn = !this.isLoggingIn;
             },
-
             submit() {
                 if (!this.user.username || !this.user.password) {
                     this.alert(
@@ -89,8 +97,13 @@
                 // this.$backendService
                 //     .login(this.user)
                 //     .then(() => {
-                        this.processing = false;
-                        this.$navigateTo(Home, { clearHistory: true });
+                    this.processing = false;
+                    //如果是管理员，跳转至管理员页面
+                    
+                        if(this.user.username=="admin"&&this.user.password=="admin123")
+                            this.$navigateTo(ManagerHome, { clearHistory: true });
+                        else
+                            this.$navigateTo(Home, { clearHistory: true });
                     // })
                     // .catch(() => {
                     //     this.processing = false;
@@ -144,9 +157,13 @@
 </script>
 
 <style scoped>
+.amap-demo {
+      height: 300px;
+    }
     .page {
         align-items: center;
         flex-direction: column;
+        /* background: transparent url(~/assets/images/mainBg.jpg) no-repeat contain; */
     }
 
     .form {
@@ -164,12 +181,11 @@
     }
 
     .header {
-        horizontal-align: center;
         font-size: 25;
         font-weight: 600;
         margin-bottom: 70;
         text-align: center;
-        color: rgb(33, 135, 202);
+        color: #3d7def;
     }
 
     .input-field {
@@ -178,7 +194,6 @@
 
     .input {
         font-size: 18;
-        placeholder-color: #A8A8A8;
     }
 
     .input:disabled {
@@ -191,7 +206,6 @@
     }
 
     .login-label {
-        horizontal-align: center;
         color: #A8A8A8;
         font-size: 16;
     }
