@@ -38,19 +38,25 @@
 				    </GridLayout>
 
                     <GridLayout v-show="selectedTabview == 0" row="3" width="100%" backgroundColor="white">
-                        <ListView ref="listview" separatorColor="transparent" for="item in createActivityList" :key="index">
-                            <v-template>
-                                <item :item="item" @clicked="showItem(item)" @openShareDialogEvent="openShareDialog(item)"/>
-                            </v-template>
-                        </ListView>
+                        <ScrollView >
+                            <StackLayout>
+                                <GridLayout v-for="item in createActivityList" :key="item.id" 
+                                                rows="*" columns="*">
+                                    <item :item="item" @clicked="showItem(item)" @openShareDialogEvent="openShareDialog(item)"/>
+                                </GridLayout>
+                            </StackLayout>
+					    </ScrollView>
                     </GridLayout>
 
                     <GridLayout v-show="selectedTabview == 1" row="3" width="100%" backgroundColor="white">		
-                         <ListView ref="listview" separatorColor="transparent" for="item in joinActivityList" :key="index">
-                            <v-template>
-                                <item :item="item" @clicked="showItem(item)" @openShareDialogEvent="openShareDialog(item)"/>
-                            </v-template>
-                         </ListView>
+                        <ScrollView >
+                            <StackLayout>
+                                <GridLayout v-for="item in joinActivityList" :key="item.id" 
+                                                rows="*" columns="*">
+                                    <item :item="item" @clicked="showItem(item)" @openShareDialogEvent="openShareDialog(item)"/>
+                                </GridLayout>
+                            </StackLayout>
+					    </ScrollView>
                     </GridLayout>
                     <NavBottom row="4" :selectedTab="selectedTab" @tabChangeEvent="bottomTabChangeEvent"/>
             </GridLayout>
@@ -93,7 +99,7 @@ export default {
 				},
 				cover:"~/assets/images/food/cake/cake1.jpg",
 				comments:6,
-                isMember:1,
+                isMember:2,
                 isPublic:false
 			    },
 			{
@@ -110,7 +116,7 @@ export default {
 				},
 				cover:"~/assets/images/food/pancake/pancake1.jpg",
 				comments:25,
-                isMember:1 ,
+                isMember:2 ,
                 isPublic:true
 			}
             ],
@@ -129,7 +135,7 @@ export default {
 				},
 				cover:"~/assets/images/food/burger/burger1.jpg",
 				comments:10,
-                isMember:1, //isMember 0是申请中，1是已加入，2是非成员,
+                isMember:1, //isMember 0是申请中，1是已加入（参与者），2是已加入（创建者），3是非成员
                 isPublic:true
 			},
 			{
@@ -146,7 +152,7 @@ export default {
 				},
 				cover:"~/assets/images/food/nju/nju1.png",
 				comments:9,
-                isMember:1,
+                isMember: 1,
                 isPublic:false
 			}
 			],

@@ -36,19 +36,25 @@
 				</GridLayout>
 
 				<GridLayout v-show="selectedTabview == 0" row="2" width="100%" backgroundColor="white">
-					<ListView ref="listview" separatorColor="transparent" for="item in items" :key="index">
-						<v-template>
-							<item :item="item" @clicked="showItem(item)" @openShareDialogEvent="openShareDialog(item)"/>
-						</v-template>
-					</ListView>
+					<ScrollView >
+						<StackLayout>
+							<GridLayout v-for="item in items" :key="item.id" 
+                                            rows="*" columns="*">
+								<item  col="0" row="0" :item="item" @clicked="showItem(item)" @openShareDialogEvent="openShareDialog(item)"/>
+							</GridLayout>
+						</StackLayout>
+					</ScrollView>
 				</GridLayout>
 
 				<GridLayout v-show="selectedTabview == 1" row="2" width="100%" backgroundColor="white">		
-					<ListView ref="listview" separatorColor="transparent" for="shareInfo in shareInfos" :key="index">
-						<v-template>
-							<single-share-block :shareInfo="shareInfo"/>
-						</v-template>
-					</ListView>
+					<ScrollView >
+						<StackLayout>
+							<GridLayout v-for="shareInfo in shareInfos" :key="shareInfo.id" 
+                                            rows="*" columns="*">
+								<single-share-block  col="0" row="0" :shareInfo="shareInfo"/>
+							</GridLayout>
+						</StackLayout>
+					</ScrollView>
 				</GridLayout>
 
 				<!-- <navBottom row="3" /> -->
@@ -92,74 +98,74 @@ export default {
 			selectedTab: 0,
 			selectedTabview: 0,
 			items: [
-			{
-				id:1000,
-				title: "湖滨轰趴",
-				startDateTime:"2019-01-01 20:00:00",
-				endDateTime:"2019-01-01 22:00:00",
-				address:"中国江苏省南京市栖霞区紫东路18-2-104号（原保利紫金山售楼处）",
-				organizer:{
-					id:1,
-					username:"刘莉",
-					email:"john@edu.cn",
-					avaUrl:"~/assets/images/johndoe.jpg"
+				{
+					id:1000,
+					title: "湖滨轰趴",
+					startDateTime:"2019-01-01 20:00:00",
+					endDateTime:"2019-01-01 22:00:00",
+					address:"中国江苏省南京市栖霞区紫东路18-2-104号（原保利紫金山售楼处）",
+					organizer:{
+						id:1,
+						username:"刘莉",
+						email:"john@edu.cn",
+						avaUrl:"~/assets/images/johndoe.jpg"
+					},
+					cover:"~/assets/images/food/burger/burger1.jpg",
+					comments:10,
+					isMember:0, //isMember 0是申请中，1是已加入（参与者），2是已加入（创建者），3是非成员
+					isPublic:true
 				},
-				cover:"~/assets/images/food/burger/burger1.jpg",
-				comments:10,
-				isMember:2, //isMember 0是申请中，1是已加入，2是非成员
-				isPublic:true
-			},
-			{
-				id:2000,
-				title:"上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游",
-				startDateTime:"2019-01-19 08:00:00",
-				endDateTime:"2019-01-21 20:00:00",
-				address:"中国上海",
-				organizer:{
-					id:2,
-					username:"张鑫",
-					email:"john@edu.cn",
-					avaUrl:"~/assets/images/johndoe.jpg"
+				{
+					id:2000,
+					title:"上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游",
+					startDateTime:"2019-01-19 08:00:00",
+					endDateTime:"2019-01-21 20:00:00",
+					address:"中国上海",
+					organizer:{
+						id:2,
+						username:"张鑫",
+						email:"john@edu.cn",
+						avaUrl:"~/assets/images/johndoe.jpg"
+					},
+					cover:"~/assets/images/food/nju/nju1.png",
+					comments:9,
+					isMember:3,
+					isPublic:true 
 				},
-				cover:"~/assets/images/food/nju/nju1.png",
-				comments:9,
-				isMember:2,
-				isPublic:true 
-			},
-			{
-				id:3000,
-				title: "玄武公园一日游",
-				startDateTime:"2019-01-10 10:00:00",
-				endDateTime:"2019-01-10 20:00:00",
-				address:"中国江苏省南京市玄武区玄武巷1号玄武湖公园",
-				organizer:{
-					id:3,
-					username:"王爱思",
-					email:"john@edu.cn",
-					avaUrl:"~/assets/images/johndoe.jpg"
+				{
+					id:3000,
+					title: "玄武公园一日游",
+					startDateTime:"2019-01-10 10:00:00",
+					endDateTime:"2019-01-10 20:00:00",
+					address:"中国江苏省南京市玄武区玄武巷1号玄武湖公园",
+					organizer:{
+						id:3,
+						username:"王爱思",
+						email:"john@edu.cn",
+						avaUrl:"~/assets/images/johndoe.jpg"
+					},
+					cover:"~/assets/images/food/cake/cake1.jpg",
+					comments:6,
+					isMember:2,
+					isPublic:true 
 				},
-				cover:"~/assets/images/food/cake/cake1.jpg",
-				comments:6,
-				isMember:0,
-				isPublic:true 
-			},
-			{
-				id:4000,
-				title: "东南大学交流日交流日交流日交流日交流日交流日交流日交流日",
-				startDateTime:"2019-02-01 09:00:00",
-				endDateTime:"2019-02-01 20:30:00",
-				address:"中国江苏省南京市玄武区四牌楼2号",
-				organizer:{
-					id:3,
-					username:"王爱思",
-					email:"john@edu.cn",
-					avaUrl:"~/assets/images/johndoe.jpg"
-				},
-				cover:"~/assets/images/food/pancake/pancake1.jpg",
-				comments:25,
-				isMember:1,
-				isPublic:true
-			},
+				{
+					id:4000,
+					title: "东南大学交流日交流日交流日交流日交流日交流日交流日交流日",
+					startDateTime:"2019-02-01 09:00:00",
+					endDateTime:"2019-02-01 20:30:00",
+					address:"中国江苏省南京市玄武区四牌楼2号",
+					organizer:{
+						id:3,
+						username:"王爱思",
+						email:"john@edu.cn",
+						avaUrl:"~/assets/images/johndoe.jpg"
+					},
+					cover:"~/assets/images/food/pancake/pancake1.jpg",
+					comments:25,
+					isMember:1,
+					isPublic:true
+				}
 			],
 			shareInfos: [
 				{
