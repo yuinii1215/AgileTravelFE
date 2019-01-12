@@ -89,8 +89,6 @@ export default {
 		return {
 			sharePayload:{},
 			shareDialogOpen:false,
-			lastDelY: 0,
-			headerCollapsed: false,
 			selectedTab: 0,
 			selectedTabview: 0,
 			items: [
@@ -100,7 +98,7 @@ export default {
 				startDateTime:"2019-01-01 20:00:00",
 				endDateTime:"2019-01-01 22:00:00",
 				address:"中国江苏省南京市栖霞区紫东路18-2-104号（原保利紫金山售楼处）",
-				originator:{
+				organizer:{
 					id:1,
 					username:"刘莉",
 					email:"john@edu.cn",
@@ -108,7 +106,8 @@ export default {
 				},
 				cover:"~/assets/images/food/burger/burger1.jpg",
 				comments:10,
-				isMember:2 //isMember 0是申请中，1是已加入，2是非成员
+				isMember:2, //isMember 0是申请中，1是已加入，2是非成员
+				isPublic:true
 			},
 			{
 				id:2000,
@@ -116,7 +115,7 @@ export default {
 				startDateTime:"2019-01-19 08:00:00",
 				endDateTime:"2019-01-21 20:00:00",
 				address:"中国上海",
-				originator:{
+				organizer:{
 					id:2,
 					username:"张鑫",
 					email:"john@edu.cn",
@@ -124,7 +123,8 @@ export default {
 				},
 				cover:"~/assets/images/food/nju/nju1.png",
 				comments:9,
-				isMember:2 
+				isMember:2,
+				isPublic:true 
 			},
 			{
 				id:3000,
@@ -132,7 +132,7 @@ export default {
 				startDateTime:"2019-01-10 10:00:00",
 				endDateTime:"2019-01-10 20:00:00",
 				address:"中国江苏省南京市玄武区玄武巷1号玄武湖公园",
-				originator:{
+				organizer:{
 					id:3,
 					username:"王爱思",
 					email:"john@edu.cn",
@@ -140,7 +140,8 @@ export default {
 				},
 				cover:"~/assets/images/food/cake/cake1.jpg",
 				comments:6,
-				isMember:0 
+				isMember:0,
+				isPublic:true 
 			},
 			{
 				id:4000,
@@ -148,7 +149,7 @@ export default {
 				startDateTime:"2019-02-01 09:00:00",
 				endDateTime:"2019-02-01 20:30:00",
 				address:"中国江苏省南京市玄武区四牌楼2号",
-				originator:{
+				organizer:{
 					id:3,
 					username:"王爱思",
 					email:"john@edu.cn",
@@ -156,7 +157,8 @@ export default {
 				},
 				cover:"~/assets/images/food/pancake/pancake1.jpg",
 				comments:25,
-				isMember:1 
+				isMember:1,
+				isPublic:true
 			},
 			],
 			shareInfos: [
@@ -311,41 +313,12 @@ export default {
 </script>
 
 <style>
-.tabview{
-	text-align: center;
-}
-.tabview.active {
-	border-bottom-color: white;
-	border-bottom-width: 3;
-	margin: 0;
-	height: 45;
-}
-.tabviewText {
-	margin-top: 10;
-	margin-bottom: 5;
-	font-size: 15;
-	margin-left:30;
-	color: #d8d2d2;
-}
-.tabviewText.active {
-	margin-top: 10;
-	margin-bottom: 5;
-	font-weight: bold;
-	color: white;
-	vertical-align: center;
-}
 .navIcon{
 	margin-right:30;
 	margin-top:5;
 	width:25;
 }
-.navTab {
-	background-color: #3d7def;
-	height: 45;
-}
-.navTabview {
-	background-color: blue;
-}
+
 .status-img {
 	margin-top: 4;
 	margin-right: 20;

@@ -33,9 +33,9 @@
                             <Label col="0" row="0" rowSpan="2" text="组织者:" class="user-type" verticalAlignment="top"/>
                             <GridLayout col="1" row="0" rows="auto,auto" columns="auto" class="user-info-wrap" horizontalAlignment="left" >
                                 <Image horizontalAlignment="center"  verticalAlignment="top" stretch="aspectFill" col="0"
-                                                row="0" class="status-profile" :src="item.originator.avaUrl" />
-                                <Label col="0" row="1" class="patipacter-name" horizontalAlignment="center"  verticalAlignment="bottom"
-                                :text="item.originator.username"/>
+                                                row="0" class="status-profile" :src="item.organizer.avaUrl" />
+                                <Label col="0" row="1" class="participator-name" horizontalAlignment="center"  verticalAlignment="bottom"
+                                :text="item.organizer.username"/>
                             </GridLayout>
                         <!-- </GridLayout> -->
                         <!-- <GridLayout row="1" col="0" rows="auto,auto" columns="auto,auto" width="100%" marginTop="5"> -->
@@ -43,12 +43,12 @@
                             <GridLayout colSpan="3"  col="1" row="1" rows="auto,auto" columns="auto" class="user-info-wrap" width="100%" horizontalAlignment="left"  marginTop="6">
                                 <ScrollView  orientation="horizontal" width="100%">
                                     <StackLayout orientation="horizontal" class="">
-                                        <GridLayout v-for="patipacter in detailInfo.patipacters" :key="patipacter.id" 
+                                        <GridLayout v-for="participator in detailInfo.participators" :key="participator.id" 
                                             rows="auto,auto" columns="*" marginRight="5">
                                             <Image horizontalAlignment="center"  verticalAlignment="top" stretch="aspectFill" 
-                                                col="0" row="0" class="status-profile" :src="patipacter.avaUrl" />
-                                            <Label col="0" row="1" class="patipacter-name" horizontalAlignment="center"  verticalAlignment="bottom" 
-                                            :text="patipacter.username"/>
+                                                col="0" row="0" class="status-profile" :src="participator.avaUrl" />
+                                            <Label col="0" row="1" class="participator-name" horizontalAlignment="center"  verticalAlignment="bottom" 
+                                            :text="participator.username"/>
                                         </GridLayout>
                                     </StackLayout>
                                 </ScrollView>
@@ -149,7 +149,7 @@
                 isLike: false,
                 isHeart: false,
                 detailInfo:{
-                    patipacters:[
+                    participators:[
                         {
                             id:3,
                             username:"宋杰",
@@ -508,7 +508,7 @@
     .user-info-wrap{
         margin-top:-5;
     }
-    .patipacter-name{
+    .participator-name{
         font-size: 12;
         text-align: center;
         color: #828282;

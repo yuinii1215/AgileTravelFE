@@ -12,7 +12,7 @@
         <GridLayout :class="selectedTab==1?'active':''" @tap="info" rows="auto,auto"
             cols="auto" class="nav" col="1" row="0" width="33%">
             <Label :class="selectedTab==1?'active':''" row="0" class="fa navBottomIcon"
-                :text="'fa-envelope-o' | fonticon"/>
+                :text="'fa-comments-o' | fonticon"/>
             <Label row="1" :class="selectedTab==1?'active':''"  text="消息" class="navText"></Label>
         </GridLayout>
 

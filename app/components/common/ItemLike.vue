@@ -3,8 +3,8 @@
     <GridLayout columns="*,auto,auto" rows="auto">
         <GridLayout col="0" rows="auto" columns="auto,auto">
             <Image horizontalAlignment="right" stretch="aspectFill" col="0"
-							row="0" class="status-profile" :src="item.originator.avaUrl" />
-            <Label col="1" row="0" class="layout" :text="item.originator.username"></Label>
+							row="0" class="status-profile" :src="item.organizer.avaUrl" />
+            <Label col="1" row="0" class="layout" :text="item.organizer.username"></Label>
         </GridLayout>
         <GridLayout col="1" rows="auto" columns="auto,auto"  orientation="horizontal" verticalAlignment="bottom" horizontalAlignment="right"  marginRight="10" class="item-comment">
             <Label col="0" row="0" ref="" class="like-icon layout fa" :text="'fa-comment-o' | fonticon" />
@@ -23,6 +23,9 @@
         <StackLayout col="2" orientation="horizontal" v-if="item.isMember==1" @tap="openShareDialog()">
             <Label ref="" class="like-icon layout fa" :text="'fa-share-square-o' | fonticon" />
             <Label class="layout" text="分享" ></Label>
+        </StackLayout>
+        <StackLayout col="2" orientation="horizontal" v-if="item.isMember==0" >
+            <Label class="layout" text="加入请求待审核" ></Label>
         </StackLayout>
     </GridLayout>
 </template>
