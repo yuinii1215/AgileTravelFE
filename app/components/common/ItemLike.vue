@@ -16,11 +16,11 @@
                 :class="[item.isFavorite ? 'heart-active' : 'default']" :text="item.isFavorite ? 'fa-heart':'fa-heart-o' | fonticon" />
             <Label col="1" row="0" class="layout" text="Favorite"></Label>
         </GridLayout> -->
-        <StackLayout col="2" orientation="horizontal" horizontalAlignment="right"  v-if="!item.isMember" @tap="joinInActivity">
+        <StackLayout col="2" orientation="horizontal" horizontalAlignment="right"  v-if="item.isMember==2" @tap="joinInActivity">
             <Label ref="" class="like-icon layout fa" :text="'fa-user-plus' | fonticon" />
             <Label class="layout" text="申请加入"></Label>
         </StackLayout>
-        <StackLayout col="2" orientation="horizontal" v-if="item.isMember" @tap="openShareDialog()">
+        <StackLayout col="2" orientation="horizontal" v-if="item.isMember==1" @tap="openShareDialog()">
             <Label ref="" class="like-icon layout fa" :text="'fa-share-square-o' | fonticon" />
             <Label class="layout" text="分享" ></Label>
         </StackLayout>
