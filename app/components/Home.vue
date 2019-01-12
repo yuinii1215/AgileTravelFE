@@ -6,7 +6,7 @@
 
 				<GridLayout row="0" ref="navStatusBar" class="navStatusBar" backgroundColor="#3d7def" verticalAlignment="top" height="40"
 				width="100%" rows="auto" columns="*,auto,auto,auto">
-					<Label col="0" row="0" text="首页" class="status-title"/>
+					<Label col="0" row="0" text="社区" class="status-title"/>
 					<Image col="1" row="0" @tap="search" horizontalAlignment="right" class="status-img"
 							src="~/assets/images/search.png" />
 					<Image col="2" row="0" @tap="bell" horizontalAlignment="right" class="status-img"
@@ -52,6 +52,7 @@
 				</GridLayout>
 
 				<!-- <navBottom row="3" /> -->
+				<NavBottom row="3" :selectedTab="selectedTab" @tabChangeEvent="bottomTabChangeEvent"/>
 			</GridLayout>
 
 			<share-dialog  :item="sharePayload" :dialogOpen="shareDialogOpen" @closeShareDialogEvent="closeShareDialog"/>
@@ -61,25 +62,24 @@
 <script>
 	// import { SwissArmyKnife } from "nativescript-swiss-army-knife";
 	import { isIOS, isAndroid } from 'tns-core-modules/platform'
-	import navBottom from "./common/NavBottom";
 	import Item from "./common/Item";
 	import SingleShareBlock from "./common/SingleShareBlock";
 	import ItemDetails from "./common/ItemDetails";
 	import ShareDialog from './common/ShareDialog';
+	import NavBottom from "./NavBottom";
+    import Info from "./Info";
+    import Mine from "./Mine";
 	const gestures = require("ui/gestures"); 
 	const app = require("application");
 
 export default {
 	components: {
-		navBottom,
 		Item,
 		SingleShareBlock,
-		ShareDialog
+		ShareDialog,
+		NavBottom
 	},
 	computed: {
-		itemsCategory(){
-			return this.category.slice().reverse();
-		}
 	},
 	mounted () {
 		//请求：获得所有活动信息
@@ -108,7 +108,7 @@ export default {
 				},
 				cover:"~/assets/images/food/burger/burger1.jpg",
 				comments:10,
-				isMember:false 
+				isMember:2 //isMember 0是申请中，1是已加入，2是非成员
 			},
 			{
 				id:2000,
@@ -124,7 +124,7 @@ export default {
 				},
 				cover:"~/assets/images/food/nju/nju1.png",
 				comments:9,
-				isMember:true 
+				isMember:2 
 			},
 			{
 				id:3000,
@@ -140,7 +140,7 @@ export default {
 				},
 				cover:"~/assets/images/food/cake/cake1.jpg",
 				comments:6,
-				isMember:false 
+				isMember:0 
 			},
 			{
 				id:4000,
@@ -156,7 +156,7 @@ export default {
 				},
 				cover:"~/assets/images/food/pancake/pancake1.jpg",
 				comments:25,
-				isMember:true 
+				isMember:1 
 			},
 			],
 			shareInfos: [
@@ -264,6 +264,15 @@ export default {
 		};
 	},
 	methods: {
+		bottomTabChangeEvent(index){
+			this.selectedTab = index
+			if(this.selectedTab==0){
+			}else if(this.selectedTab==1){
+				this.$navigateTo(Info,{animated: false})
+			}else if(this.selectedTab==2){
+				this.$navigateTo(Mine,{animated: false})
+			}
+        },
 		openShareDialog(item){
 			this.sharePayload = item
             this.shareDialogOpen = true
@@ -291,7 +300,6 @@ export default {
 				}
 			})
 		},
-		
 		showActivity() {
 			this.selectedTabview = 0;
 		},
@@ -329,6 +337,7 @@ export default {
 .navIcon{
 	margin-right:30;
 	margin-top:5;
+	width:25;
 }
 .navTab {
 	background-color: #3d7def;
