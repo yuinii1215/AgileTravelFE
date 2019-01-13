@@ -45,3 +45,31 @@
     color: #828282;
 }
 
+.navTab {
+	background-color: #3d7def;
+	height: 45;
+}
+
+.tabview{
+	text-align: center;
+}
+.tabview.active {
+	border-bottom-color: white;
+	border-bottom-width: 3;
+	margin: 0;
+	height: 45;
+}
+.tabviewText {
+	margin-top: 10;
+	margin-bottom: 5;
+	font-size: 15;
+	margin-left:30;
+	color: #d8d2d2;
+}
+.tabviewText.active {
+	margin-top: 10;
+	margin-bottom: 5;
+	font-weight: bold;
+	color: white;
+	vertical-align: center;
+}

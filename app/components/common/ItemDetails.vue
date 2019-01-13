@@ -28,14 +28,14 @@
                     <StackLayout v-if="showMore==1"   class="line anim-likes lineBasic" row="2" width="100%" marginTop="10" />
 
                     <GridLayout v-if="showMore==1"  class="anim-likes"  marginTop="5" width="100%" row="3"
-                        :columns="item.isMember?'55,*,60':'55,*,90'" rows="auto,auto,auto,auto" marginBottom="-10">
+                        :columns="item.isMember==1||item.isMember==2?'55,*,*,60':'55,*,*,90'" rows="auto,auto,auto,auto" marginBottom="-10">
                         <!-- <GridLayout row="0" col="0" rows="auto,auto" columns="auto,auto"> -->
                             <Label col="0" row="0" rowSpan="2" text="组织者:" class="user-type" verticalAlignment="top"/>
                             <GridLayout col="1" row="0" rows="auto,auto" columns="auto" class="user-info-wrap" horizontalAlignment="left" >
                                 <Image horizontalAlignment="center"  verticalAlignment="top" stretch="aspectFill" col="0"
-                                                row="0" class="status-profile" :src="item.originator.avaUrl" />
-                                <Label col="0" row="1" class="patipacter-name" horizontalAlignment="center"  verticalAlignment="bottom"
-                                :text="item.originator.username"/>
+                                                row="0" class="status-profile" :src="item.organizer.avaUrl" />
+                                <Label col="0" row="1" class="participator-name" horizontalAlignment="center"  verticalAlignment="bottom"
+                                :text="item.organizer.username"/>
                             </GridLayout>
                         <!-- </GridLayout> -->
                         <!-- <GridLayout row="1" col="0" rows="auto,auto" columns="auto,auto" width="100%" marginTop="5"> -->
@@ -43,12 +43,12 @@
                             <GridLayout colSpan="3"  col="1" row="1" rows="auto,auto" columns="auto" class="user-info-wrap" width="100%" horizontalAlignment="left"  marginTop="6">
                                 <ScrollView  orientation="horizontal" width="100%">
                                     <StackLayout orientation="horizontal" class="">
-                                        <GridLayout v-for="patipacter in detailInfo.patipacters" :key="patipacter.id" 
+                                        <GridLayout v-for="participator in detailInfo.participators" :key="participator.id" 
                                             rows="auto,auto" columns="*" marginRight="5">
                                             <Image horizontalAlignment="center"  verticalAlignment="top" stretch="aspectFill" 
-                                                col="0" row="0" class="status-profile" :src="patipacter.avaUrl" />
-                                            <Label col="0" row="1" class="patipacter-name" horizontalAlignment="center"  verticalAlignment="bottom" 
-                                            :text="patipacter.username"/>
+                                                col="0" row="0" class="status-profile" :src="participator.avaUrl" />
+                                            <Label col="0" row="1" class="participator-name" horizontalAlignment="center"  verticalAlignment="bottom" 
+                                            :text="participator.username"/>
                                         </GridLayout>
                                     </StackLayout>
                                 </ScrollView>
@@ -71,11 +71,15 @@
                                 :text="isHeart ? 'fa-heart':'fa-heart-o' | fonticon" />
                             <Label col="1" row="0" class="layout" text="Favorite"></Label>
                         </GridLayout> -->
-                        <StackLayout row="0" col="2" orientation="horizontal" horizontalAlignment="right" verticalAlignment="top" v-if="item.isMember" @tap="openShareDialog()">
+                        <StackLayout row="0" col="2" orientation="horizontal" horizontalAlignment="right" verticalAlignment="top" v-if="item.isMember==2">
+                            <Label class="fa like-icon layout" :text="'fa-edit'| fonticon" />
+                            <Label class="layout" text="编辑"></Label>
+                        </StackLayout>
+                        <StackLayout row="0" col="3" orientation="horizontal" horizontalAlignment="right" verticalAlignment="top" v-if="item.isMember==1||item.isMember==2" @tap="openShareDialog()">
                             <Label ref="" class="like-icon layout fa" :text="'fa-share-square-o' | fonticon" />
                             <Label class="layout" text="分享"></Label>
                         </StackLayout>
-                        <StackLayout row="0" col="2" orientation="horizontal" horizontalAlignment="right" verticalAlignment="top" v-if="!item.isMember"  @tap="joinInActivity">
+                        <StackLayout row="0" col="3" orientation="horizontal" horizontalAlignment="right" verticalAlignment="top" v-if="item.isMember==3"  @tap="joinInActivity">
                             <Label ref="" class="like-icon layout fa" :text="'fa-user-plus' | fonticon" />
                             <Label class="layout" text="申请加入"></Label>
                         </StackLayout>
@@ -96,9 +100,9 @@
                     </GridLayout>
 
                     <StackLayout row="1" height="100%" marginTop="10">
-                        <Label  v-if="!item.isMember" class="comment-no" text="快快加入活动，查看所有评论！"
+                        <Label  v-if="item.isMember==3" class="comment-no" text="快快加入活动，查看所有评论！"
                             textWrap="true" />
-                        <ScrollView v-if="item.isMember">
+                        <ScrollView v-if="item.isMember==1||item.isMember==2">
                             <StackLayout>
                                 <GridLayout v-for="comment in detailInfo.comments" :key="comment.id" 
                                     rows="*" columns="auto">
@@ -149,7 +153,7 @@
                 isLike: false,
                 isHeart: false,
                 detailInfo:{
-                    patipacters:[
+                    participators:[
                         {
                             id:3,
                             username:"宋杰",
@@ -508,7 +512,7 @@
     .user-info-wrap{
         margin-top:-5;
     }
-    .patipacter-name{
+    .participator-name{
         font-size: 12;
         text-align: center;
         color: #828282;

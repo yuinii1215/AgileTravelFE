@@ -94,11 +94,13 @@
             },
 
             login() {
+                //将个人信息保存到state
                 // this.$backendService
                 //     .login(this.user)
                 //     .then(() => {
                     this.processing = false;
                     //如果是管理员，跳转至管理员页面
+                    
                     
                         if(this.user.username=="admin"&&this.user.password=="admin123")
                             this.$navigateTo(ManagerHome, { clearHistory: true });

@@ -6,7 +6,7 @@
 
 				<GridLayout row="0" ref="navStatusBar" class="navStatusBar" backgroundColor="#3d7def" verticalAlignment="top" height="40"
 				width="100%" rows="auto" columns="*,auto,auto,auto">
-					<Label col="0" row="0" text="首页" class="status-title"/>
+					<Label col="0" row="0" text="社区" class="status-title"/>
 					<Image col="1" row="0" @tap="search" horizontalAlignment="right" class="status-img"
 							src="~/assets/images/search.png" />
 					<Image col="2" row="0" @tap="bell" horizontalAlignment="right" class="status-img"
@@ -36,22 +36,29 @@
 				</GridLayout>
 
 				<GridLayout v-show="selectedTabview == 0" row="2" width="100%" backgroundColor="white">
-					<ListView ref="listview" separatorColor="transparent" for="item in items" :key="index">
-						<v-template>
-							<item :item="item" @clicked="showItem(item)" @openShareDialogEvent="openShareDialog(item)"/>
-						</v-template>
-					</ListView>
+					<ScrollView >
+						<StackLayout>
+							<GridLayout v-for="item in items" :key="item.id" 
+                                            rows="*" columns="*">
+								<item  col="0" row="0" :item="item" @clicked="showItem(item)" @openShareDialogEvent="openShareDialog(item)"/>
+							</GridLayout>
+						</StackLayout>
+					</ScrollView>
 				</GridLayout>
 
 				<GridLayout v-show="selectedTabview == 1" row="2" width="100%" backgroundColor="white">		
-					<ListView ref="listview" separatorColor="transparent" for="shareInfo in shareInfos" :key="index">
-						<v-template>
-							<single-share-block :shareInfo="shareInfo"/>
-						</v-template>
-					</ListView>
+					<ScrollView >
+						<StackLayout>
+							<GridLayout v-for="shareInfo in shareInfos" :key="shareInfo.id" 
+                                            rows="*" columns="*">
+								<single-share-block  col="0" row="0" :shareInfo="shareInfo"/>
+							</GridLayout>
+						</StackLayout>
+					</ScrollView>
 				</GridLayout>
 
 				<!-- <navBottom row="3" /> -->
+				<NavBottom row="3" :selectedTab="selectedTab" @tabChangeEvent="bottomTabChangeEvent"/>
 			</GridLayout>
 
 			<share-dialog  :item="sharePayload" :dialogOpen="shareDialogOpen" @closeShareDialogEvent="closeShareDialog"/>
@@ -61,25 +68,24 @@
 <script>
 	// import { SwissArmyKnife } from "nativescript-swiss-army-knife";
 	import { isIOS, isAndroid } from 'tns-core-modules/platform'
-	import navBottom from "./common/NavBottom";
 	import Item from "./common/Item";
 	import SingleShareBlock from "./common/SingleShareBlock";
 	import ItemDetails from "./common/ItemDetails";
 	import ShareDialog from './common/ShareDialog';
+	import NavBottom from "./NavBottom";
+    import Info from "./Info";
+    import Mine from "./Mine";
 	const gestures = require("ui/gestures"); 
 	const app = require("application");
 
 export default {
 	components: {
-		navBottom,
 		Item,
 		SingleShareBlock,
-		ShareDialog
+		ShareDialog,
+		NavBottom
 	},
 	computed: {
-		itemsCategory(){
-			return this.category.slice().reverse();
-		}
 	},
 	mounted () {
 		//请求：获得所有活动信息
@@ -89,75 +95,77 @@ export default {
 		return {
 			sharePayload:{},
 			shareDialogOpen:false,
-			lastDelY: 0,
-			headerCollapsed: false,
 			selectedTab: 0,
 			selectedTabview: 0,
 			items: [
-			{
-				id:1000,
-				title: "湖滨轰趴",
-				startDateTime:"2019-01-01 20:00:00",
-				endDateTime:"2019-01-01 22:00:00",
-				address:"中国江苏省南京市栖霞区紫东路18-2-104号（原保利紫金山售楼处）",
-				originator:{
-					id:1,
-					username:"刘莉",
-					email:"john@edu.cn",
-					avaUrl:"~/assets/images/johndoe.jpg"
+				{
+					id:1000,
+					title: "湖滨轰趴",
+					startDateTime:"2019-01-01 20:00:00",
+					endDateTime:"2019-01-01 22:00:00",
+					address:"中国江苏省南京市栖霞区紫东路18-2-104号（原保利紫金山售楼处）",
+					organizer:{
+						id:1,
+						username:"刘莉",
+						email:"john@edu.cn",
+						avaUrl:"~/assets/images/johndoe.jpg"
+					},
+					cover:"~/assets/images/food/burger/burger1.jpg",
+					comments:10,
+					isMember:0, //isMember 0是申请中，1是已加入（参与者），2是已加入（创建者），3是非成员
+					isPublic:true
 				},
-				cover:"~/assets/images/food/burger/burger1.jpg",
-				comments:10,
-				isMember:false 
-			},
-			{
-				id:2000,
-				title:"上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游",
-				startDateTime:"2019-01-19 08:00:00",
-				endDateTime:"2019-01-21 20:00:00",
-				address:"中国上海",
-				originator:{
-					id:2,
-					username:"张鑫",
-					email:"john@edu.cn",
-					avaUrl:"~/assets/images/johndoe.jpg"
+				{
+					id:2000,
+					title:"上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游",
+					startDateTime:"2019-01-19 08:00:00",
+					endDateTime:"2019-01-21 20:00:00",
+					address:"中国上海",
+					organizer:{
+						id:2,
+						username:"张鑫",
+						email:"john@edu.cn",
+						avaUrl:"~/assets/images/johndoe.jpg"
+					},
+					cover:"~/assets/images/food/nju/nju1.png",
+					comments:9,
+					isMember:3,
+					isPublic:true 
 				},
-				cover:"~/assets/images/food/nju/nju1.png",
-				comments:9,
-				isMember:true 
-			},
-			{
-				id:3000,
-				title: "玄武公园一日游",
-				startDateTime:"2019-01-10 10:00:00",
-				endDateTime:"2019-01-10 20:00:00",
-				address:"中国江苏省南京市玄武区玄武巷1号玄武湖公园",
-				originator:{
-					id:3,
-					username:"王爱思",
-					email:"john@edu.cn",
-					avaUrl:"~/assets/images/johndoe.jpg"
+				{
+					id:3000,
+					title: "玄武公园一日游",
+					startDateTime:"2019-01-10 10:00:00",
+					endDateTime:"2019-01-10 20:00:00",
+					address:"中国江苏省南京市玄武区玄武巷1号玄武湖公园",
+					organizer:{
+						id:3,
+						username:"王爱思",
+						email:"john@edu.cn",
+						avaUrl:"~/assets/images/johndoe.jpg"
+					},
+					cover:"~/assets/images/food/cake/cake1.jpg",
+					comments:6,
+					isMember:2,
+					isPublic:true 
 				},
-				cover:"~/assets/images/food/cake/cake1.jpg",
-				comments:6,
-				isMember:false 
-			},
-			{
-				id:4000,
-				title: "东南大学交流日交流日交流日交流日交流日交流日交流日交流日",
-				startDateTime:"2019-02-01 09:00:00",
-				endDateTime:"2019-02-01 20:30:00",
-				address:"中国江苏省南京市玄武区四牌楼2号",
-				originator:{
-					id:3,
-					username:"王爱思",
-					email:"john@edu.cn",
-					avaUrl:"~/assets/images/johndoe.jpg"
-				},
-				cover:"~/assets/images/food/pancake/pancake1.jpg",
-				comments:25,
-				isMember:true 
-			},
+				{
+					id:4000,
+					title: "东南大学交流日交流日交流日交流日交流日交流日交流日交流日",
+					startDateTime:"2019-02-01 09:00:00",
+					endDateTime:"2019-02-01 20:30:00",
+					address:"中国江苏省南京市玄武区四牌楼2号",
+					organizer:{
+						id:3,
+						username:"王爱思",
+						email:"john@edu.cn",
+						avaUrl:"~/assets/images/johndoe.jpg"
+					},
+					cover:"~/assets/images/food/pancake/pancake1.jpg",
+					comments:25,
+					isMember:1,
+					isPublic:true
+				}
 			],
 			shareInfos: [
 				{
@@ -264,6 +272,15 @@ export default {
 		};
 	},
 	methods: {
+		bottomTabChangeEvent(index){
+			this.selectedTab = index
+			if(this.selectedTab==0){
+			}else if(this.selectedTab==1){
+				this.$navigateTo(Info,{animated: false})
+			}else if(this.selectedTab==2){
+				this.$navigateTo(Mine,{animated: false})
+			}
+        },
 		openShareDialog(item){
 			this.sharePayload = item
             this.shareDialogOpen = true
@@ -291,7 +308,6 @@ export default {
 				}
 			})
 		},
-		
 		showActivity() {
 			this.selectedTabview = 0;
 		},
@@ -303,40 +319,12 @@ export default {
 </script>
 
 <style>
-.tabview{
-	text-align: center;
-}
-.tabview.active {
-	border-bottom-color: white;
-	border-bottom-width: 3;
-	margin: 0;
-	height: 45;
-}
-.tabviewText {
-	margin-top: 10;
-	margin-bottom: 5;
-	font-size: 15;
-	margin-left:30;
-	color: #d8d2d2;
-}
-.tabviewText.active {
-	margin-top: 10;
-	margin-bottom: 5;
-	font-weight: bold;
-	color: white;
-	vertical-align: center;
-}
 .navIcon{
 	margin-right:30;
 	margin-top:5;
+	width:25;
 }
-.navTab {
-	background-color: #3d7def;
-	height: 45;
-}
-.navTabview {
-	background-color: blue;
-}
+
 .status-img {
 	margin-top: 4;
 	margin-right: 20;
