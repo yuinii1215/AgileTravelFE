@@ -60,6 +60,11 @@
                     </GridLayout>
                     <NavBottom row="4" :selectedTab="selectedTab" @tabChangeEvent="bottomTabChangeEvent"/>
             </GridLayout>
+            
+            <AbsoluteLayout  v-show="selectedTabview == 0"  marginTop="85.5%" marginLeft="79%">
+				<FabButton @onButtonTap="onButtonTap" :isActive="isActive" />
+			</AbsoluteLayout>
+
             <share-dialog  :item="sharePayload" :dialogOpen="shareDialogOpen" @closeShareDialogEvent="closeShareDialog"/>
         </GridLayout>
     </page>
@@ -70,13 +75,16 @@
     import Info from "./Info";
     import Home from "./Home";
     import Item from "./common/Item";
+    import FabButton from "./common/FabButton";
     import ItemDetails from "./common/ItemDetails";
-	import ShareDialog from './common/ShareDialog';
+    import ShareDialog from './common/ShareDialog';
+    import ActivityCreate from './common/ActivityCreate';
 export default {
     components: {
         Item,
 		ShareDialog,
-        NavBottom
+        NavBottom,
+        FabButton
     },
     data(){
         return{
@@ -84,6 +92,7 @@ export default {
 			shareDialogOpen:false,
             selectedTab:2,
             selectedTabview:0,
+            isActive: false, 
             createActivityList:[
                 {
 				id:3000,
@@ -165,6 +174,19 @@ export default {
         //请求：通过userID获得用户参与活动列表
     },
     methods: {
+        onButtonTap() {
+            this.$navigateTo(ActivityCreate,{
+				props: {
+					
+				},
+				animated: true,
+				transition: {
+					name: "slideTop",
+					duration: 380,
+					curve: "easeIn"
+				}
+			})
+        },
         openShareDialog(item){
 			this.sharePayload = item
             this.shareDialogOpen = true
