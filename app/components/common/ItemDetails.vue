@@ -71,7 +71,7 @@
                                 :text="isHeart ? 'fa-heart':'fa-heart-o' | fonticon" />
                             <Label col="1" row="0" class="layout" text="Favorite"></Label>
                         </GridLayout> -->
-                        <StackLayout  class="icon-btn" row="0" col="2" orientation="horizontal" horizontalAlignment="right" verticalAlignment="top" v-if="item.isMember==2">
+                        <StackLayout  class="icon-btn" row="0" col="2" orientation="horizontal" horizontalAlignment="right" verticalAlignment="top" v-if="item.isMember==2" @tap="modifyActivity">
                             <Label class="fa like-icon layout" :text="'fa-edit'| fonticon" />
                             <Label class="layout" text="编辑"></Label>
                         </StackLayout>
@@ -139,6 +139,7 @@
  import BasicInfoBlock from "./BasicInfoBlock";
  import SingleCommentBlock from "./SingleCommentBlock";
  import ShareDialog from './ShareDialog';
+ import ActivityCreate from './ActivityCreate';
 
     export default {
         components: {BasicInfoBlock,SingleCommentBlock,ItemLike,ShareDialog},
@@ -337,6 +338,20 @@
             this.isHeart = this.item.isFavorite;
         },
         methods: { 
+            modifyActivity(){
+                this.$navigateTo(ActivityCreate,{
+                    props: {
+                        state:1,
+                        activityID:0
+                    },
+                    animated: true,
+                    transition: {
+                        name: "slideTop",
+                        duration: 380,
+                        curve: "easeIn"
+                    }
+			    })
+            },
             joinOutActivity(){
                 confirm({
                     title: "活动退出",
@@ -624,15 +639,6 @@
         width: 100%;
         height: 250;
         margin-bottom: 5;
-    }
-
-    .card-img-thumb {
-        background-color: #828282;
-        vertical-align: center;
-        border-radius: 5;
-        width: 130;
-        height: 70;
-        margin-left: 5;
     }
 
     .line {

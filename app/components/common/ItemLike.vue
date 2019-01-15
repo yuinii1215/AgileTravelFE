@@ -1,7 +1,7 @@
 <template>
     <!-- <GridLayout marginTop="5" width="100%" row="3" columns="auto,*,auto,auto" rows="auto"> -->
     <GridLayout columns="*,auto,auto,auto" rows="auto">
-        <GridLayout col="0" rows="auto" columns="auto,auto" v-if="item.isMember==2" verticalAlignment="bottom">
+        <GridLayout col="0" rows="auto" columns="auto,auto" v-if="item.isMember==2" verticalAlignment="bottom" @tap="modifyActivity">
             <Label horizontalAlignment="right" verticalAlignment="bottom" stretch="aspectFill" col="0"
 							row="0" class="fa like-icon layout" :text="'fa-edit'| fonticon" />
             <Label col="1" row="0" class="layout" text="编辑"></Label>
@@ -43,6 +43,7 @@
 <script>
 
     import { isIOS, isAndroid } from "tns-core-modules/platform";
+    import ActivityCreate from './ActivityCreate';
     export default {
         props: ["item"],
         data() {
@@ -52,33 +53,27 @@
             };
         },
         components: {},
-        computed: {
-            categoryIcon() {
-                switch (this.item.category) {
-                    case "Burger":
-                        return "fa-cutlery";
-                        break;
-                    case "Beer":
-                        return "fa-beer";
-                        break;
-                    case "Pancake":
-                        return "fa-coffee";
-                        break;
-                    case "Cake":
-                        return "fa-birthday-cake";
-                        break;
-                    default:
-                        return "fa-fire";
-                        break;
-                }
-            }
-        },
+        computed: {},
         created() {
             // this.isLike =  this.item.isLike
             // this.isHeart =  this.item.isFavorite
         },
         mounted() {},
         methods: {
+            modifyActivity(){
+                this.$navigateTo(ActivityCreate,{
+                    props: {
+                        state:1,
+                        activityID:0
+                    },
+                    animated: true,
+                    transition: {
+                        name: "slideTop",
+                        duration: 380,
+                        curve: "easeIn"
+                    }
+			    })
+            },
             joinOutActivity(){
                 confirm({
                     title: "活动退出",
