@@ -3,7 +3,7 @@
         backgroundSpanUnderStatusBar="true" @loaded="onLoaded">
         <StackLayout class="main" verticalAlignment="top" >
             <GridLayout rows="auto" width="100%" columns="*" class="navTopBar">
-                <Label col="0" row="0" text="创建活动" class="create-title"/>
+                <Label col="0" row="0" :text="state==0?'创建活动':'编辑活动'" class="create-title"/>
                 <Label col="0" row="0" verticalAlignment="top" class="fa close" fontSize="24"
                         horizontalAlignment="left" @tap="close" :text="'fa-arrow-left' | fonticon"/>
             </GridLayout>
