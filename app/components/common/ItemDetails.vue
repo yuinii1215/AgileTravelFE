@@ -28,7 +28,7 @@
                     <StackLayout v-if="showMore==1"   class="line anim-likes lineBasic" row="2" width="100%" marginTop="10" />
 
                     <GridLayout v-if="showMore==1"  class="anim-likes"  marginTop="5" width="100%" row="3"
-                        :columns="item.isMember==1||item.isMember==2?'55,*,*,60':'55,*,*,90'" rows="auto,auto,auto,auto" marginBottom="-10">
+                        :columns="item.isMember==1||item.isMember==2?item.isMember==1?'55,*,*,90,60':'55,*,*,60':'55,*,*,90'" rows="auto,auto,auto,auto" marginBottom="-10">
                         <!-- <GridLayout row="0" col="0" rows="auto,auto" columns="auto,auto"> -->
                             <Label col="0" row="0" rowSpan="2" text="组织者:" class="user-type" verticalAlignment="top"/>
                             <GridLayout col="1" row="0" rows="auto,auto" columns="auto" class="user-info-wrap" horizontalAlignment="left" >
@@ -40,7 +40,7 @@
                         <!-- </GridLayout> -->
                         <!-- <GridLayout row="1" col="0" rows="auto,auto" columns="auto,auto" width="100%" marginTop="5"> -->
                             <Label col="0" row="1" rowSpan="2" text="参与者:" class="user-type" verticalAlignment="top" marginTop="8"/>
-                            <GridLayout colSpan="3"  col="1" row="1" rows="auto,auto" columns="auto" class="user-info-wrap" width="100%" horizontalAlignment="left"  marginTop="6">
+                            <GridLayout :colSpan="item.isMember==1?4:3"  col="1" row="1" rows="auto,auto" columns="auto" class="user-info-wrap" width="100%" horizontalAlignment="left"  marginTop="6">
                                 <ScrollView  orientation="horizontal" width="100%">
                                     <StackLayout orientation="horizontal" class="">
                                         <GridLayout v-for="participator in detailInfo.participators" :key="participator.id" 
@@ -71,17 +71,21 @@
                                 :text="isHeart ? 'fa-heart':'fa-heart-o' | fonticon" />
                             <Label col="1" row="0" class="layout" text="Favorite"></Label>
                         </GridLayout> -->
-                        <StackLayout row="0" col="2" orientation="horizontal" horizontalAlignment="right" verticalAlignment="top" v-if="item.isMember==2">
+                        <StackLayout  class="icon-btn" row="0" col="2" orientation="horizontal" horizontalAlignment="right" verticalAlignment="top" v-if="item.isMember==2">
                             <Label class="fa like-icon layout" :text="'fa-edit'| fonticon" />
                             <Label class="layout" text="编辑"></Label>
                         </StackLayout>
-                        <StackLayout row="0" col="3" orientation="horizontal" horizontalAlignment="right" verticalAlignment="top" v-if="item.isMember==1||item.isMember==2" @tap="openShareDialog()">
-                            <Label ref="" class="like-icon layout fa" :text="'fa-share-square-o' | fonticon" />
-                            <Label class="layout" text="分享"></Label>
+                        <StackLayout  class="icon-btn" row="0" col="3" orientation="horizontal" horizontalAlignment="right" verticalAlignment="top" v-if="item.isMember==1" @tap="joinOutActivity">
+                            <Label ref="" class="like-icon layout fa" :text="'fa-user-times' | fonticon" />
+                            <Label class="layout" text="退出活动"></Label>
                         </StackLayout>
-                        <StackLayout row="0" col="3" orientation="horizontal" horizontalAlignment="right" verticalAlignment="top" v-if="item.isMember==3"  @tap="joinInActivity">
+                        <StackLayout  class="icon-btn" row="0" col="3" orientation="horizontal" horizontalAlignment="right" verticalAlignment="top" v-if="item.isMember==3"  @tap="joinInActivity">
                             <Label ref="" class="like-icon layout fa" :text="'fa-user-plus' | fonticon" />
                             <Label class="layout" text="申请加入"></Label>
+                        </StackLayout>
+                        <StackLayout class="icon-btn" row="0" :col="item.isMember==1?4:3"  orientation="horizontal" horizontalAlignment="right" verticalAlignment="top" v-if="item.isMember==1||item.isMember==2" @tap="openShareDialog()">
+                            <Label ref="" class="like-icon layout fa" :text="'fa-share-square-o' | fonticon" />
+                            <Label class="layout" text="分享"></Label>
                         </StackLayout>
                     </GridLayout>
                 </GridLayout>
@@ -333,6 +337,16 @@
             this.isHeart = this.item.isFavorite;
         },
         methods: { 
+            joinOutActivity(){
+                confirm({
+                    title: "活动退出",
+                    message: "您确定要退出该活动吗？",
+                    okButtonText: "确定",
+                    cancelButtonText: "取消"
+                }).then(result => {
+                    console.log(result);
+                });
+            },
             joinInActivity(){
                 //加入活动请求
                 confirm({
@@ -564,7 +578,11 @@
         color: #828282;
         font-size: 14;
         height: 30;
-        padding: 5 0 5 0;
+        padding: 5 0 5 2;
+    }
+
+    .icon-btn{
+        margin-left:8;
     }
 
     .like-icon {
@@ -572,7 +590,7 @@
         height: 30;
         font-size: 16;
         margin-right: 2;
-        padding: 5 5 5 5;
+        padding: 5 0 5 0;
     }
 
     .item-name {
