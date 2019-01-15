@@ -2,8 +2,8 @@
     <Page actionBarHidden="true" class="anim-page"
         backgroundSpanUnderStatusBar="true" @loaded="onLoaded">
         <GridLayout class="main" verticalAlignment="top" >
-
             <StackLayout :class="{ shareDialogOpen: shareDialogOpen }">
+               
                 <GridLayout class="anim-cover" rows="auto" columns="*">
                     <Image row="0" col="0" marginTop="-40" height="180" stretch="aspectFill"
                         class="card-img" :src="item.cover" />
@@ -11,7 +11,6 @@
                         horizontalAlignment="left" @tap="close" :text="'fa-arrow-left' | fonticon"
                         class="fa close" fontSize="24" />
                 </GridLayout>
-
                 <ScrollView class="anim-images" orientation="horizontal">
                     <StackLayout orientation="horizontal" class="">
                         <GridLayout v-for="image in detailInfo.descriptions.images" :key="image.id" rows="auto"
@@ -104,7 +103,7 @@
                     </GridLayout>
 
                     <StackLayout row="1" height="100%" marginTop="10">
-                        <Label  v-if="item.isMember==3" class="comment-no" text="快快加入活动，查看所有评论！"
+                        <Label  v-if="item.isMember==3||item.isMember==0" class="comment-no" text="快快加入活动，查看所有评论！"
                             textWrap="true" />
                         <ScrollView v-if="item.isMember==1||item.isMember==2">
                             <StackLayout>
@@ -128,6 +127,10 @@
 
 
                 </Gridlayout>
+
+                <!-- <AbsoluteLayout  marginTop="1%" marginLeft="90%">
+                        <Label :text="item.isPublic?'公开':'私有'" />
+                </AbsoluteLayout> -->
             </StackLayout>
             <share-dialog  :item="item" :dialogOpen="shareDialogOpen" @closeShareDialogEvent="closeShareDialog"/>
         </GridLayout>

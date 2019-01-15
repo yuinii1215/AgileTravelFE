@@ -4,11 +4,6 @@ import store from './store';
 import routes from "./routes";
 import BackendService from "./constants/index";
 import { isAndroid, isIOS } from 'tns-core-modules/platform';
-// import { Mapbox, MapboxView } from "nativescript-mapbox";
-// import { Directions } from "nativescript-directions";
-// Vue.use(Mapbox)
-// Vue.use(MapboxView)
-// Vue.use(Directions)
 
 Vue.prototype.$isAndroid = isAndroid;
 Vue.prototype.$isIOS = isIOS;

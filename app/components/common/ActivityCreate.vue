@@ -40,7 +40,7 @@
                                 <StackLayout  orientation="horizontal"  row="1" class="activity-attribute-content ispublic-area">
                                     <Label text="公开" horizontalAlignment="right" class="switch-label"/>
                                     <Switch v-model="activity.isPublic" />
-                                    <Label text="不公开" horizontalAlignment="left"  class="switch-label"/>
+                                    <Label text="私有" horizontalAlignment="left"  class="switch-label"/>
                                 </StackLayout>
                             </GridLayout>
                             <GridLayout rows="auto,auto" columns="*"  class="activity-attribute">

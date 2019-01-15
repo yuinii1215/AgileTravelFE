@@ -53,7 +53,7 @@
                             <StackLayout>
                                 <GridLayout v-for="item in joinActivityList" :key="item.id" 
                                                 rows="*" columns="*">
-                                    <!-- <item :item="item" @clicked="showItem(item)" @openShareDialogEvent="openShareDialog(item)"/> -->
+                                    <item :item="item" @clicked="showItem(item)" @openShareDialogEvent="openShareDialog(item)"/>
                                 </GridLayout>
                             </StackLayout>
 					    </ScrollView>
@@ -74,11 +74,12 @@
 	import NavBottom from "./NavBottom";
     import Info from "./Info";
     import Home from "./Home";
-    import Item from "./common/Item";
     import FabButton from "./common/FabButton";
     import ItemDetails from "./common/ItemDetails";
     import ShareDialog from './common/ShareDialog';
     import ActivityCreate from './common/ActivityCreate';
+    import Item from "./common/Item";
+
     export default {
         components: {
             ShareDialog,
