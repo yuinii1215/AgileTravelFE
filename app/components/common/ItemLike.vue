@@ -1,11 +1,11 @@
 <template>
     <!-- <GridLayout marginTop="5" width="100%" row="3" columns="auto,*,auto,auto" rows="auto"> -->
     <GridLayout columns="*,auto,auto,auto" rows="auto">
-        <GridLayout col="0" rows="auto" columns="auto,auto" v-if="item.isMember==2" verticalAlignment="bottom" @tap="modifyActivity">
+        <!-- <GridLayout col="0" rows="auto" columns="auto,auto" v-if="item.isMember==2" verticalAlignment="bottom" @tap="modifyActivity">
             <Label horizontalAlignment="right" verticalAlignment="bottom" stretch="aspectFill" col="0"
 							row="0" class="fa like-icon layout" :text="'fa-edit'| fonticon" />
             <Label col="1" row="0" class="layout" text="编辑"></Label>
-        </GridLayout>
+        </GridLayout> -->
         <GridLayout col="0" rows="auto" columns="auto,auto" v-if="item.isMember!=2">
             <Image horizontalAlignment="right" stretch="aspectFill" col="0"
 							row="0" class="status-profile" :src="item.organizer.avaUrl" />
@@ -41,24 +41,15 @@
 </template>
 
 <script>
-
-    import { isIOS, isAndroid } from "tns-core-modules/platform";
-    import ActivityCreate from './ActivityCreate';
+    // import ActivityCreate from './ActivityCreate';
     export default {
-        props: ["item"],
+        props: {
+            item:Object
+        },
         data() {
             return {
-                isLike: false,
-                isHeart: false
             };
         },
-        components: {},
-        computed: {},
-        created() {
-            // this.isLike =  this.item.isLike
-            // this.isHeart =  this.item.isFavorite
-        },
-        mounted() {},
         methods: {
             modifyActivity(){
                 this.$navigateTo(ActivityCreate,{
@@ -97,90 +88,6 @@
             },
             openShareDialog(){
                 this.$emit("openShareDialogEvent");
-            },
-            animateLike() {
-                if (isIOS) {
-                    return;
-                }
-                let imgLogo = this.$refs.like.nativeView;
-                imgLogo
-                    .animate({
-                        scale: {
-                            x: 0.6,
-                            y: 0.6
-                        },
-                        duration: 100,
-                        delay: 0
-                    })
-                    .then(function() {
-                        return imgLogo.animate({
-                            scale: {
-                                x: 1.2,
-                                y: 1.2,
-                                duration: 50
-                            }
-                        });
-                    })
-                    .then(function() {
-                        return imgLogo.animate({
-                            scale: {
-                                x: 1,
-                                y: 1,
-                                duration: 100
-                            }
-                        });
-                    })
-                    .then(function() {});
-            },
-            animateFavorite() {
-                if (isIOS) {
-                    return;
-                }
-                let imgLogo = this.$refs.favorite.nativeView;
-                imgLogo
-                    .animate({
-                        scale: {
-                            x: 0.6,
-                            y: 0.6
-                        },
-                        duration: 50,
-                        delay: 0
-                    })
-                    .then(function() {
-                        return imgLogo.animate({
-                            scale: {
-                                x: 1.2,
-                                y: 1.2,
-                                duration: 50
-                            }
-                        });
-                    })
-                    .then(function() {
-                        return imgLogo.animate({
-                            scale: {
-                                x: 1,
-                                y: 1,
-                                duration: 100
-                            }
-                        });
-                    })
-                    .then(function() {});
-            },
-            toggleLike() {
-                this.animateLike();
-                this.item.isLike = !this.item.isLike;
-                if (this.item.isLike) {
-                    this.item.likes += 1;
-                } else {
-                    this.item.likes -= 1;
-                }
-            },
-            toggleHeart() {
-                this.animateFavorite();
-                this.item.isFavorite = !this.item.isFavorite;
-            },
-            onClickButton() {
-                this.$emit("clicked", this.item);
             }
         }
     };
@@ -195,10 +102,6 @@
         margin-right: 15;
         width: 30;
         height: 30;
-    }
-    .item-category {
-        font-size: 14;
-        color: #828282;
     }
 
     .rating-icon {
@@ -246,26 +149,6 @@
     .item-name {
         font-size: 14;
         font-weight: bold;
-    }
-
-    .item-category {
-        font-size: 14;
-        color: #828282;
-    }
-
-    .category-icon {
-        text-align: center;
-        padding-top: 5;
-        border-color: white;
-        color: white;
-        vertical-align: center;
-        font-size: 25;
-        border-width: 1;
-        border-radius: 50%;
-        margin-top: 4;
-        margin-right: 15;
-        width: 40;
-        height: 40;
     }
 
     .content {

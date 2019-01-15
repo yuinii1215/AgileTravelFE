@@ -345,7 +345,7 @@
                 this.$navigateTo(ActivityCreate,{
                     props: {
                         state:1,
-                        activityID:0
+                        item:this.item
                     },
                     animated: true,
                     transition: {

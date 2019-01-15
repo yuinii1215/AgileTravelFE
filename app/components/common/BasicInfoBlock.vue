@@ -1,8 +1,12 @@
 <template>
     <GridLayout width="100%" columns="*,auto" rows="auto,auto,auto,auto"
                 verticalAlignment="center">
-                <Label row="0" col="0" class="item-title" textwrap="true" 
-                    :text="item.title" @tap="showCompleteTitle()"/>
+                <GridLayout row="0" col="0" columns="auto,*" >
+                    <Label col="0" class="item-open-status" textwrap="true" 
+                    :text="item.isPublic?'公开':'私有'" :class="[item.isPublic?'ispublic-true':'ispublic-false']"/>
+                    <Label col="1" class="item-title" textwrap="true" 
+                        :text="item.title" @tap="showCompleteTitle()"/>
+                </GridLayout>
                 <Label v-if="hasMore==1" row="0" col="1" class="fa show-more-btn" verticalAlignment="top" horizontalAlignment="right"
                         :text="'fa-list-ul' | fonticon" @tap="changeShowState()"/>
                 <TextView  row="1" col="0" v-if="hasMore==1&&showMore==1&&detailInfo" editable="false" 
@@ -133,4 +137,19 @@ export default {
         }
     }
 
+    .item-open-status{
+        width:40;
+        text-align:center;
+        padding:2 5 2 5;
+        color:#000;
+        font-size:13;
+        margin-right:5;
+        border-radius: 2;
+    }
+    .ispublic-true{
+        background-color:rgb(143, 205, 255);
+    }
+    .ispublic-false{
+        background-color:rgb(255, 191, 138);
+    }
 </style>

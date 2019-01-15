@@ -7,12 +7,10 @@
             <basic-info-block hasMore=0 showMore=1 :item="item"/>
             <StackLayout width="100%" marginTop="5" class="line lineBasic" />
 
-            <!-- Here the problem in scroll transistion -->
             <ItemLike :item="item" @openShareDialogEvent="openShareDialogEvent"></ItemLike>
         </StackLayout>
 
         <StackLayout width="100%" class="lineBreak lineBasic" />
-
 
     </StackLayout>
 </template>

@@ -1,7 +1,7 @@
 <template>
     <Page actionBarHidden="true" class="anim-page"
-        backgroundSpanUnderStatusBar="true" @loaded="onLoaded">
-        <StackLayout class="main" verticalAlignment="top" >
+        backgroundSpanUnderStatusBar="true">
+        <StackLayout class="activity-edit" verticalAlignment="top" >
             <GridLayout rows="auto" width="100%" columns="*" class="navTopBar">
                 <Label col="0" row="0" :text="state==0?'创建活动':'编辑活动'" class="create-title"/>
                 <Label col="0" row="0" verticalAlignment="top" class="fa close" fontSize="24"
@@ -57,6 +57,30 @@
                                     <Button  col="1" :text="selectedEndTime?selectedEndTime:'选择结束时间'" @tap="selectEndTime"  class="btn btn-primary date-btn"/>
                                 </GridLayout>
                             </GridLayout>
+
+                            <GridLayout v-if="state==1" rows="auto,auto" columns="*" class="activity-attribute">
+                                <Label row="0" text="活动成员" horizontalAlignment="left" class="activity-attribute-title"/>
+                                <GridLayout row="1" rows="*, auto" class="activity-attribute-content">
+                                    <ScrollView class="participant-list-scroll" :height="participantsSize>5?200:''">
+                                        <StackLayout>
+                                            <WrapLayout v-for="participant in participants" :key="participant.id"
+                                                class="participant-list">
+                                                <StackLayout  width="33%" >
+                                                    <Image class="status-profile" :src="participant.avaUrl" verticalAlignment="top" 
+                                                    horizontalAlignment="center"  stretch="aspectFill"  />
+                                                </StackLayout>
+                                                <StackLayout width="33%" class="participant-name-block">
+                                                    <Label class="participant-name" :text="participant.username"
+                                                        horizontalAlignment="left" textWrap="true" />
+                                                </StackLayout>
+                                                <StackLayout width="33%">
+                                                    <Button text="移除" @tap="removeParticipant(participant.id)"   horizontalAlignment="center" verticalAlignment="middle"  class="btn btn-small delete-btn"/>
+                                                 </StackLayout>
+                                            </WrapLayout>
+                                        </StackLayout>
+                                    </ScrollView>
+                                </GridLayout>
+                            </GridLayout>
                         </StackLayout>
                     </ScrollView>
                 </GridLayout>
@@ -86,11 +110,13 @@ export default {
             type:Number,
             default:0//0表示创建 1表示修改
         },
-        activityID:String
+        item:Object
     },
     mounted(){
         if(this.state==1){
-            //请求：获得活动基本信息 更新this.activity
+            this.activity = this.item
+            // 请求：通过id获得活动成员信息
+            this.participantsSize = this.participants.length
         }
     },
     data(){
@@ -104,6 +130,37 @@ export default {
                 endTime:"",
                 isPublic:true
             },
+            participants: [
+                {
+                    "id": 7,
+                    "username": "echosheng",
+                    "email": "2271642660@qq.com",
+                    "avaUrl": "img_url",
+                    "weChat": ""
+                },
+                {
+                    "id": 2,
+                    "username": "sccc",
+                    "email": "141250107@smail.nju.edu.cn",
+                    "avaUrl": "1",
+                    "weChat": null
+                },
+                {
+                    "id": 3,
+                    "username": "test",
+                    "email": "test@edu.cn",
+                    "avaUrl": "1",
+                    "weChat": null
+                },
+                {
+                    "id": 9,
+                    "username": "echosheng",
+                    "email": "sc89703312@qq.com",
+                    "avaUrl": "img_url",
+                    "weChat": ""
+                }
+            ],
+            participantsSize:0,
             isSingleMode:false,
             previewSize: 300,
             thumbSize: 80,
@@ -132,6 +189,9 @@ export default {
             //请求：新建活动
             this.$navigateTo(Mine)
 
+        },
+        removeParticipant(userId){
+            console.log(userId)
         },
         onSelectMultipleTap(){
             let context = imagepicker.create({
@@ -406,5 +466,23 @@ export default {
         color:#999999;
         font-size:16;
         margin:0 5 0 5;
+    }
+    .status-profile {
+        margin-right: 0;
+        width:45;
+        height:45;
+    }
+    .participant-name{
+    }
+    .delete-btn{
+        background-color: transparent;
+        border-width:0.5;
+        border-radius: 2;
+        border-color:#3d7def;
+        color:#3d7def;
+    }
+    .participant-name-block{
+        height:100%;
+        vertical-align: middle;
     }
 </style>
