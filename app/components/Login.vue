@@ -67,7 +67,7 @@
                 processing: false,
                 user: {
                     username: "shaodong",
-                    email: "shaodong@nju.edu.cn",
+                    email: "sc89703312@qq.com",
                     password: "123456",
                     confirmPassword: "123456"
                 }
@@ -94,25 +94,30 @@
             },
 
             login() {
-                //将个人信息保存到state
-                // this.$backendService
-                //     .login(this.user)
-                //     .then(() => {
-                    this.processing = false;
-                    //如果是管理员，跳转至管理员页面
-                    
-                    
-                        if(this.user.username=="admin"&&this.user.password=="admin123")
-                            this.$navigateTo(ManagerHome, { clearHistory: true });
-                        else
-                            this.$navigateTo(Home, { clearHistory: true });
-                    // })
-                    // .catch(() => {
-                    //     this.processing = false;
-                    //     this.alert(
-                    //         "Unfortunately we could not find your account."
-                    //     );
-                    // });
+                var user={
+                    "email": this.user.email,
+	                "password": this.user.password
+                }
+                this.$backendService
+                    .login(user)
+                    .then(res => {
+                        console.log(JSON.stringify(res))
+                        this.processing = false;
+                        // //成功后 设置user信息
+                        // this.$backendService.setUser(this.user)
+                        // //如果是管理员，跳转至管理员页面
+                        // if(this.user.username=="admin"&&this.user.password=="admin123")
+                        //     this.$navigateTo(ManagerHome, { clearHistory: true });
+                        // else
+                        //     this.$navigateTo(Home, { clearHistory: true });
+                        
+                    })
+                    .catch((err) => {
+                        this.processing = false;
+                        this.alert(
+                            "很抱歉，并没有找到您的账号"
+                        );
+                    });
             },
 
             register() {
