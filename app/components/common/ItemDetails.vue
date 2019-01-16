@@ -93,13 +93,17 @@
 
                 <Gridlayout rows="auto,auto" class="content anim-content" marginTop="15" >
 
-                    <GridLayout row="0" rows="auto" marginBottom="5" columns="auto, auto,auto">
+                    <GridLayout row="0" rows="auto" marginBottom="5" columns="auto, auto,auto,*">
                         <Label col="0" :text="'fa-tags' | fonticon" class="fa description-icon"
                             textWrap="true" />
                         <Label col="1" class="description-text" text="评论"
                             textWrap="true" />
                         <Label col="2" class="comment-num" :text="'共'+item.comments+'条'" 
-                            verticalAlignment="bottom" textWrap="true" />
+                            verticalAlignment="middle" textWrap="true" />
+                        <StackLayout v-if="item.isMember==1||item.isMember==2" class="icon-btn" col="3"  orientation="horizontal" horizontalAlignment="right" verticalAlignment="top" @tap="openComment()">
+                            <Label ref="" class="like-icon layout fa" :text="'fa-commenting-o' | fonticon" />
+                            <Label class="layout" text="发表评论"></Label>
+                        </StackLayout>
                     </GridLayout>
 
                     <StackLayout row="1" height="100%" marginTop="10">
@@ -142,6 +146,7 @@
  import BasicInfoBlock from "./BasicInfoBlock";
  import SingleCommentBlock from "./SingleCommentBlock";
  import ShareDialog from './ShareDialog';
+ import CommentDialog from './CommentDialog';
  import ActivityCreate from './ActivityCreate';
 
     export default {
@@ -340,7 +345,20 @@
             this.isLike = this.item.isLike;
             this.isHeart = this.item.isFavorite;
         },
-        methods: { 
+        methods: {
+            openComment(){
+                this.$navigateTo(CommentDialog,{
+                    props: {
+                        activityId:this.item.id
+                    },
+                    animated: true,
+                    transition: {
+                        name: "slideTop",
+                        duration: 380,
+                        curve: "easeIn"
+                    }
+			    })
+            },
             modifyActivity(){
                 this.$navigateTo(ActivityCreate,{
                     props: {

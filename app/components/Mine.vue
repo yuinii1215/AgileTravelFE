@@ -5,7 +5,7 @@
                     <GridLayout row="0" rows="auto" width="100%" class="navTopBar" >
                         <Label col="0" row="0" text="我的" class="mine-title"/>
                     </GridLayout>
-                    <GridLayout row="1" rows="auto,auto" columns="auto,*" class="mine-info" width="100%">
+                    <GridLayout row="1" rows="auto,auto" columns="auto,*,auto" class="mine-info" width="100%">
                         <Image row="0"  col="0"class="mine-profile" src="~/assets/images/me.jpg" 
                             horizontalAlignment="left" verticalAlignment="middle" stretch="aspectFill"  />
                         <StackLayout row="0" col="1" horizontalAlignment="left" verticalAlignment="middle" >
@@ -15,7 +15,11 @@
                                 <Label text="shaodong@edu.cn" />
                             </StackLayout>
                         </StackLayout>
-                        <StackLayout row="1" colSpan="2" width="100%" class="line lineBasic" />
+                        <StackLayout class="sign-out-btn" orientation="horizontal"  row="0" col="2" horizontalAlignment="right" verticalAlignment="middle" @tap="signOut">
+                            <Label class="fa email-icon" :text="'fa-sign-out' | fonticon"/>
+                            <Label text="退出登录" />
+                        </StackLayout>
+                        <StackLayout row="1" colSpan="3" width="100%" class="line lineBasic" />
                     </GridLayout>
                     <GridLayout  row="2" ref="navTab" class="navTab" verticalAlignment="top"
 						width="100%"  rows="auto" columns="*,*">
@@ -79,6 +83,7 @@
     import ShareDialog from './common/ShareDialog';
     import ActivityCreate from './common/ActivityCreate';
     import Item from "./common/Item";
+    import Login from "./Login"
 
     export default {
         components: {
@@ -173,7 +178,12 @@
             //请求：通过userID获得用户参与活动列表
         },
         methods: {
-            
+            signOut(){
+                //清理store
+                this.$navigateTo(Login, {
+                    clearHistory: true
+                });
+            },
             onButtonTap() {
                 this.$navigateTo(ActivityCreate,{
                     props: {
@@ -275,6 +285,10 @@
     }
     .line{
         height:0.5;
+    }
+    .sign-out-btn{
+        margin-right:10;
+        font-size:16;
     }
 </style>
 
