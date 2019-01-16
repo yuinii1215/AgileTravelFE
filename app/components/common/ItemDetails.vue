@@ -11,11 +11,11 @@
                         horizontalAlignment="left" @tap="close" :text="'fa-arrow-left' | fonticon"
                         class="fa close" fontSize="24" />
                 </GridLayout>
-                <ScrollView class="anim-images" orientation="horizontal">
+                <ScrollView v-if="imagesLength>1"class="anim-images" orientation="horizontal">
                     <StackLayout orientation="horizontal" class="">
-                        <GridLayout v-for="image in detailInfo.descriptions.images" :key="image.id" rows="auto"
+                        <GridLayout v-for="image in detailInfo.images" :key="image.id" rows="auto"
                             columns="*">
-                            <Image class="card-img-thumb" row="0" col="0" :src="image.src"
+                            <Image class="card-img-thumb" row="0" col="0" :src="image"
                                 stretch="aspectFill" />
                         </GridLayout>
                     </StackLayout>
@@ -30,7 +30,7 @@
                         :columns="item.isMember==1||item.isMember==2?item.isMember==1?'55,*,*,90,60':'55,*,*,60':'55,*,*,90'" rows="auto,auto,auto,auto" marginBottom="-10">
                         <!-- <GridLayout row="0" col="0" rows="auto,auto" columns="auto,auto"> -->
                             <Label col="0" row="0" rowSpan="2" text="组织者:" class="user-type" verticalAlignment="top"/>
-                            <GridLayout col="1" row="0" rows="auto,auto" columns="auto" class="user-info-wrap" horizontalAlignment="left" >
+                            <GridLayout col="1" row="0" rows="auto,auto" columns="auto" class="user-info-wrap" horizontalAlignment="left" :marginBottom="participantsLength>0?0:8">
                                 <Image horizontalAlignment="center"  verticalAlignment="top" stretch="aspectFill" col="0"
                                                 row="0" class="status-profile" :src="item.organizer.avaUrl" />
                                 <Label col="0" row="1" class="participator-name" horizontalAlignment="center"  verticalAlignment="bottom"
@@ -38,11 +38,11 @@
                             </GridLayout>
                         <!-- </GridLayout> -->
                         <!-- <GridLayout row="1" col="0" rows="auto,auto" columns="auto,auto" width="100%" marginTop="5"> -->
-                            <Label col="0" row="1" rowSpan="2" text="参与者:" class="user-type" verticalAlignment="top" marginTop="8"/>
-                            <GridLayout :colSpan="item.isMember==1?4:3"  col="1" row="1" rows="auto,auto" columns="auto" class="user-info-wrap" width="100%" horizontalAlignment="left"  marginTop="6">
+                            <Label v-if="participantsLength>0" col="0" row="1" rowSpan="2" text="参与者:" class="user-type" verticalAlignment="top" marginTop="8"/>
+                            <GridLayout  v-if="participantsLength>0"  :colSpan="item.isMember==1?4:3"  col="1" row="1" rows="auto,auto" columns="auto" class="user-info-wrap" width="100%" horizontalAlignment="left"  marginTop="6">
                                 <ScrollView  orientation="horizontal" width="100%">
                                     <StackLayout orientation="horizontal" class="">
-                                        <GridLayout v-for="participator in detailInfo.participators" :key="participator.id" 
+                                        <GridLayout v-for="participator in detailInfo.participants" :key="participator.id" 
                                             rows="auto,auto" columns="*" marginRight="5">
                                             <Image horizontalAlignment="center"  verticalAlignment="top" stretch="aspectFill" 
                                                 col="0" row="0" class="status-profile" :src="participator.avaUrl" />
@@ -107,11 +107,11 @@
                     </GridLayout>
 
                     <StackLayout row="1" height="100%" marginTop="10">
-                        <Label  v-if="item.isMember==3||item.isMember==0" class="comment-no" text="快快加入活动，查看所有评论！"
+                        <Label  v-if="item.isMember==3||item.isMember==0" class="no-data" text="快快加入活动，查看所有评论！"
                             textWrap="true" />
                         <ScrollView v-if="item.isMember==1||item.isMember==2">
                             <StackLayout>
-                                <GridLayout v-for="comment in detailInfo.comments" :key="comment.id" 
+                                <GridLayout v-for="comment in comments" :key="comment.id" 
                                     rows="*" columns="auto">
                                     <single-comment-block :comment="comment"/>
                                 </GridLayout>
@@ -133,7 +133,7 @@
                 </Gridlayout>
 
                 <!-- <AbsoluteLayout  marginTop="1%" marginLeft="90%">
-                        <Label :text="item.isPublic?'公开':'私有'" />
+                        <Label :text="item.public?'公开':'私有'" />
                 </AbsoluteLayout> -->
             </StackLayout>
             <share-dialog  :item="item" :dialogOpen="shareDialogOpen" @closeShareDialogEvent="closeShareDialog"/>
@@ -142,7 +142,6 @@
 </template>
 
 <script>
- import ItemLike from "./ItemLike";
  import BasicInfoBlock from "./BasicInfoBlock";
  import SingleCommentBlock from "./SingleCommentBlock";
  import ShareDialog from './ShareDialog';
@@ -150,13 +149,33 @@
  import ActivityCreate from './ActivityCreate';
 
     export default {
-        components: {BasicInfoBlock,SingleCommentBlock,ItemLike,ShareDialog},
+        components: {BasicInfoBlock,SingleCommentBlock,ShareDialog},
         props: {
             "item" :Object,
         },
         mounted(){
             // 请求：通过id获得详细信息
+            this.$backendService
+                    .getActivityDetailInfo(this.item.id)
+                    .then(res => {
+                        this.detailInfo = res;
+                        this.participantsLength = this.detailInfo.participants.length;
+                        this.imagesLength = this.detailInfo.images.length;
+                    })
+                    .catch(err=>{
+                        console.log(res)
+                    })
             // 请求：通过ID获得所有评论信息
+             this.$backendService
+                    .getCommentList(this.item.id)
+                    .then(res => {
+                        this.comments = res
+                    })
+                    .catch(err=>{
+                        console.log(res)
+                    })
+            
+
         },
         data() {
 		    return {
@@ -165,185 +184,16 @@
                 images: null,
                 isLike: false,
                 isHeart: false,
-                detailInfo:{
-                    participators:[
-                        {
-                            id:3,
-                            username:"宋杰",
-                            email:"john@edu.cn",
-                            avaUrl:"~/assets/images/johndoe.jpg"
-                        },
-                        {
-                            id:2,
-                            username:"深深",
-                            email:"john@edu.cn",
-                            avaUrl:"~/assets/images/me.jpg"
-                        },
-                        {
-                            id:4,
-                            username:"王小风",
-                            email:"john@edu.cn",
-                            avaUrl:"~/assets/images/johndoe.jpg"
-                        },
-                        {
-                            id:6,
-                            username:"厉害的不行",
-                            email:"john@edu.cn",
-                            avaUrl:"~/assets/images/me.jpg"
-                        },
-                        {
-                            id:6,
-                            username:"王元和",
-                            email:"john@edu.cn",
-                            avaUrl:"~/assets/images/me.jpg"
-                        },
-                        {
-                            id:6,
-                            username:"王元和",
-                            email:"john@edu.cn",
-                            avaUrl:"~/assets/images/me.jpg"
-                        },
-                        {
-                            id:6,
-                            username:"王元和",
-                            email:"john@edu.cn",
-                            avaUrl:"~/assets/images/me.jpg"
-                        },{
-                            id:6,
-                            username:"王元和",
-                            email:"john@edu.cn",
-                            avaUrl:"~/assets/images/me.jpg"
-                        },{
-                            id:6,
-                            username:"王元和",
-                            email:"john@edu.cn",
-                            avaUrl:"~/assets/images/me.jpg"
-                        },
-                    ],
-                    descriptions:{
-                        text:"来玩呀，有美景，有福利！\nBBQ、火锅、日料、韩餐任你选！",
-                        images:[{
-                                src: "~/assets/images/food/nju/nju2.png"
-                            },
-                            {
-                                src: "~/assets/images/food/nju/nju3.png"
-                            },
-                            {
-                                src: "~/assets/images/food/pancake640.jpg"
-                            },
-                            {
-                                src: "~/assets/images/food/pancake640.jpg"
-                            }
-                        ]    
-                    },
-                    comments:[
-                       {
-                           id:1,
-                           user:{
-                               id:3,
-                                username:"王爱思",
-                                email:"john@edu.cn",
-                                avaUrl:"~/assets/images/johndoe.jpg"
-                           },
-                           contents:{
-                                text:"111111Lorem ipsum, dolor sit amet consectetur adipisicing elit. \nRatione maiores, veritatis nesciunt sint dolorum sequi dicta omnis dolor blanditiis, ipsam officiis commodi temporibus quas non nobis tempore saepe necessitatibus quasi! Lorem ipsum, dolor sit amet consectetur adipisicing elit. ",
-                                images:[
-                                    {
-                                        src: "~/assets/images/food/pancake640.jpg"
-                                    }
-                                ]    
-                           },
-                           dateTime:"2019-01-01 19:31:00" 
-                       },
-                       {
-                           id:2,
-                           user:{
-                               id:4,
-                                username:"王晓芬",
-                                email:"john@edu.cn",
-                                avaUrl:"~/assets/images/johndoe.jpg"
-                           },
-                           contents:{
-                                text:"2222棒棒阿达",
-                                images:[
-                                    {
-                                        src: "~/assets/images/food/pancake640.jpg"
-                                    },
-                                    {
-                                        src: "~/assets/images/food/pancake640.jpg"
-                                    }
-                                ]    
-                           },
-                           dateTime:"2019-01-01 20:31:00" 
-                       },
-                        {
-                            id:3,
-                           user:{
-                               id:4,
-                                username:"王晓芬",
-                                email:"john@edu.cn",
-                                avaUrl:"~/assets/images/johndoe.jpg"
-                           },
-                           contents:{
-                                text:"3333棒棒阿达",
-                                images:[]    
-                           },
-                           dateTime:"2019-01-01 20:31:00" 
-                       },
-                       {
-                           id:4,
-                           user:{
-                               id:4,
-                                username:"王晓芬",
-                                email:"john@edu.cn",
-                                avaUrl:"~/assets/images/johndoe.jpg"
-                           },
-                           contents:{
-                                text:"",
-                                images:[{
-                                        src: "~/assets/images/food/pancake640.jpg"
-                                    }]    
-                           },
-                           dateTime:"2019-01-01 20:31:00" 
-                       },
-                       {
-                           id:5,
-                           user:{
-                               id:3,
-                                username:"王爱思",
-                                email:"john@edu.cn",
-                                avaUrl:"~/assets/images/johndoe.jpg"
-                           },
-                           contents:{
-                                text:"5555Lorem ipsum, dolor sit amet consectetur adipisicing elit. \nRatione maiores, veritatis nesciunt sint dolorum sequi dicta omnis dolor blanditiis, ipsam officiis commodi temporibus quas non nobis tempore saepe necessitatibus quasi! Lorem ipsum, dolor sit amet consectetur adipisicing elit. ",
-                                images:[
-                                    {
-                                        src: "~/assets/images/food/pancake640.jpg"
-                                    },
-                                     {
-                                        src: "~/assets/images/food/nju/nju1.png"
-                                    },
-                                    {
-                                        src: "~/assets/images/food/nju/nju2.png"
-                                    },
-                                    {
-                                        src: "~/assets/images/food/nju/nju3.png"
-                                    },
-                                    {
-                                        src: "~/assets/images/food/cake/cake3.jpg"
-                                    }
-                                ]    
-                           },
-                           dateTime:"2019-01-01 19:31:00" 
-                       },
-                    ] 
-                }
+                participantsLength:0,
+                imagesLength:0,
+                detailInfo:{},
+                comments:[] 
             }
         },
         created() {
-            this.images = this.detailInfo.images;
-            this.isLike = this.item.isLike;
-            this.isHeart = this.item.isFavorite;
+            // this.images = this.detailInfo.images;
+            // this.isLike = this.item.isLike;
+            // this.isHeart = this.item.isFavorite;
         },
         methods: {
             openComment(){
@@ -380,7 +230,16 @@
                     okButtonText: "确定",
                     cancelButtonText: "取消"
                 }).then(result => {
-                    console.log(result);
+                    if(result){
+                        this.$backendService
+                            .applyExitActivity(this.item.id)
+                            .then(res => {
+                                this.alert("退出活动成功！")
+                            })
+                            .catch(err => {
+                                this.alert("退出活动失败！")
+                            })
+                    }
                 });
             },
             joinInActivity(){
@@ -391,7 +250,24 @@
                     okButtonText: "确定",
                     cancelButtonText: "取消"
                 }).then(result => {
-                    console.log(result);
+                    //请求：加入活动
+                    if(result){
+                        this.$backendService
+                            .applyAddActivity(this.item.id)
+                            .then(res => {
+                                this.alert("加入活动请求已发出，待审核！")
+                            })
+                            .catch(err => {
+                                this.alert("加入活动失败！")
+                            })
+                    }
+                });
+            },
+            alert(message) {
+                return alert({
+                    title: "提示",
+                    okButtonText: "好的",
+                    message: message
                 });
             },
             openShareDialog(){
@@ -551,11 +427,7 @@
     };
 </script>
 <style scoped>
-    .comment-no{
-        font-size: 14;
-        font-weight: bold;
-        color: #828282;
-    }
+    
     .status-profile {
         margin-right: 0;
     }

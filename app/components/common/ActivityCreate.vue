@@ -13,7 +13,7 @@
                         <StackLayout class="activity-create-body" marginTop="10" marginBottom="10">
                             <GridLayout rows="auto,auto" columns="*"  class="activity-attribute" >
                                 <Label row="0" text="活动标题" horizontalAlignment="left" class="activity-attribute-title"/>
-                                <TextView row="1" v-model="activity.name" hint="请输入活动标题..." class="input activity-attribute-content" />
+                                <TextView row="1" v-model="activity.title" hint="请输入活动标题..." class="input activity-attribute-content" />
                             </GridLayout>
                             <GridLayout rows="auto,auto" columns="*" class="activity-attribute" >
                                 <Label row="0" text="活动描述" horizontalAlignment="left"  class="activity-attribute-title"/>
@@ -23,7 +23,7 @@
                                 <Label row="0" text="活动图片" horizontalAlignment="left" class="activity-attribute-title"/>
                                 <GridLayout row="1" rows="*, auto" class="activity-attribute-content images-area">
                                     <WrapLayout row="0"  columns="auto" height="100%" class="images-show" >
-                                        <GridLayout v-for="item in activity.imageUrls" :key="item.id"  width="30%"
+                                        <GridLayout v-for="item in activity.images" :key="item.id"  width="30%"
                                                 rows="auto" columns="auto" class="image-item" horizontalAlignment="center">
                                             <Image class="image-pic" :src="item" stretch="aspectFill" horizontalAlignment="center"/>
                                         </GridLayout>
@@ -33,13 +33,13 @@
                             </GridLayout>
                             <GridLayout rows="auto,auto" columns="*"  class="activity-attribute">
                                 <Label row="0" text="举办地址" horizontalAlignment="left" class="activity-attribute-title"/>
-                                <TextView row="1" v-model="activity.location" hint="请填写实际有效地址，如：中国江苏省南京市玄武区玄武巷1号玄武湖公园" class="input  activity-attribute-content address-area" />
+                                <TextView row="1" v-model="activity.address" hint="请填写实际有效地址，如：中国江苏省南京市玄武区玄武巷1号玄武湖公园" class="input  activity-attribute-content address-area" />
                             </GridLayout>
                             <GridLayout rows="auto,auto" columns="*"  class="activity-attribute">
                                 <Label row="0" text="是否公开" horizontalAlignment="left" class="activity-attribute-title"/>
                                 <StackLayout  orientation="horizontal"  row="1" class="activity-attribute-content ispublic-area">
                                     <Label text="公开" horizontalAlignment="right" class="switch-label"/>
-                                    <Switch v-model="activity.isPublic" />
+                                    <Switch v-model="activity.public" />
                                     <Label text="私有" horizontalAlignment="left"  class="switch-label"/>
                                 </StackLayout>
                             </GridLayout>
@@ -114,9 +114,25 @@ export default {
     },
     mounted(){
         if(this.state==1){
-            this.activity = this.item
-            // 请求：通过id获得活动成员信息
-            this.participantsSize = this.participants.length
+            //请求：通过id获得活动详细信息
+             this.$backendService
+                    .getActivityDetailInfo(this.item.id)
+                    .then(res => {
+                        this.activity = res;
+                        this.participants = this.detailInfo.participants;
+                        this.participantsSize = this.participants.length;
+                        if(this.activity.startDateTime.split(" ").length>1){
+                            this.selectedStartDate = this.activity.startDateTime.split(" ")[0]
+                            this.selectedStartTime = this.activity.startDateTime.split(" ")[1]
+                        }
+                        if(this.activity.endDateTime.split(" ").length>1){
+                            this.selectedEndDate = this.activity.endDateTime.split(" ")[0]
+                            this.selectedEndTime = this.activity.endDateTime.split(" ")[1]
+                        }
+                    })
+                    .catch(err=>{
+                        console.log(res)
+                    })
         }
     },
     data(){
@@ -124,42 +140,13 @@ export default {
             activity:{
                 title:"",
                 description:"",
-                imageUrls:[],
-                location:"",
-                startTime:"",
-                endTime:"",
-                isPublic:true
+                images:[],
+                address:"",
+                startDateTime:"",
+                endDateTime:"",
+                public:true
             },
-            participants: [
-                {
-                    "id": 7,
-                    "username": "echosheng",
-                    "email": "2271642660@qq.com",
-                    "avaUrl": "img_url",
-                    "weChat": ""
-                },
-                {
-                    "id": 2,
-                    "username": "sccc",
-                    "email": "141250107@smail.nju.edu.cn",
-                    "avaUrl": "1",
-                    "weChat": null
-                },
-                {
-                    "id": 3,
-                    "username": "test",
-                    "email": "test@edu.cn",
-                    "avaUrl": "1",
-                    "weChat": null
-                },
-                {
-                    "id": 9,
-                    "username": "echosheng",
-                    "email": "sc89703312@qq.com",
-                    "avaUrl": "img_url",
-                    "weChat": ""
-                }
-            ],
+            participants: [],
             participantsSize:0,
             isSingleMode:false,
             previewSize: 300,
@@ -178,21 +165,82 @@ export default {
             this.$navigateBack();
         },
         submitActivity(){
-            console.log(this.activity.name)
+            console.log(this.activity.title)
             console.log(this.activity.description)
-            console.log(this.activity.location)
-            console.log(this.activity.startTime)
-            console.log(this.activity.endTime)
-            console.log(this.activity.isPublic)
-            console.log(JSON.stringify(this.activity.imageUrls))
+            console.log(this.activity.address)
+            console.log(this.activity.startDateTime)
+            console.log(this.activity.endDateTime)
+            console.log(this.activity.public)
+            console.log(JSON.stringify(this.activity.images))
 
+            var info ={
+                "name": this.activity.title,
+                "description":  this.activity.description,
+                "location": this.activity.address,
+                "startTime": this.activity.startDateTime,
+                "endTime": this.activity.endDateTime,
+                "imageUrls":this.activity.images,
+                "isPublic": this.activity.public,
+            }
             //请求：新建活动
-            this.$navigateTo(Mine)
+            if(this.state==0){
+                this.$backendService
+                    .createActivity(info)
+                    .then(res => {
+                        this.alert("创建成功！")
+                        this.$navigateTo(Mine)
+                    })
+                    .catch(err=>{
+                        this.alert("创建失败！")
+                    })
+            }
+            //请求：修改活动
+            if(this.state==1){
+                this.$backendService
+                    .modifyActivity(this.item.id,info)
+                    .then(res => {
+                        this.alert("编辑成功！")
+                        this.$navigateBack();
+                    })
+                    .catch(err=>{
+                        this.alert("编辑失败！")
+                    })
+            }
+                
 
         },
         removeParticipant(userId){
             console.log(userId)
+            //请求：删除成员
+            this.$backendService
+                    .removeActivityParticipant(this.item.id,userId)
+                    .then(res => {
+                        this.alert("移除成功！")
+                        //刷新列表
+                        this.getParticipant()
+                    })
+                    .catch(err=>{
+                        this.alert("移除失败！")
+                    })
+            
         },
+        getParticipant(){
+            this.$backendService
+                    .getActivityParticipants(this.item.id)
+                    .then(res => {
+                        this.participants = res;
+                         this.participantsSize = this.participants.length;
+                    })
+                    .catch(err=>{
+                    })
+        },
+        alert(message) {
+                return alert({
+                    title: "提示",
+                    okButtonText: "好的",
+                    message: message
+                });
+            },
         onSelectMultipleTap(){
             let context = imagepicker.create({
                     mode: "multiple"
@@ -203,7 +251,7 @@ export default {
             context
                 .authorize()
                     .then(() => {
-                        this.activity.imageUrls = [];
+                        this.activity.images = [];
                         return context.present();
                     })
                     .then((selection) => {
@@ -213,7 +261,7 @@ export default {
                             element.options.width = this.isSingleMode ? this.previewSize : this.thumbSize;
                             element.options.height = this.isSingleMode ? this.previewSize : this.thumbSize;
                         });
-                        this.activity.imageUrls = selection;
+                        this.activity.images = selection;
                     }).catch(function (e) {
                         console.log(e);
                     });
@@ -278,7 +326,7 @@ export default {
                 });
         },
         selectEndDate(){
-            if(!this.activity.startTime){
+            if(!this.activity.startDateTime){
                 alert({
                     title: "提示",
                     message: "请先选定活动开始时间",
@@ -376,8 +424,8 @@ export default {
                 this.selectedStartTime = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds(); 
                 this.startTime = new Date() 
             }
-            this.activity.startTime= this.selectedStartDate +" "+this.selectedStartTime;
-            // console.log(this.activity.startTime)
+            this.activity.startDateTime= this.selectedStartDate +" "+this.selectedStartTime;
+            // console.log(this.activity.startDateTime)
         },
         getEndDateTime(){
             if(!this.selectedEndDate){
@@ -387,8 +435,8 @@ export default {
             if(!this.selectedEndTime){
                 this.selectedEndTime = this.startTime.getHours() + ':' + this.startTime.getMinutes()+ ':' +  (this.startTime.getSeconds()+1);  
             }
-            this.activity.endTime= this.selectedEndDate +" "+this.selectedEndTime;
-            // console.log(this.activity.endTime)
+            this.activity.endDateTime= this.selectedEndDate +" "+this.selectedEndTime;
+            // console.log(this.activity.endDateTime)
         }
     }
 }

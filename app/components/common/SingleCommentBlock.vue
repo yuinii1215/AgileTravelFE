@@ -1,26 +1,25 @@
 <template>
     <Gridlayout  rows="*,auto" columns="45,auto"  width="100%" marginBottom="15" class="single-comment">
         <GridLayout row="0" col="0" columns="auto" rows="auto,auto" marginBottom="5" marginRight="10" >
-            <Image row="0" col="0"  class="status-profile" :src="comment.user.avaUrl" 
+            <Image row="0" col="0"  class="status-profile" :src="comment.author.avaUrl" 
                 horizontalAlignment="center" verticalAlignment="top" stretch="aspectFill"  />
-            <Label row="1" col="0" class="comment-name" :text="comment.user.username"
+            <Label row="1" col="0" class="comment-name" :text="comment.author.username"
                 horizontalAlignment="center"  verticalAlignment="bottom" textWrap="true" />
         </GridLayout>
         <GridLayout row="0" col="1" rows="auto" columns="auto" width=100% height="100%">
             <StackLayout width=100% height="100%">
-                <Textview v-if="comment.contents.text" editable="false" class="comment-text" 
-                                   :text="comment.contents.text" />
-                <ScrollView v-if="comment.contents.images.length>0"  orientation="horizontal" >
+                <Textview v-if="comment.content" editable="false" class="comment-text" 
+                                   :text="comment.content" />
+                <ScrollView v-if="comment.imageUrls.length>0"  orientation="horizontal" >
                     <StackLayout orientation="horizontal" class="">
-                        <GridLayout v-for="image in comment.contents.images" :key="image.id" rows="auto"
+                        <GridLayout v-for="image in comment.imageUrls" :key="image.id" rows="auto"
                             columns="*">
-                            <!-- <Label text="哈哈哈："/> -->
                             <Image class="comment-image" row="0" col="0" :src="image.src"
                                 stretch="aspectFill" />
                         </GridLayout>
                     </StackLayout>
                 </ScrollView>
-                <Label class="comment-datatime" textWrap="true" :text="comment.dateTime" />
+                <Label class="comment-datatime" textWrap="true" :text="comment.postedTime" />
             </StackLayout>
         </GridLayout>
         <StackLayout row="1" col="0" colSpan="2" width="100%" class="line lineBasic" marginTop="10"  />

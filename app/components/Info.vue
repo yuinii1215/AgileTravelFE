@@ -44,6 +44,7 @@
                     <GridLayout rows="auto,*"  class="action-block">
                             <Label  row="0" text="系统消息"  class="action-title"/>
                             <GridLayout  row="1"  class="action-body">
+                                <Label v-if="infoList.length<=0" class="no-data" horizontalAlignment="center" text="暂无消息"/>
                                 <ScrollView width="100%">
                                     <StackLayout class="">
                                         <GridLayout v-for="info in infoList" :key="info.id" 
@@ -52,8 +53,8 @@
                                             <Label row="1" col="0" text="活动加入申请" class="info-block-title"/>
                                             <GridLayout  row="2" col="0" rows="auto" columns="auto,*" width="100%">
                                                 <Image horizontalAlignment="right" stretch="aspectFill" col="0"
-                                                        row="0" class="status-profile" :src="info.participant.avaUrl" />
-                                                <TextView editable="false"  row="0" col="1" class="item-title" textWrap="true" :text="info.participant.username" verticalAlignment="middle" horizontalAlignment="left"/>       
+                                                        row="0" class="status-profile" :src="info.applicant.avaUrl" />
+                                                <TextView editable="false"  row="0" col="1" class="item-title" textWrap="true" :text="info.applicant.username" verticalAlignment="middle" horizontalAlignment="left"/>       
                                             </GridLayout>
                                             <GridLayout  row="3" col="0" rows="auto" columns="auto,*" width="100%" class="item-info">
                                                 <Image row="0" col="0" class="item-image"  :src="info.activity.cover" stretch="aspectFill" />
@@ -92,72 +93,7 @@ export default {
         return{
             selectedTab:1,
             selectedTabview:0,
-            infoList:[{
-                participant:{
-                    "id": 8,
-                    "username": "测试测试测试啥地方还是 水电费客户刷卡就很烦",
-                    "email": "sc2271642660@qq.com",
-                    "avaUrl": "~/assets/images/food/cake/cake1.jpg",
-                    "weChat": ""
-                },
-                activity:{
-                    "id": 1,
-                    "title": "开心共春节",
-                    "cover": "~/assets/images/food/cake/cake1.jpg",
-                }
-            },{
-                participant:{
-                    "id": 7,
-                    "username": "hehe",
-                    "email": "sc2271642660@qq.com",
-                    "avaUrl": "~/assets/images/food/cake/cake1.jpg",
-                    "weChat": ""
-                },
-                activity:{
-                    "id": 1,
-                    "title": "厉害了带回家是否会焚枯食淡和开发商都好看是否健康收到货付款几十块上课福建省",
-                    "cover": "~/assets/images/food/cake/cake1.jpg",
-                }
-            },{
-                participant:{
-                    "id": 6,
-                    "username": "hehe",
-                    "email": "sc2271642660@qq.com",
-                    "avaUrl": "~/assets/images/food/cake/cake1.jpg",
-                    "weChat": ""
-                },
-                activity:{
-                    "id": 1,
-                    "title": "厉害了带回家是否会焚枯食淡和开发商都好看是否健康收到货付款几十块上课福建省厉害了带回家是否会焚枯食淡和开发商都好看是否健康收到货付款几十块上课福建省",
-                    "cover": "~/assets/images/food/cake/cake1.jpg",
-                }
-            },{
-                participant:{
-                    "id": 5,
-                    "username": "hehe",
-                    "email": "sc2271642660@qq.com",
-                    "avaUrl": "~/assets/images/food/cake/cake1.jpg",
-                    "weChat": ""
-                },
-                activity:{
-                    "id": 1,
-                    "title": "activity",
-                    "cover": "~/assets/images/food/cake/cake1.jpg",
-                }
-            },{
-                participant:{
-                    "id": 4,
-                    "username": "sdksdhfjkshdfkj你打算空间发挥水电费速度快咖啡店是几十块后方可s科技是福克斯福克斯",
-                    "email": "sc2271642660@qq.com",
-                    "avaUrl": "~/assets/images/food/cake/cake1.jpg",
-                    "weChat": ""
-                },
-                activity:{
-                    "id": 1,
-                    "title": "activity",
-                    "cover": "~/assets/images/food/cake/cake1.jpg",
-                }
-            }]
+            infoList:[]
         }
     },
     mounted(){
@@ -166,14 +102,38 @@ export default {
     methods: {
         acceptParticipate(info){
             // 请求：审批通过
-            console.log("通过：")
-            //请求：消息列表（更新）
+            this.$backendService
+                    .approveAddActivityApply(info.activity.id,info.applicant.id)
+                    .then(res => {
+                        this.alert("操作成功！")
+                    })
+                    .catch(err=>{
+                        this.alert("操作失败！")
+                    })
+            //请求：消息列表（更
+            this.getApplyList()
         },
         dismissParticipate(info){
             //请求：审批不通过
-            console.log("不通过：")
-            console.log(info.participant.id)
+            this.$backendService
+                    .rejectAddActivityApply(info.activity.id,info.applicant.id)
+                    .then(res => {
+                        this.alert("操作成功！")
+                    })
+                    .catch(err=>{
+                        this.alert("操作失败！")
+                    })
             //请求：消息列表（更新）
+            this.getApplyList()
+        },
+        getApplyList(){
+            this.$backendService
+                    .getActivityAddApply()
+                    .then(res => {
+                        this.infoList = res
+                    })
+                    .catch(err=>{
+                    })
         },
 		bottomTabChangeEvent(index){
 			this.selectedTab = index
@@ -185,6 +145,13 @@ export default {
 				this.$navigateTo(Mine,{animated: false})
 			}
         },
+        alert(message) {
+                return alert({
+                    title: "提示",
+                    okButtonText: "好的",
+                    message: message
+                });
+            },
         createActivity(){
             this.$navigateTo(ActivityCreate,{
                     props: {
@@ -206,6 +173,17 @@ export default {
                 cancelButtonText: "取消",
                 inputType: dialogs.inputType.text
             }).then(result => {
+                //请求：通过邀请码加入活动
+                if(result.result){
+                    this.$backendService
+                        .joinWithInviteCode()
+                        .then(res => {
+                            this.alert("加入活动请求已发出，待审核！")
+                        })
+                        .catch(err => {
+                            this.alert("加入活动失败！")
+                        })
+                }
                 console.log(`Dialog result: ${result.result}, text: ${result.text}`)
             });
         },
@@ -215,6 +193,13 @@ export default {
         showMessage(){
                 this.selectedTabview = 1;
         },
+        alert(message) {
+                return alert({
+                    title: "提示",
+                    okButtonText: "好的",
+                    message: message
+                });
+            }
     }
 }
 </script>

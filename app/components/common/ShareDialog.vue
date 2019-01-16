@@ -9,7 +9,7 @@
             <StackLayout  class="line lineBasic" width="100%" marginTop="10" marginBottom="10"/>
             <GridLayout rows="auto" columns="*,*" width="100%" horizontalAlignment="center">
                 <Button row="0" col="0" class="btn btn-primary" text="取消" horizontalAlignment="right" @tap="closeDialog"></Button>
-                <Button row="0" col="1" class="btn btn-primary" text="分享"  horizontalAlignment="left"></Button>
+                <Button row="0" col="1" class="btn btn-primary" text="分享"  horizontalAlignment="left" @tap="shareActivity"></Button>
             </GridLayout>
 		</StackLayout>
 	</AbsoluteLayout>
@@ -37,7 +37,31 @@ export default {
         closeDialog() {
             this.dialogOpen = false;
             this.$emit("closeShareDialogEvent")
-        }
+        },
+        shareActivity(){
+            var params = {
+                "contents": this.textFieldValue,
+                "activityId": this.item.id
+            }
+            console.log(JSON.stringify(params))
+            this.$backendService
+                    .shareActivity(params)
+                    .then(res => {
+                        this.alert("分享成功！")
+                        this.dialogOpen = false;
+                        this.$emit("closeShareDialogEvent")
+                    })
+                    .catch(err=>{
+                        this.alert("分享失败！")
+                    })
+        },
+        alert(message) {
+                return alert({
+                    title: "提示",
+                    okButtonText: "好的",
+                    message: message
+                });
+            },
     }
 }
 </script>

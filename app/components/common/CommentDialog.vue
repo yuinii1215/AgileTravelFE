@@ -66,8 +66,27 @@ export default {
         },
         submitComment(){
             //请求：提交评论
+            if(this.comment.content==""&&this.comment.imageUrls.length<=0){
+                this.alert("请填写评论内容")
+            }else{
+                this.$backendService
+                    .applyAddActivity(this.activityId,this.comment)
+                    .then(res => {
+                        this.alert("评论成功")
+                    })
+                    .catch(err => {
+                        this.alert("评论失败！")
+                    })
 
-            this.$navigateBack();
+                this.$navigateBack();
+            }
+        },
+        alert(message) {
+                return alert({
+                    title: "提示",
+                    okButtonText: "好的",
+                    message: message
+                });
         },
         onSelectMultipleTap(){
             let context = imagepicker.create({

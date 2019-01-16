@@ -3,7 +3,7 @@
                 verticalAlignment="center">
                 <GridLayout row="0" col="0" columns="auto,*" >
                     <Label col="0" class="item-open-status" textwrap="true" 
-                    :text="item.isPublic?'公开':'私有'" :class="[item.isPublic?'ispublic-true':'ispublic-false']"/>
+                    :text="item.public?'公开':'私有'" :class="[item.public?'ispublic-true':'ispublic-false']"/>
                     <Label col="1" class="item-title" textwrap="true" 
                         :text="item.title" @tap="showCompleteTitle()"/>
                 </GridLayout>
@@ -11,7 +11,7 @@
                         :text="'fa-list-ul' | fonticon" @tap="changeShowState()"/>
                 <TextView  row="1" col="0" v-if="hasMore==1&&showMore==1&&detailInfo" editable="false" 
                         class="item-block item-desc" :class="[hasMore==1?'anim-more':'']"
-                        textWrap="true" :text="detailInfo.descriptions.text" />
+                        textWrap="true" :text="detailInfo.description" />
                 <GridLayout row="2" col="0" width="100%" columns="auto,auto" rows="auto,auto" 
                     v-if="showMore==1" class="item-block" :class="[hasMore==1?'anim-more':'']"
                     verticalAlignment="top" horizontalAlignment="left">
@@ -27,7 +27,7 @@
                 <GridLayout v-if="item.isMember==2&&inviteCode&&showMore==1" row="3" col="0" rows="auto"  class="item-block" :class="[hasMore==1?'anim-more':'']" columns="*" verticalAlignment="bottom"  @tap="showCompleteInviteCode()">
                     <Label col="0" row="0" class="layout" v-if="inviteCode" :text="'邀  请  码:'+inviteCode"/>
                 </GridLayout>
-                <GridLayout v-if="item.isMember==2&&showMore==1" row="4" col="0" rows="auto"  class="item-block" :class="[hasMore==1?'anim-more':'']" columns="auto,auto,auto" verticalAlignment="bottom" @tap="generateInviteCode">
+                <GridLayout v-if="item.isMember==2&&showMore==1" row="4" col="0" rows="auto"  class="item-block" :class="[hasMore==1?'anim-more':'']" columns="auto,auto,auto" verticalAlignment="bottom" @tap="generateInviteCode()">
                     <Button col="1" row="0" class="layout generate-code-btn" text="重新生成邀请码" verticalAlignment="bottom" />
                 </GridLayout>
                 <GridLayout :row="item.isMember==2?5:4" col="0" rows="auto" columns="auto,*" v-if="showMore==1" :class="[hasMore==1?'anim-more':'']">
@@ -41,6 +41,7 @@
 
 <script>
 var LocateAddress = require("nativescript-locate-address").LocateAddress;
+
 export default {
     props: {
         "item":Object,
@@ -50,16 +51,28 @@ export default {
     },
     data(){
         return{
-            inviteCode:"MSAyMDE5LTAxLTE2IDE0OjE1OjM4",
+            inviteCode:""
         }
     },
     mounted(){
          this.locateAddress = new LocateAddress();
         //请求：获得inviteCode
+         this.$backendService
+                .getInviteCode(this.item.id)
+                .then(res => {
+                    this.inviteCode = res
+                })
+                .catch(err=>{})
     },
     methods:{
         generateInviteCode(){
                 //请求：重新请求InviteCode更新之
+                this.$backendService
+                    .generateInviteCode(this.item.id)
+                    .then(res => {
+                        this.inviteCode = res
+                    })
+                    .catch(err=>{})
         },
         changeShowState(){
             if(this.showMore==0)

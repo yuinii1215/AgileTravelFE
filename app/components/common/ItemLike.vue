@@ -1,11 +1,11 @@
 <template>
     <!-- <GridLayout marginTop="5" width="100%" row="3" columns="auto,*,auto,auto" rows="auto"> -->
     <GridLayout columns="*,auto,auto,auto" rows="auto">
-        <!-- <GridLayout col="0" rows="auto" columns="auto,auto" v-if="item.isMember==2" verticalAlignment="bottom" @tap="modifyActivity">
+        <GridLayout col="0" rows="auto" columns="auto,auto" v-if="item.isMember==2" verticalAlignment="bottom" @tap="modifyActivity">
             <Label horizontalAlignment="right" verticalAlignment="bottom" stretch="aspectFill" col="0"
 							row="0" class="fa like-icon layout" :text="'fa-edit'| fonticon" />
             <Label col="1" row="0" class="layout" text="编辑"></Label>
-        </GridLayout> -->
+        </GridLayout>
         <GridLayout col="0" rows="auto" columns="auto,auto" v-if="item.isMember!=2">
             <Image horizontalAlignment="right" stretch="aspectFill" col="0"
 							row="0" class="status-profile" :src="item.organizer.avaUrl" />
@@ -41,7 +41,6 @@
 </template>
 
 <script>
-    // import ActivityCreate from './ActivityCreate';
     export default {
         props: {
             item:Object
@@ -55,18 +54,7 @@
         },
         methods: {
             modifyActivity(){
-                this.$navigateTo(ActivityCreate,{
-                    props: {
-                        state:1,
-                        item:this.item
-                    },
-                    animated: true,
-                    transition: {
-                        name: "slideTop",
-                        duration: 380,
-                        curve: "easeIn"
-                    }
-			    })
+                this.$emit("modifyClick",this.item)
             },
             joinOutActivity(){
                 confirm({
@@ -75,7 +63,16 @@
                     okButtonText: "确定",
                     cancelButtonText: "取消"
                 }).then(result => {
-                    console.log(result);
+                   if(result){
+                        this.$backendService
+                            .applyExitActivity(this.item.id)
+                            .then(res => {
+                                this.alert("退出活动成功！")
+                            })
+                            .catch(err => {
+                                this.alert("退出活动失败！")
+                            })
+                    }
                 });
             },
             joinInActivity(){
@@ -86,11 +83,27 @@
                     okButtonText: "确定",
                     cancelButtonText: "取消"
                 }).then(result => {
-                    console.log(result);
+                    if(result){
+                        this.$backendService
+                            .applyAddActivity(this.item.id)
+                            .then(res => {
+                                this.alert("加入活动请求已发出，待审核！")
+                            })
+                            .catch(err => {
+                                this.alert("加入活动失败！")
+                            })
+                    }
                 });
             },
             openShareDialog(){
                 this.$emit("openShareDialogEvent");
+            },
+            alert(message) {
+                return alert({
+                    title: "提示",
+                    okButtonText: "好的",
+                    message: message
+                });
             }
         }
     };
