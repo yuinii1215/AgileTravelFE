@@ -60,6 +60,11 @@
                     </GridLayout>
                     <NavBottom row="4" :selectedTab="selectedTab" @tabChangeEvent="bottomTabChangeEvent"/>
             </GridLayout>
+            
+            <AbsoluteLayout  v-show="selectedTabview == 0"  marginTop="85.5%" marginLeft="79%">
+				<FabButton @onButtonTap="onButtonTap" :isActive="isActive" />
+			</AbsoluteLayout>
+
             <share-dialog  :item="sharePayload" :dialogOpen="shareDialogOpen" @closeShareDialogEvent="closeShareDialog"/>
         </GridLayout>
     </page>
@@ -69,40 +74,45 @@
 	import NavBottom from "./NavBottom";
     import Info from "./Info";
     import Home from "./Home";
-    import Item from "./common/Item";
+    import FabButton from "./common/FabButton";
     import ItemDetails from "./common/ItemDetails";
-	import ShareDialog from './common/ShareDialog';
-export default {
-    components: {
-        Item,
-		ShareDialog,
-        NavBottom
-    },
-    data(){
-        return{
-            sharePayload:{},
-			shareDialogOpen:false,
-            selectedTab:2,
-            selectedTabview:0,
-            createActivityList:[
-                {
-				id:3000,
-				title: "玄武公园一日游",
-				startDateTime:"2019-01-10 10:00:00",
-				endDateTime:"2019-01-10 20:00:00",
-				address:"中国江苏省南京市玄武区玄武巷1号玄武湖公园",
-				organizer:{
-					id:3,
-					username:"shaodong",
-					email:"john@edu.cn",
-					avaUrl:"~/assets/images/me.jpg"
-				},
-				cover:"~/assets/images/food/cake/cake1.jpg",
-				comments:6,
-                isMember:2,
-                isPublic:false
-			    },
-			{
+    import ShareDialog from './common/ShareDialog';
+    import ActivityCreate from './common/ActivityCreate';
+    import Item from "./common/Item";
+
+    export default {
+        components: {
+            ShareDialog,
+            NavBottom,
+            FabButton,
+            Item
+        },
+        data(){
+            return{
+                sharePayload:{},
+                shareDialogOpen:false,
+                selectedTab:2,
+                selectedTabview:0,
+                isActive: false, 
+                createActivityList:[
+                    {
+                    id:3000,
+                    title: "玄武公园一日游",
+                    startDateTime:"2019-01-10 10:00:00",
+                    endDateTime:"2019-01-10 20:00:00",
+                    address:"中国江苏省南京市玄武区玄武巷1号玄武湖公园",
+                    organizer:{
+                        id:3,
+                        username:"shaodong",
+                        email:"john@edu.cn",
+                        avaUrl:"~/assets/images/me.jpg"
+                    },
+                    cover:"~/assets/images/food/cake/cake1.jpg",
+                    comments:6,
+                    isMember:2,
+                    isPublic:false
+                    },
+			    {
 				id:4000,
 				title: "东南大学交流日交流日交流日交流日交流日交流日交流日交流日",
 				startDateTime:"2019-02-01 09:00:00",
@@ -121,7 +131,7 @@ export default {
 			}
             ],
             joinActivityList: [
-			{
+			    {
 				id:1000,
 				title: "湖滨轰趴",
 				startDateTime:"2019-01-01 20:00:00",
@@ -155,56 +165,68 @@ export default {
                 isMember: 1,
                 isPublic:false
 			}
-			],
-
+			],  
+            }
+        },
+        mounted(){
+            //请求：通过userID获得用户创建活动列表
+            //请求：通过userID获得用户参与活动列表
+        },
+        methods: {
             
-        }
-    },
-    mounted(){
-        //请求：通过userID获得用户创建活动列表
-        //请求：通过userID获得用户参与活动列表
-    },
-    methods: {
-        openShareDialog(item){
-			this.sharePayload = item
-            this.shareDialogOpen = true
-        },
-        closeShareDialog(){
-            this.shareDialogOpen = false
-        },
-		bottomTabChangeEvent(index){
-			this.selectedTab = index
-			if(this.selectedTab==0){
-                this.$navigateTo(Home,{animated: false})
-			}else if(this.selectedTab==1){
-				this.$navigateTo(Info,{animated: false})
-			}else if(this.selectedTab==2){
-				
-			}
-        },
-        showCreate(){
-            this.selectedTabview = 0;
-        },
-        showJoin(){
-            this.selectedTabview = 1;
-        },
-        showItem(payload) {
-			this.sharePayload = payload
-			this.$navigateTo(ItemDetails,{
-				props: {
-					item: payload
-				},
-				animated: true,
-				transition: {
-					name: "slideTop",
-					duration: 380,
-					curve: "easeIn"
-				}
-			})
-		},
+            onButtonTap() {
+                this.$navigateTo(ActivityCreate,{
+                    props: {
+                        state:0
+                    },
+                    animated: true,
+                    transition: {
+                        name: "slideTop",
+                        duration: 380,
+                        curve: "easeIn"
+                    }
+                })
+            },
+            openShareDialog(item){
+                this.sharePayload = item
+                this.shareDialogOpen = true
+            },
+            closeShareDialog(){
+                this.shareDialogOpen = false
+            },
+            bottomTabChangeEvent(index){
+                this.selectedTab = index
+                if(this.selectedTab==0){
+                    this.$navigateTo(Home,{animated: false})
+                }else if(this.selectedTab==1){
+                    this.$navigateTo(Info,{animated: false})
+                }else if(this.selectedTab==2){
+                    
+                }
+            },
+            showCreate(){
+                this.selectedTabview = 0;
+            },
+            showJoin(){
+                this.selectedTabview = 1;
+            },
+            showItem(payload) {
+                this.sharePayload = payload
+                this.$navigateTo(ItemDetails,{
+                    props: {
+                        item: payload
+                    },
+                    animated: true,
+                    transition: {
+                        name: "slideTop",
+                        duration: 380,
+                        curve: "easeIn"
+                    }
+                })
+            },
 
+        }
     }
-}
 </script>
 <style scoped>
     .navTopBar{
