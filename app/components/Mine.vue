@@ -173,6 +173,7 @@
             //请求：通过userID获得用户参与活动列表
         },
         methods: {
+            
             onButtonTap() {
                 this.$navigateTo(ActivityCreate,{
                     props: {

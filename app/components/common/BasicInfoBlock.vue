@@ -1,5 +1,5 @@
 <template>
-    <GridLayout width="100%" columns="*,auto" rows="auto,auto,auto,auto"
+    <GridLayout width="100%" columns="*,auto" rows="auto,auto,auto,auto,auto,auto"
                 verticalAlignment="center">
                 <GridLayout row="0" col="0" columns="auto,*" >
                     <Label col="0" class="item-open-status" textwrap="true" 
@@ -24,7 +24,13 @@
                     <Label row="1" col="1"  textwrap="true" 
                             :text="item.endDateTime" />
                 </GridLayout>
-                <GridLayout row="3" col="0" rows="auto" columns="auto,*" v-if="showMore==1" :class="[hasMore==1?'anim-more':'']">
+                <GridLayout v-if="item.isMember==2&&inviteCode&&showMore==1" row="3" col="0" rows="auto"  class="item-block" :class="[hasMore==1?'anim-more':'']" columns="*" verticalAlignment="bottom"  @tap="showCompleteInviteCode()">
+                    <Label col="0" row="0" class="layout" v-if="inviteCode" :text="'邀  请  码:'+inviteCode"/>
+                </GridLayout>
+                <GridLayout v-if="item.isMember==2&&showMore==1" row="4" col="0" rows="auto"  class="item-block" :class="[hasMore==1?'anim-more':'']" columns="auto,auto,auto" verticalAlignment="bottom" @tap="generateInviteCode">
+                    <Button col="1" row="0" class="layout generate-code-btn" text="重新生成邀请码" verticalAlignment="bottom" />
+                </GridLayout>
+                <GridLayout :row="item.isMember==2?5:4" col="0" rows="auto" columns="auto,*" v-if="showMore==1" :class="[hasMore==1?'anim-more':'']">
                     <Label row="0" col="0" class="fa location-icon" verticalAlignment="top" horizontalAlignment="left"
                         :text="'fa-location-arrow' | fonticon" @tap="goAddress()"/>
                     <Label row="0" col="1" class="item-address" textwrap="true"
@@ -42,11 +48,19 @@ export default {
         "hasMore":Number,
         "showMore":Number,
     },
+    data(){
+        return{
+            inviteCode:"MSAyMDE5LTAxLTE2IDE0OjE1OjM4",
+        }
+    },
     mounted(){
          this.locateAddress = new LocateAddress();
-        
+        //请求：获得inviteCode
     },
     methods:{
+        generateInviteCode(){
+                //请求：重新请求InviteCode更新之
+        },
         changeShowState(){
             if(this.showMore==0)
                 this.showMore = 1
@@ -60,6 +74,15 @@ export default {
                 console.log(`Address: ${this.item.address} locateAddress launched!`);
             }, (err) => {
                 alert(err);
+            });
+        },
+        showCompleteInviteCode(){
+            alert({
+                title: "邀请码",
+                message: this.inviteCode,
+                okButtonText: "好的"
+            }).then(() => {
+                console.log("Alert dialog closed");
             });
         },
         showCompleteTitle(){
@@ -151,5 +174,12 @@ export default {
     }
     .ispublic-false{
         background-color:rgb(255, 191, 138);
+    }
+
+    .generate-code-btn{
+        background-color:transparent;
+        border-color:#3e9edb;
+        border-width:0.5;
+        padding:2 5 2 5;
     }
 </style>

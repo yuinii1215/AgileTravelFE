@@ -50,6 +50,9 @@
             return {
             };
         },
+        mounted(){
+           
+        },
         methods: {
             modifyActivity(){
                 this.$navigateTo(ActivityCreate,{
@@ -162,5 +165,10 @@
         width: 100%;
         height: 150;
         margin-bottom: 10;
+    }
+    
+    .generate-code-btn{
+        border-bottom-color:#4080FF;
+        border-bottom-width:1;
     }
 </style>
