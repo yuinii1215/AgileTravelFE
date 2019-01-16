@@ -180,6 +180,7 @@
         methods: {
             signOut(){
                 //清理store
+                this.$backendService.logOut()
                 this.$navigateTo(Login, {
                     clearHistory: true
                 });

@@ -101,21 +101,20 @@
                 this.$backendService
                     .login(user)
                     .then(res => {
-                        console.log(JSON.stringify(res))
                         this.processing = false;
-                        // //成功后 设置user信息
-                        // this.$backendService.setUser(this.user)
-                        // //如果是管理员，跳转至管理员页面
-                        // if(this.user.username=="admin"&&this.user.password=="admin123")
-                        //     this.$navigateTo(ManagerHome, { clearHistory: true });
-                        // else
-                        //     this.$navigateTo(Home, { clearHistory: true });
+                        //成功后 设置user信息
+                        this.$backendService.setUser(res)
+                        //如果是管理员，跳转至管理员页面
+                        if(this.user.username=="admin"&&this.user.password=="admin123")
+                            this.$navigateTo(ManagerHome, { clearHistory: true });
+                        else
+                            this.$navigateTo(Home, { clearHistory: true });
                         
                     })
                     .catch((err) => {
                         this.processing = false;
                         this.alert(
-                            "很抱歉，并没有找到您的账号"
+                            "请检查您的邮箱和密码"
                         );
                     });
             },
@@ -127,20 +126,31 @@
                     return;
                 }
 
-                // this.$backendService
-                //     .register(this.user)
-                //     .then(() => {
+
+                var user={
+                    "email": this.user.email,
+                    "password": this.user.password,
+                    "username": this.user.username,
+                    "avatarUrl":""
+                }
+
+                console.log(JSON.stringify(user))
+
+                this.$backendService
+                    .register(user)
+                    .then((res) => {
                         this.processing = false;
                         this.alert(
                             "您的账户已创建成功，可尝试登录");
                         this.isLoggingIn = true;
-                    // })
-                    // .catch(() => {
-                    //     this.processing = false;
-                    //     this.alert(
-                    //         "Unfortunately we were unable to create your account."
-                    //     );
-                    // });
+                    })
+                    .catch((err) => {
+                        console.log(JSON.stringify(err))
+                        this.processing = false;
+                        this.alert(
+                            "抱歉，账户创建失败"
+                        );
+                    });
             },
 
             focusPassword() {
