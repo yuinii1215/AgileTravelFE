@@ -41,18 +41,37 @@
 </template>
 
 <script>
+
+import {getState} from '../../constants/index'
+
     export default {
         props: {
             item:Object
         },
         data() {
             return {
+                state:0
             };
         },
         mounted(){
-           
+            this.$nextTick(()=> {
+                this.getDetailInfo();
+            });
         },
         methods: {
+            getDetailInfo(){
+            // 请求：通过id获得详细信息
+                this.$backendService
+                    .getActivityDetailInfo(this.item.id)
+                    .then(res => {
+                        this.detailInfo = res;
+                        this.state = getState(this.detailInfo.startDateTime,this.detailInfo.endDateTime);
+                    })
+                    .catch(err=>{
+                        console.log(err)
+                        // this.$navigateBack();
+                    })
+            },
             modifyActivity(){
                 this.$emit("modifyClick",this.item)
             },
@@ -76,24 +95,28 @@
                 });
             },
             joinInActivity(){
-                //加入活动请求
-                confirm({
-                    title: "活动加入申请",
-                    message: "您确定要加入该活动吗？",
-                    okButtonText: "确定",
-                    cancelButtonText: "取消"
-                }).then(result => {
-                    if(result){
-                        this.$backendService
-                            .applyAddActivity(this.item.id)
-                            .then(res => {
-                                this.alert("加入活动请求已发出，待审核！")
-                            })
-                            .catch(err => {
-                                this.alert("加入活动失败！")
-                            })
-                    }
-                });
+                if(this.state==2){
+                    this.alert("抱歉，活动已结束！")
+                }else{
+                    //加入活动请求
+                    confirm({
+                        title: "活动加入申请",
+                        message: "您确定要加入该活动吗？",
+                        okButtonText: "确定",
+                        cancelButtonText: "取消"
+                    }).then(result => {
+                        if(result){
+                            this.$backendService
+                                .applyAddActivity(this.item.id)
+                                .then(res => {
+                                    this.alert("加入活动请求已发出，待审核！")
+                                })
+                                .catch(err => {
+                                    this.alert("加入活动失败！")
+                                })
+                        }
+                    });
+                }
             },
             openShareDialog(){
                 this.$emit("openShareDialogEvent");

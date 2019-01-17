@@ -115,6 +115,7 @@
  import ActivityCreate from './ActivityCreate';
  import Mine from "../Mine";
  import Home from "../Home";
+ import {getState} from '../../constants/index'
 
     export default {
         components: {BasicInfoBlock,SingleCommentBlock,ShareDialog},
@@ -134,6 +135,7 @@
                 detailInfo:{},
                 comments:[],
                 organizer:{},
+                state:0,
                 cover:""
             }
         },
@@ -155,6 +157,7 @@
                     .getActivityDetailInfo(this.activityId)
                     .then(res => {
                         this.detailInfo = res;
+                        this.state = getState(this.detailInfo.startDateTime,this.detailInfo.endDateTime);
                         this.cover = this.detailInfo.images[0];
                         this.organizer = this.detailInfo.organizer;
                         this.participantsLength = this.detailInfo.participants.length;
@@ -223,25 +226,29 @@
                 });
             },
             joinInActivity(){
+                if(this.state==2){
+                    this.alert("抱歉，活动已结束！")
+                }else{
                 //加入活动请求
-                confirm({
-                    title: "活动加入申请",
-                    message: "您确定要加入该活动吗？",
-                    okButtonText: "确定",
-                    cancelButtonText: "取消"
-                }).then(result => {
-                    //请求：加入活动
-                    if(result){
-                        this.$backendService
-                            .applyAddActivity(this.activityId)
-                            .then(res => {
-                                this.alert("加入活动请求已发出，待审核！")
-                            })
-                            .catch(err => {
-                                this.alert("加入活动失败！")
-                            })
-                    }
-                });
+                    confirm({
+                        title: "活动加入申请",
+                        message: "您确定要加入该活动吗？",
+                        okButtonText: "确定",
+                        cancelButtonText: "取消"
+                    }).then(result => {
+                        //请求：加入活动
+                        if(result){
+                            this.$backendService
+                                .applyAddActivity(this.activityId)
+                                .then(res => {
+                                    this.alert("加入活动请求已发出，待审核！")
+                                })
+                                .catch(err => {
+                                    this.alert("加入活动失败！")
+                                })
+                        }
+                    });
+                }
             },
             alert(message) {
                 return alert({

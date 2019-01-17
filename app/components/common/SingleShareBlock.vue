@@ -81,15 +81,15 @@ export default {
                 this.shareInfo.likeNum += 1;
                 this.$backendService
                     .likeActivity(this.shareInfo.activity.id)
-                    .then(res => {})
-                    .catch(err=>{})
+                    .then(res => {console.log(res)})
+                    .catch(err=>{console.log(err)})
             }
             else {
                 this.shareInfo.likeNum -= 1;
                 this.$backendService
                     .likeActivity(this.shareInfo.activity.id)
-                    .then(res => {})
-                    .catch(err=>{})
+                    .then(res => {console.log(res)})
+                    .catch(err=>{console.log(err)})
             }
                 
         },

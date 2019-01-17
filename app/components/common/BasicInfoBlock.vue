@@ -2,11 +2,11 @@
     <GridLayout width="100%" columns="*,auto" rows="auto,auto,auto,auto,auto,auto"
                 verticalAlignment="center">
                 <GridLayout row="0" col="0" columns="auto,auto,*" >
-                    <!-- <Label col="0" class="item-open-status" textwrap="true" 
-                    :text="Enum.activityState(state)" :class="[detailInfo.public?'ispublic-true':'ispublic-false']"/> -->
                     <Label col="0" class="item-open-status" textwrap="true" 
+                    :text="stateLabel" :class="{'state-unstart': state==0, 'state-going': state==1,'state-finish':state==2}"/>
+                    <Label col="1" class="item-open-status" textwrap="true" 
                     :text="detailInfo.public?'公开':'私有'" :class="[detailInfo.public?'ispublic-true':'ispublic-false']"/>
-                    <Label col="1" class="item-title" textwrap="true" 
+                    <Label col="2" class="item-title" textwrap="true" 
                         :text="detailInfo.title" @tap="showCompleteTitle()"/>
                 </GridLayout>
                 <Label v-if="hasMore==1" row="0" col="1" class="fa show-more-btn" verticalAlignment="top" horizontalAlignment="right"
@@ -44,6 +44,7 @@
 <script>
 var LocateAddress = require("nativescript-locate-address").LocateAddress;
 import Enum from '../../constants/enum'
+import {getState} from '../../constants/index'
 
 export default {
     props: {
@@ -55,6 +56,7 @@ export default {
         return{
             inviteCode:"",
             state:0,
+            stateLabel:"",
             detailInfo:{}
         }
     },
@@ -72,6 +74,8 @@ export default {
                     .getActivityDetailInfo(this.activityId)
                     .then(res => {
                         this.detailInfo = res;
+                        this.state = getState(this.detailInfo.startDateTime,this.detailInfo.endDateTime);
+                        this.stateLabel = Enum.activityState[this.state]
                     })
                     .catch(err=>{
                         console.log(err)
@@ -138,27 +142,6 @@ export default {
                 console.log("Alert dialog closed");
             });
         },
-        getState(){
-            var date = new date()
-
-            var startdate=this.detailInfo.startDateTime.split(" ")[0].split("-")
-            var starttime=this.detailInfo.startDateTime.split(" ")[1].split(":")
-            var enddate=this.detailInfo.endDateTime.split(" ")[0].split("-")
-            var endtime=this.detailInfo.endDateTime.split(" ")[1].split(":")
-            var date1 = new date()
-            date1.setHours(starttime[0],starttime[1],starttime[2])
-            date1.setYear(startdate[0])
-            date1.setMonth(startdate[1]-1,startdate[2])
-            var date2 = new date()
-            date2.setHours(endtime[0],endtime[1],endtime[2])
-            date2.setYear(enddate[0])
-            date2.setMonth(enddate[1]-1,enddate[2])
-
-            if(date<date1) return 0
-            if(date2<date) return 2
-            if(date>=date1&&date<=date2) return 1
-            return 1
-        }
     }
 }
 </script>
@@ -216,21 +199,7 @@ export default {
         }
     }
 
-    .item-open-status{
-        width:40;
-        text-align:center;
-        padding:2 5 2 5;
-        color:#000;
-        font-size:13;
-        margin-right:5;
-        border-radius: 2;
-    }
-    .ispublic-true{
-        background-color:rgb(143, 205, 255);
-    }
-    .ispublic-false{
-        background-color:rgb(255, 191, 138);
-    }
+  
 
     .generate-code-btn{
         background-color:transparent;

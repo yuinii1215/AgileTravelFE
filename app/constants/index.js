@@ -198,17 +198,17 @@ export const timeChange= (datetime)=>{
 }
 
 export const getState = (startdatetime,enddatetime)=>{
-    var date = new date()
+    var date = new Date()
 
     var startdate=startdatetime.split(" ")[0].split("-")
     var starttime=startdatetime.split(" ")[1].split(":")
     var enddate=enddatetime.split(" ")[0].split("-")
     var endtime=enddatetime.split(" ")[1].split(":")
-    var date1 = new date()
+    var date1 = new Date()
     date1.setHours(starttime[0],starttime[1],starttime[2])
     date1.setYear(startdate[0])
     date1.setMonth(startdate[1]-1,startdate[2])
-    var date2 = new date()
+    var date2 = new Date()
     date2.setHours(endtime[0],endtime[1],endtime[2])
     date2.setYear(enddate[0])
     date2.setMonth(enddate[1]-1,enddate[2])
