@@ -60,7 +60,8 @@
 
                             <GridLayout v-if="state==1" rows="auto,auto" columns="*" class="activity-attribute">
                                 <Label row="0" text="活动成员" horizontalAlignment="left" class="activity-attribute-title"/>
-                                <GridLayout row="1" rows="*, auto" class="activity-attribute-content">
+                                <GridLayout row="1" rows="*, auto" class="activity-attribute-content">  
+                                    <Label v-if="participantsSize<=0" class="no-data no-participant" text="暂无成员" textWrap="true" />
                                     <ScrollView class="participant-list-scroll" :height="participantsSize>5?200:''">
                                         <StackLayout>
                                             <WrapLayout v-for="participant in participants" :key="participant.id"
@@ -585,5 +586,12 @@ export default {
     .participant-name-block{
         height:100%;
         vertical-align: middle;
+    }
+    .no-participant{
+        color:#999999;
+        font-size:16;
+        font-weight: 400;
+        margin-left:20;
+        margin-top:15;
     }
 </style>
