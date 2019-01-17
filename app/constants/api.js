@@ -31,5 +31,21 @@ export default{
                 reject(error);
             })
         })
+    },
+    doUpLoad(url,data){
+        return new Promise((resolve, reject) => {
+            axios({
+              url: url,
+              method: 'post',
+              data: data,
+              headers: { 'Content-Type': 'multipart/form-data' }
+            })
+              .then((res) => {
+                resolve(res)
+              })
+              .catch((err) => {
+                reject(err)
+              })
+          })
     }
 }

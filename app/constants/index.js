@@ -2,6 +2,8 @@ import http from './api'
 import store from '../store';
 // import { Kinvey } from "kinvey-nativescript-sdk";
 const backend_url = "http://118.25.105.127:8080";
+
+
 export default class BackendService {
 
     constructor() {
@@ -188,6 +190,10 @@ export default class BackendService {
      */
     rejectAddActivityApply (activityId,participantId) {
         return http.fetchPost(backend_url+'/user/'+this.user.id+'/activity/'+activityId+'/applicants/'+participantId+'/refuse');
+    }
+
+    uploadToOSS(){
+        return http.doUpLoad()
     }
 }
 

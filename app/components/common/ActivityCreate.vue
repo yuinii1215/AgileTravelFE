@@ -99,6 +99,7 @@
  import Home from "../Home";
  import ItemDetails from "./ItemDetails";
  import * as imagepicker from "nativescript-imagepicker";
+ var bghttpModule = require("nativescript-background-http");
 
 const startModalPicker = require("nativescript-modal-datetimepicker")
   .ModalDatetimepicker;

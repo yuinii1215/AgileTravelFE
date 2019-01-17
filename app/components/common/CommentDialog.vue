@@ -24,7 +24,7 @@
                                             <Image class="image-pic" :src="item" stretch="aspectFill" horizontalAlignment="center"/>
                                         </GridLayout>
                                     </WrapLayout>
-                                    <Button class="btn btn-primary date-btn" row="1" text="请选择评论图片上传..." @tap="onSelectMultipleTap" horizontalAlignment="left" />
+                                    <Button class="btn btn-primary date-btn" row="1" text="请选择评论图片并上传..." @tap="onSelectMultipleTap" horizontalAlignment="left" />
                                 </GridLayout>
                             </GridLayout>
                             
@@ -41,7 +41,13 @@
 
 <script>
 import * as imagepicker from "nativescript-imagepicker";
+const bgHttp = require("nativescript-background-http");
+const fs = require("file-system");
+ import { isIOS, isAndroid } from "tns-core-modules/platform";
+
  import ItemDetails from "./ItemDetails";
+ var imageName;
+ var counter = 0;
  
 export default {
     props:{
@@ -60,6 +66,7 @@ export default {
             previewSize: 300,
             thumbSize: 80,
             thumbSize: null,
+            session: bgHttp.session("image-upload"),
            
         }   
     },
@@ -73,6 +80,15 @@ export default {
             if(this.comment.content==""&&this.comment.imageUrls.length<=0){
                 this.alert("请填写评论内容")
             }else{
+                this.comment.imageUrls=[
+                    "http://agile-travel.oss-cn-shanghai.aliyuncs.com/images/Jt2jNR2jxF.jpg",
+                    "http://agile-travel.oss-cn-shanghai.aliyuncs.com/images/j5RfdnpZQ5.png",
+                    "http://agile-travel.oss-cn-shanghai.aliyuncs.com/images/rsRsRYT7Y8.jpg",
+                    "http://agile-travel.oss-cn-shanghai.aliyuncs.com/images/t5JXn4hdxP.jpg",
+                    "http://agile-travel.oss-cn-shanghai.aliyuncs.com/images/KZRPx4tzkJ.jpg",
+                    "http://agile-travel.oss-cn-shanghai.aliyuncs.com/images/weBsP25bwW.png",
+                    "http://agile-travel.oss-cn-shanghai.aliyuncs.com/images/X82kwb5N2N.png"]
+                console.log(JSON.stringify(this.comment))
                 this.$backendService
                     .commentActivity(this.activityId,this.comment)
                     .then(res => {
@@ -127,6 +143,7 @@ export default {
             this.startSelection(context);
         },
         startSelection(context) {
+            let _self =this;
             context
                 .authorize()
                     .then(() => {
@@ -134,17 +151,112 @@ export default {
                         return context.present();
                     })
                     .then((selection) => {
-                        // console.log("Selection done: " + JSON.stringify(selection));
-                        // set the images to be loaded from the assets with optimal sizes (optimize memory usage)
-                        selection.forEach(element => {
-                            element.options.width = this.isSingleMode ? this.previewSize : this.thumbSize;
-                            element.options.height = this.isSingleMode ? this.previewSize : this.thumbSize;
-                        });
-                        this.comment.imageUrls = selection;
+                        let imageAsset = null;
+                        if(selection.length > 0){
+                           selection.forEach(selected_item => {
+                                this.getImageFilePath(selected_item).then(path => {
+                                    console.log(`path: ${path}`);
+                                    this.comment.imageUrls.push(path)
+                                    console.log(JSON.stringify(this.comment.imageUrls))
+                                    this.uploadImage(path);
+                                });
+                                selected_item.options.width = this.isSingleMode ? this.previewSize : this.thumbSize;
+                                selected_item.options.height = this.isSingleMode ? this.previewSize : this.thumbSize;
+                            });
+                        }
+                        // this.comment.imageUrls = selection;
+                        console.log(JSON.stringify(this.comment.imageUrls))
                     }).catch(function (e) {
                         console.log(e);
                     });
         },
+        uploadImage(path) {
+                let file = fs.File.fromPath(path);
+                this.currentFileNameBeingUploaded = file.path.substr(
+                    file.path.lastIndexOf("/") + 1
+                );
+                let request = this.createNewRequest();
+                request.description = "uploading image " + file.path;
+                request.headers["File-Name"] = this.currentFileNameBeingUploaded;
+                // var params = [{
+                //         name: "test",
+                //         value: "value"
+                //     },
+                //     {
+                //         name: "fileToUpload",
+                //         filename: file.path,
+                //         mimeType: "image/jpeg"
+                //     }
+                // ];
+                // var task = this.session.multipartUpload(params, request);
+                let task = this.session.uploadFile(file.path, request);
+                // task.on("progress", this.logEvent);
+                // task.on("error", this.logEvent);
+                task.on("responded",this.logEvent);
+                // task.on("complete", this.logEvent);
+            },
+            createNewRequest() {
+                let url;
+                // NOTE: using https://httpbin.org/post for testing purposes,
+                // you'll need to use your own service in real-world app
+                if (isIOS) {
+                    url = "https://httpbin.org/post";
+                } else {
+                    url = "http://www.csm-testcenter.org/test";
+                }
+                let request = {
+                    url: url,
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/octet-stream"
+                    },
+                    description: "uploading file...",
+                    androidAutoDeleteAfterUpload: false,
+                    androidNotificationTitle: "NativeScript HTTP background"
+                };
+                return request;
+            },
+            getImageFilePath(imageAsset) {
+                return new Promise(resolve => {
+                    if (isIOS) {
+                        const options = PHImageRequestOptions.new();
+                        options.synchronous = true;
+                        options.version =
+                            PHImageRequestOptionsVersion.Current;
+                        options.deliveryMode =
+                            PHImageRequestOptionsDeliveryMode.HighQualityFormat;
+
+                        PHImageManager.defaultManager().requestImageDataForAssetOptionsResultHandler(
+                            imageAsset.ios,
+                            options,
+                            nsData => {
+                                // create file from image asset and return its path
+                                const tempFolderPath = fs.knownFolders
+                                    .temp()
+                                    .getFolder("nsimagepicker").path;
+                                const tempFilePath = fs.path.join(
+                                    tempFolderPath,
+                                    Date.now() + ".jpg"
+                                );
+
+                                nsData.writeToFileAtomically(
+                                    tempFilePath, true);
+                                resolve(tempFilePath);
+                            }
+                        );
+                    } else {
+                        // return imageAsset.android, since it 's the path of the file
+                        resolve(imageAsset.android);
+                    }
+                });
+            },
+            logEvent(e) {
+                console.log(JSON.stringify(e))
+                console.log("currentBytes: " + e.currentBytes);
+                console.log("totalBytes: " + e.totalBytes);
+                console.log("eventName: " + e.eventName);
+            }
+
     
     }
 }
