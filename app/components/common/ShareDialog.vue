@@ -43,7 +43,6 @@ export default {
                 "contents": this.textFieldValue,
                 "activityId": this.item.id
             }
-            console.log(JSON.stringify(params))
             this.$backendService
                     .shareActivity(params)
                     .then(res => {

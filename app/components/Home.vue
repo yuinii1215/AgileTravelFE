@@ -1,6 +1,5 @@
 <template>
 	<page actionBarHidden="true" backgroundSpanUnderStatusBar="true">
-		<!-- @loaded="onLoaded" -->
 		<GridLayout>
 			<GridLayout rows="auto,auto,*,auto" columns="auto" :class="{ shareDialogOpen: shareDialogOpen }">
 
@@ -89,20 +88,10 @@ export default {
 	mounted () {
 		//获得用户头像
 		this.user = this.$backendService.getUser()
-		//请求：获得所有活动信息
-		 this.$backendService
-                    .getAllActivityListWithPage(0)
-					.then(res => {
-						this.items = res
-					})
-					.catch(err => {})
-		//请求：获得所有分享列表
-		this.$backendService
-                    .getShareList()
-					.then(res => {
-						this.shareInfos = res
-					})
-					.catch(err => {})
+		 this.$nextTick(()=> {
+			 this.getActivityList();
+			 this.getShareList();
+		 })
 	},
 	data() {
 		return {
@@ -116,6 +105,24 @@ export default {
 		};
 	},
 	methods: {
+		getActivityList(){
+			//请求：获得所有活动信息
+			this.$backendService
+						.getAllActivityListWithPage(0)
+						.then(res => {
+							this.items = res
+						})
+						.catch(err => {})
+		},
+		getShareList(){
+			//请求：获得所有分享列表
+			this.$backendService
+						.getShareList()
+						.then(res => {
+							this.shareInfos = res.reverse()
+						})
+						.catch(err => {})
+		},
 		bottomTabChangeEvent(index){
 			this.selectedTab = index
 			if(this.selectedTab==0){
@@ -130,7 +137,8 @@ export default {
             this.shareDialogOpen = true
         },
         closeShareDialog(){
-            this.shareDialogOpen = false
+			this.shareDialogOpen = false
+			this.getShareList();
         },
 		search(){
 			console.log('search')
@@ -153,7 +161,8 @@ export default {
 			this.sharePayload = payload
 			this.$navigateTo(ItemDetails,{
 				props: {
-					item: payload
+					activityId: payload.id,
+					from: 0
 				},
 				animated: true,
 				transition: {
@@ -167,7 +176,8 @@ export default {
 			this.$navigateTo(ActivityCreate,{
                     props: {
                         state:1,
-                        item:payload
+						item:payload,
+						from:1
                     },
                     animated: true,
                     transition: {

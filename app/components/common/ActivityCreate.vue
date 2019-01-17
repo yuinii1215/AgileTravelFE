@@ -94,6 +94,9 @@
 
 <script>
  import Mine from "../Mine";
+ import Info from "../Info";
+ import Home from "../Home";
+ import ItemDetails from "./ItemDetails";
  import * as imagepicker from "nativescript-imagepicker";
 
 const startModalPicker = require("nativescript-modal-datetimepicker")
@@ -110,17 +113,20 @@ export default {
             type:Number,
             default:0//0表示创建 1表示修改
         },
-        item:Object
+        item:Object,
+        from:Number
     },
     mounted(){
         if(this.state==1){
             //请求：通过id获得活动详细信息
+            this.$nextTick(()=> {
              this.$backendService
                     .getActivityDetailInfo(this.item.id)
                     .then(res => {
                         this.activity = res;
-                        this.participants = this.detailInfo.participants;
+                        this.participants = this.activity.participants;
                         this.participantsSize = this.participants.length;
+                      
                         if(this.activity.startDateTime.split(" ").length>1){
                             this.selectedStartDate = this.activity.startDateTime.split(" ")[0]
                             this.selectedStartTime = this.activity.startDateTime.split(" ")[1]
@@ -133,6 +139,7 @@ export default {
                     .catch(err=>{
                         console.log(res)
                     })
+            })
         }
     },
     data(){
@@ -161,8 +168,17 @@ export default {
         }   
     },
     methods:{
+        getBack(){
+            console.log(this.from)
+            if(this.from ==0) this.getDetailInfo();
+            if(this.from ==1) this.gotoHomePage();
+            if(this.from ==2) this.gotoInfoPage();
+            if(this.from ==3) this.gotoMinePage();
+            //0:详细信息页面，1:Home页面，2:Info页面，3：Mine页面
+        },
         close() {
-            this.$navigateBack();
+            // this.$navigateBack();
+            this.getBack()
         },
         submitActivity(){
             console.log(this.activity.title)
@@ -187,8 +203,9 @@ export default {
                 this.$backendService
                     .createActivity(info)
                     .then(res => {
-                        this.alert("创建成功！")
                         this.$navigateTo(Mine)
+                        this.alert("创建成功！")
+                        
                     })
                     .catch(err=>{
                         this.alert("创建失败！")
@@ -199,8 +216,10 @@ export default {
                 this.$backendService
                     .modifyActivity(this.item.id,info)
                     .then(res => {
-                        this.alert("编辑成功！")
-                        this.$navigateBack();
+                        this.getBack();
+                        this.alert("编辑成功！");
+                        // this.$navigateBack();
+                        
                     })
                     .catch(err=>{
                         this.alert("编辑失败！")
@@ -210,7 +229,6 @@ export default {
 
         },
         removeParticipant(userId){
-            console.log(userId)
             //请求：删除成员
             this.$backendService
                     .removeActivityParticipant(this.item.id,userId)
@@ -437,6 +455,41 @@ export default {
             }
             this.activity.endDateTime= this.selectedEndDate +" "+this.selectedEndTime;
             // console.log(this.activity.endDateTime)
+        },
+        getDetailInfo(){
+                // 请求：通过id获得详细信息
+                this.$backendService
+                    .getActivityDetailInfo(this.item.id)
+                    .then(res => {
+                        this.gotoDetailPage(res)
+                    })
+                    .catch(err=>{
+                        console.log(err)
+                        // this.$navigateBack();
+                    })
+        },
+        gotoDetailPage(payload){
+            this.$navigateTo(ItemDetails,{
+                props: {
+                    activityId: payload.id,
+                    from: 3
+				},
+				animated: true,
+				transition: {
+					name: "slideTop",
+					duration: 380,
+					curve: "easeIn"
+				}
+			})
+        },
+        gotoHomePage(){
+            this.$navigateTo(Home);
+        },
+        gotoInfoPage(){
+            this.$navigateTo(Info);
+        },
+        gotoMinePage(){
+            this.$navigateTo(Mine);
         }
     }
 }

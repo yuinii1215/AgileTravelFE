@@ -8,8 +8,8 @@
                 horizontalAlignment="center"  verticalAlignment="bottom" textWrap="true" />
         </GridLayout>
         <GridLayout row="0" col="1" rows="*,auto,auto" columns="auto" width="100%" verticalAlignment="middle" horizontalAlignment="left">
-            <TextView row="0" v-if="shareInfo.contents.text" width="100%" editable="false" class="shareInfo-text" 
-                                   :text="shareInfo.contents.text" />
+            <TextView row="0" v-if="shareInfo.contents" width="100%" editable="false" class="shareInfo-text" 
+                                   :text="shareInfo.contents" />
             <GridLayout row="1" rows="auto" columns="auto,*" width="100%" height="100%" class="shareInfo-info" @tap="toItemDetail()">
                 <Image row="0" col="0" class="shareInfo-image"  :src="shareInfo.activity.cover" stretch="aspectFill"  />
                 <TextView row="0" col="1" editable="false" class="shareInfo-title" textWrap="true" :text="shareInfo.activity.title" verticalAlignment="middle" horizontalAlignment="left"/>
@@ -30,7 +30,6 @@
 </template>
 <script>
 import { isIOS, isAndroid } from "tns-core-modules/platform";
-import ItemDetails from "./ItemDetails";
 
 export default {
     props:["shareInfo"],

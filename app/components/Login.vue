@@ -67,7 +67,7 @@
                 processing: false,
                 user: {
                     username: "shaodong",
-                    email: "sc89703312@qq.com",
+                    email: "mf1832136@smail.nju.edu.cn",
                     password: "123456",
                     confirmPassword: "123456"
                 }

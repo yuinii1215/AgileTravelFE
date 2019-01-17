@@ -1,12 +1,12 @@
 <template>
     <Page actionBarHidden="true" class="anim-page"
-        backgroundSpanUnderStatusBar="true" @loaded="onLoaded">
+        backgroundSpanUnderStatusBar="true">
         <GridLayout class="main" verticalAlignment="top" >
-            <StackLayout :class="{ shareDialogOpen: shareDialogOpen }">
+            <StackLayout :class="{ shareDialogOpen: shareDialogOpen }" v-if="detailInfo">
                
                 <GridLayout class="anim-cover" rows="auto" columns="*">
                     <Image row="0" col="0" marginTop="-40" height="180" stretch="aspectFill"
-                        class="card-img" :src="item.cover" />
+                        class="card-img" :src="cover" />
                     <Label row="0" col="0" verticalAlignment="top"
                         horizontalAlignment="left" @tap="close" :text="'fa-arrow-left' | fonticon"
                         class="fa close" fontSize="24" />
@@ -22,24 +22,21 @@
                 </ScrollView>
 
                 <GridLayout rows="auto,auto,auto,auto" columns="auto" class="content">
-                    <basic-info-block hasMore=1 :showMore="showMore" :item="item" :detailInfo="detailInfo" @showMoreChangeEvent="showMoreChange()" class="anim-itemInfo"  marginTop="15" />
+                    <basic-info-block hasMore=1 :showMore="showMore" :activityId="activityId"  @showMoreChangeEvent="showMoreChange()" class="anim-itemInfo"  marginTop="15" />
 
                     <StackLayout v-if="showMore==1"   class="line anim-likes lineBasic" row="2" width="100%" marginTop="10" />
 
                     <GridLayout v-if="showMore==1"  class="anim-likes"  marginTop="5" width="100%" row="3"
-                        :columns="item.isMember==1||item.isMember==2?item.isMember==1?'55,*,*,90,60':'55,*,*,60':'55,*,*,90'" rows="auto,auto,auto,auto" marginBottom="-10">
-                        <!-- <GridLayout row="0" col="0" rows="auto,auto" columns="auto,auto"> -->
+                        :columns="detailInfo.isMember==1||detailInfo.isMember==2?detailInfo.isMember==1?'55,*,*,90,60':'55,*,*,60':'55,*,*,90'" rows="auto,auto,auto,auto" marginBottom="-10">
                             <Label col="0" row="0" rowSpan="2" text="组织者:" class="user-type" verticalAlignment="top"/>
                             <GridLayout col="1" row="0" rows="auto,auto" columns="auto" class="user-info-wrap" horizontalAlignment="left" :marginBottom="participantsLength>0?0:8">
                                 <Image horizontalAlignment="center"  verticalAlignment="top" stretch="aspectFill" col="0"
-                                                row="0" class="status-profile" :src="item.organizer.avaUrl" />
+                                                row="0" class="status-profile" :src="organizer.avaUrl" />
                                 <Label col="0" row="1" class="participator-name" horizontalAlignment="center"  verticalAlignment="bottom"
-                                :text="item.organizer.username"/>
+                                :text="organizer.username"/>
                             </GridLayout>
-                        <!-- </GridLayout> -->
-                        <!-- <GridLayout row="1" col="0" rows="auto,auto" columns="auto,auto" width="100%" marginTop="5"> -->
                             <Label v-if="participantsLength>0" col="0" row="1" rowSpan="2" text="参与者:" class="user-type" verticalAlignment="top" marginTop="8"/>
-                            <GridLayout  v-if="participantsLength>0"  :colSpan="item.isMember==1?4:3"  col="1" row="1" rows="auto,auto" columns="auto" class="user-info-wrap" width="100%" horizontalAlignment="left"  marginTop="6">
+                            <GridLayout  v-if="participantsLength>0"  :colSpan="detailInfo.isMember==1?4:3"  col="1" row="1" rows="auto,auto" columns="auto" class="user-info-wrap" width="100%" horizontalAlignment="left"  marginTop="6">
                                 <ScrollView  orientation="horizontal" width="100%">
                                     <StackLayout orientation="horizontal" class="">
                                         <GridLayout v-for="participator in detailInfo.participants" :key="participator.id" 
@@ -53,36 +50,19 @@
                                 </ScrollView>
                                 
                             </GridLayout>
-                        <!-- </GridLayout> -->
-                        <!-- <GridLayout col="0" rows="auto" columns="auto,auto" @tap="toggleLike">
-                            <Label col="0" row="0" ref="like" class="like-icon fa"
-                                :class="[isLike ? 'liked-active' : 'default']"
-                                :text="isLike ? 'fa-thumbs-up':'fa-thumbs-o-up' | fonticon" />
-                            <Label col="1" row="0" class="layout" :text="item.likes"></Label>
-                        </GridLayout> -->
-                        <!-- <StackLayout col="1" orientation="horizontal" marginLeft="15">
-                            <Label ref="" class="like-icon layout fa" :text="'fa-comment-o' | fonticon" />
-                            <Label class="layout" :text="item.comments"></Label>
-                        </StackLayout> -->
-                        <!-- <GridLayout col="2" rows="auto" columns="auto,auto" marginRight="15">
-                            <Label col="0" row="0" ref="favorite" class="like-icon  fa"
-                                :class="[isHeart ? 'heart-active' : 'default']"
-                                :text="isHeart ? 'fa-heart':'fa-heart-o' | fonticon" />
-                            <Label col="1" row="0" class="layout" text="Favorite"></Label>
-                        </GridLayout> -->
-                        <StackLayout  class="icon-btn" row="0" col="2" orientation="horizontal" horizontalAlignment="right" verticalAlignment="top" v-if="item.isMember==2" @tap="modifyActivity">
+                        <StackLayout  class="icon-btn" row="0" col="2" orientation="horizontal" horizontalAlignment="right" verticalAlignment="top" v-if="detailInfo.isMember==2" @tap="modifyActivity">
                             <Label class="fa like-icon layout" :text="'fa-edit'| fonticon" />
                             <Label class="layout" text="编辑"></Label>
                         </StackLayout>
-                        <StackLayout  class="icon-btn" row="0" col="3" orientation="horizontal" horizontalAlignment="right" verticalAlignment="top" v-if="item.isMember==1" @tap="joinOutActivity">
+                        <StackLayout  class="icon-btn" row="0" col="3" orientation="horizontal" horizontalAlignment="right" verticalAlignment="top" v-if="detailInfo.isMember==1" @tap="joinOutActivity">
                             <Label ref="" class="like-icon layout fa" :text="'fa-user-times' | fonticon" />
                             <Label class="layout" text="退出活动"></Label>
                         </StackLayout>
-                        <StackLayout  class="icon-btn" row="0" col="3" orientation="horizontal" horizontalAlignment="right" verticalAlignment="top" v-if="item.isMember==3"  @tap="joinInActivity">
+                        <StackLayout  class="icon-btn" row="0" col="3" orientation="horizontal" horizontalAlignment="right" verticalAlignment="top" v-if="detailInfo.isMember==3"  @tap="joinInActivity">
                             <Label ref="" class="like-icon layout fa" :text="'fa-user-plus' | fonticon" />
                             <Label class="layout" text="申请加入"></Label>
                         </StackLayout>
-                        <StackLayout class="icon-btn" row="0" :col="item.isMember==1?4:3"  orientation="horizontal" horizontalAlignment="right" verticalAlignment="top" v-if="item.isMember==1||item.isMember==2" @tap="openShareDialog()">
+                        <StackLayout class="icon-btn" row="0" :col="detailInfo.isMember==1?4:3"  orientation="horizontal" horizontalAlignment="right" verticalAlignment="top" v-if="detailInfo.isMember==1||detailInfo.isMember==2" @tap="openShareDialog()">
                             <Label ref="" class="like-icon layout fa" :text="'fa-share-square-o' | fonticon" />
                             <Label class="layout" text="分享"></Label>
                         </StackLayout>
@@ -98,18 +78,20 @@
                             textWrap="true" />
                         <Label col="1" class="description-text" text="评论"
                             textWrap="true" />
-                        <Label col="2" class="comment-num" :text="'共'+item.comments+'条'" 
+                        <Label col="2" class="comment-num" :text="'共'+detailInfo.comments+'条'" 
                             verticalAlignment="middle" textWrap="true" />
-                        <StackLayout v-if="item.isMember==1||item.isMember==2" class="icon-btn" col="3"  orientation="horizontal" horizontalAlignment="right" verticalAlignment="top" @tap="openComment()">
+                        <StackLayout v-if="detailInfo.isMember==1||detailInfo.isMember==2" class="icon-btn" col="3"  orientation="horizontal" horizontalAlignment="right" verticalAlignment="top" @tap="openComment()">
                             <Label ref="" class="like-icon layout fa" :text="'fa-commenting-o' | fonticon" />
                             <Label class="layout" text="发表评论"></Label>
                         </StackLayout>
                     </GridLayout>
 
                     <StackLayout row="1" height="100%" marginTop="10">
-                        <Label  v-if="item.isMember==3||item.isMember==0" class="no-data" text="快快加入活动，查看所有评论！"
+                        <Label  v-if="detailInfo.isMember==1||detailInfo.isMember==2&&comments.length<=0" class="no-data" text="暂无评论，快来评论吧！"
                             textWrap="true" />
-                        <ScrollView v-if="item.isMember==1||item.isMember==2">
+                        <Label  v-if="detailInfo.isMember==3||detailInfo.isMember==0" class="no-data" text="快快加入活动，查看所有评论！"
+                            textWrap="true" />
+                        <ScrollView v-if="detailInfo.isMember==1||detailInfo.isMember==2">
                             <StackLayout>
                                 <GridLayout v-for="comment in comments" :key="comment.id" 
                                     rows="*" columns="auto">
@@ -118,25 +100,9 @@
                             </StackLayout>
                         </ScrollView>
                     </StackLayout>
-                    
-                    <!-- <StackLayout row="1">
-                        <ScrollView>
-                            <StackLayout verticalAlignment="top"
-                                horizontalAlignment="left">
-                                <Textview editable="false" class="description-value"
-                                    textWrap="true" :text="description" />
-                            </StackLayout>
-                        </ScrollView>
-                    </StackLayout> -->
-
-
                 </Gridlayout>
-
-                <!-- <AbsoluteLayout  marginTop="1%" marginLeft="90%">
-                        <Label :text="item.public?'公开':'私有'" />
-                </AbsoluteLayout> -->
             </StackLayout>
-            <share-dialog  :item="item" :dialogOpen="shareDialogOpen" @closeShareDialogEvent="closeShareDialog"/>
+            <share-dialog  :item="detailInfo" :dialogOpen="shareDialogOpen" @closeShareDialogEvent="closeShareDialog"/>
         </GridLayout>
     </Page>
 </template>
@@ -147,35 +113,14 @@
  import ShareDialog from './ShareDialog';
  import CommentDialog from './CommentDialog';
  import ActivityCreate from './ActivityCreate';
+ import Mine from "../Mine";
+ import Home from "../Home";
 
     export default {
         components: {BasicInfoBlock,SingleCommentBlock,ShareDialog},
         props: {
-            "item" :Object,
-        },
-        mounted(){
-            // 请求：通过id获得详细信息
-            this.$backendService
-                    .getActivityDetailInfo(this.item.id)
-                    .then(res => {
-                        this.detailInfo = res;
-                        this.participantsLength = this.detailInfo.participants.length;
-                        this.imagesLength = this.detailInfo.images.length;
-                    })
-                    .catch(err=>{
-                        console.log(res)
-                    })
-            // 请求：通过ID获得所有评论信息
-             this.$backendService
-                    .getCommentList(this.item.id)
-                    .then(res => {
-                        this.comments = res
-                    })
-                    .catch(err=>{
-                        console.log(res)
-                    })
-            
-
+            "activityId" :String,
+            "from":Number
         },
         data() {
 		    return {
@@ -187,19 +132,53 @@
                 participantsLength:0,
                 imagesLength:0,
                 detailInfo:{},
-                comments:[] 
+                comments:[],
+                organizer:{},
+                cover:""
             }
         },
-        created() {
-            // this.images = this.detailInfo.images;
-            // this.isLike = this.item.isLike;
-            // this.isHeart = this.item.isFavorite;
+        mounted(){
+            this.$nextTick(()=> {
+                this.getDetailInfo();
+                this.getComments();
+            })
         },
         methods: {
+            goBack(){
+                //0：Home首页，1：Mine个人页面，2：评论、活动分享、页面（回到Home）3：活动编辑修改页面，回到Mine，
+                if(this.from==0||this.from==2) this.gotoHomePage();
+                if(this.from==1||this.from==3) this.gotoMinePage();
+            },
+            getDetailInfo(){
+                // 请求：通过id获得详细信息
+                this.$backendService
+                    .getActivityDetailInfo(this.activityId)
+                    .then(res => {
+                        this.detailInfo = res;
+                        this.cover = this.detailInfo.images[0];
+                        this.organizer = this.detailInfo.organizer;
+                        this.participantsLength = this.detailInfo.participants.length;
+                        this.imagesLength = this.detailInfo.images.length;
+                    })
+                    .catch(err=>{
+                        console.log(res)
+                    })
+            },
+            getComments(){
+                // 请求：通过ID获得所有评论信息
+                this.$backendService
+                    .getCommentList(this.activityId)
+                    .then(res => {
+                        this.comments = res.reverse()
+                    })
+                    .catch(err=>{
+                        console.log(res)
+                    })
+            },
             openComment(){
                 this.$navigateTo(CommentDialog,{
                     props: {
-                        activityId:this.item.id
+                        activityId:this.activityId
                     },
                     animated: true,
                     transition: {
@@ -213,7 +192,8 @@
                 this.$navigateTo(ActivityCreate,{
                     props: {
                         state:1,
-                        item:this.item
+                        item:this.detailInfo,
+                        from:0
                     },
                     animated: true,
                     transition: {
@@ -232,7 +212,7 @@
                 }).then(result => {
                     if(result){
                         this.$backendService
-                            .applyExitActivity(this.item.id)
+                            .applyExitActivity(this.activityId)
                             .then(res => {
                                 this.alert("退出活动成功！")
                             })
@@ -253,7 +233,7 @@
                     //请求：加入活动
                     if(result){
                         this.$backendService
-                            .applyAddActivity(this.item.id)
+                            .applyAddActivity(this.activityId)
                             .then(res => {
                                 this.alert("加入活动请求已发出，待审核！")
                             })
@@ -281,9 +261,7 @@
                     this.showMore = 1
                 else this.showMore = 0
             },
-            onLoaded() {
-                // this.animateFrom()
-            },
+            
             animateFrom() {
                 let cover = this.$refs.cover.nativeView;
                 let images = this.$refs.images.nativeView;
@@ -343,7 +321,8 @@
                 });
             },
             close() {
-                this.$navigateBack();
+                // this.$navigateBack();
+                this.goBack();
             },
             animateLike() {
                 let imgLogo = this.$refs.like.nativeView;
@@ -411,9 +390,9 @@
                 this.animateLike();
                 this.isLike = !this.isLike;
                 if (this.isLike) {
-                    this.item.likes += 1;
+                    this.detailInfo.likes += 1;
                 } else {
-                    this.item.likes -= 1;
+                    this.detailInfo.likes -= 1;
                 }
             },
             toggleHeart() {
@@ -422,6 +401,12 @@
             },
             onClickButton() {
                 this.$emit("clicked");
+            },
+            gotoHomePage(){
+                this.$navigateTo(Home);
+            },
+            gotoMinePage(){
+                this.$navigateTo(Mine);
             }
         }
     };

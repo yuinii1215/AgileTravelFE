@@ -98,6 +98,9 @@ export default {
     },
     mounted(){
         //请求：获得审批信息
+        this.$nextTick(()=> {
+            this.getApplyList()
+        });
     },
     methods: {
         acceptParticipate(info){
@@ -105,26 +108,28 @@ export default {
             this.$backendService
                     .approveAddActivityApply(info.activity.id,info.applicant.id)
                     .then(res => {
-                        this.alert("操作成功！")
+                        this.alert("操作成功！");
+                        this.getApplyList()
                     })
                     .catch(err=>{
-                        this.alert("操作失败！")
+                        this.alert("操作失败！");
                     })
             //请求：消息列表（更
-            this.getApplyList()
+            // this.getApplyList()
         },
         dismissParticipate(info){
             //请求：审批不通过
             this.$backendService
                     .rejectAddActivityApply(info.activity.id,info.applicant.id)
                     .then(res => {
-                        this.alert("操作成功！")
+                        this.alert("操作成功！");
+                        this.getApplyList();
                     })
                     .catch(err=>{
-                        this.alert("操作失败！")
+                        this.alert("操作失败！");
                     })
             //请求：消息列表（更新）
-            this.getApplyList()
+            // this.getApplyList()
         },
         getApplyList(){
             this.$backendService
@@ -155,7 +160,8 @@ export default {
         createActivity(){
             this.$navigateTo(ActivityCreate,{
                     props: {
-                        state:0
+                        state:0,
+                        from:2
                     },
                     animated: true,
                     transition: {

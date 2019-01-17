@@ -41,11 +41,14 @@
 
 <script>
 import * as imagepicker from "nativescript-imagepicker";
+ import ItemDetails from "./ItemDetails";
+ 
 export default {
     props:{
         activityId:String
     },
     mounted(){
+     
     },
     data(){
         return{
@@ -62,7 +65,8 @@ export default {
     },
     methods:{
         close(){
-            this.$navigateBack();
+            // this.$navigateBack();
+            this.getDetailInfo()
         },
         submitComment(){
             //请求：提交评论
@@ -70,7 +74,7 @@ export default {
                 this.alert("请填写评论内容")
             }else{
                 this.$backendService
-                    .applyAddActivity(this.activityId,this.comment)
+                    .commentActivity(this.activityId,this.comment)
                     .then(res => {
                         this.alert("评论成功")
                     })
@@ -78,8 +82,36 @@ export default {
                         this.alert("评论失败！")
                     })
 
-                this.$navigateBack();
+                // this.$navigateBack();
+                    this.getDetailInfo()
+                
             }
+        },
+        getDetailInfo(){
+                // 请求：通过id获得详细信息
+                this.$backendService
+                    .getActivityDetailInfo(this.activityId)
+                    .then(res => {
+                        this.gotoDetail(res)
+                    })
+                    .catch(err=>{
+                        console.log(err)
+                        // this.$navigateBack();
+                    })
+            },
+        gotoDetail(payload){
+            this.$navigateTo(ItemDetails,{
+				props: {
+                    activityId: payload.id,
+                    from: 2
+				},
+				animated: true,
+				transition: {
+					name: "slideTop",
+					duration: 380,
+					curve: "easeIn"
+				}
+			})
         },
         alert(message) {
                 return alert({

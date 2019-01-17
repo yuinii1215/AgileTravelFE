@@ -109,22 +109,24 @@
         mounted(){
             //获得个人信息
             this.user = this.$backendService.getUser();
-            //请求：通过userID获得用户创建活动列表
-            this.$backendService
-                .getMyCreateActivityList()
-                .then(res => {
-                    this.createActivityList = res
-                })
-                .catch(err => {
-                })
-            //请求：通过userID获得用户参与活动列表
-            this.$backendService
-                .getMyJoinActivityList()
-                .then(res => {
-                    this.joinActivityList = res
-                })
-                .catch(err => {
-                })
+            this.$nextTick(()=> {
+                //请求：通过userID获得用户创建活动列表
+                this.$backendService
+                    .getMyCreateActivityList()
+                    .then(res => {
+                        this.createActivityList = res
+                    })
+                    .catch(err => {
+                    })
+                //请求：通过userID获得用户参与活动列表
+                this.$backendService
+                    .getMyJoinActivityList()
+                    .then(res => {
+                        this.joinActivityList = res
+                    })
+                    .catch(err => {
+                    })
+            })
         },
         methods: {
             signOut(){
@@ -136,7 +138,8 @@
             onButtonTap() {
                 this.$navigateTo(ActivityCreate,{
                     props: {
-                        state:0
+                        state:0,
+                        from:3
                     },
                     animated: true,
                     transition: {
@@ -173,7 +176,8 @@
                 this.sharePayload = payload
                 this.$navigateTo(ItemDetails,{
                     props: {
-                        item: payload
+                        activityId: payload.id,
+                        from: 1
                     },
                     animated: true,
                     transition: {
@@ -187,7 +191,8 @@
 			this.$navigateTo(ActivityCreate,{
                     props: {
                         state:1,
-                        item:payload
+                        item:payload,
+                        from:3
                     },
                     animated: true,
                     transition: {
