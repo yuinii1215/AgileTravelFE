@@ -597,11 +597,11 @@ export default {
                 }
                 console.log(JSON.stringify(e))
                 if(e.responseCode==200){
-                    this.alert("第"+this.imageCount+"张图片上传成功！")
+                    // this.alert("第"+this.imageCount+"张图片上传成功！")
                     console.log(e.data)
                     this.activity.images.push('http://'+e.data)
                 }else{
-                    this.alert("第"+this.imageCount+"张图片上传失败！")
+                    // this.alert("第"+this.imageCount+"张图片上传失败！")
 
                 }
                 
