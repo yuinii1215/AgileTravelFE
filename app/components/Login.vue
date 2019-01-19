@@ -67,7 +67,7 @@
                 processing: false,
                 user: {
                     username: "shaodong",
-                    email: "shaodong@nju.edu.cn",
+                    email: "mf1832136@smail.nju.edu.cn",
                     password: "123456",
                     confirmPassword: "123456"
                 }
@@ -94,25 +94,29 @@
             },
 
             login() {
-                //将个人信息保存到state
-                // this.$backendService
-                //     .login(this.user)
-                //     .then(() => {
-                    this.processing = false;
-                    //如果是管理员，跳转至管理员页面
-                    
-                    
+                var user={
+                    "email": this.user.email,
+	                "password": this.user.password
+                }
+                this.$backendService
+                    .login(user)
+                    .then(res => {
+                        this.processing = false;
+                        //成功后 设置user信息
+                        this.$backendService.setUser(res)
+                        //如果是管理员，跳转至管理员页面
                         if(this.user.username=="admin"&&this.user.password=="admin123")
                             this.$navigateTo(ManagerHome, { clearHistory: true });
                         else
                             this.$navigateTo(Home, { clearHistory: true });
-                    // })
-                    // .catch(() => {
-                    //     this.processing = false;
-                    //     this.alert(
-                    //         "Unfortunately we could not find your account."
-                    //     );
-                    // });
+                        
+                    })
+                    .catch((err) => {
+                        this.processing = false;
+                        this.alert(
+                            "很抱歉，并没有找到您的账号"
+                        );
+                    });
             },
 
             register() {
@@ -121,21 +125,27 @@
                     this.processing = false;
                     return;
                 }
+                var user= {
+                    "email": this.user.email,
+                    "password": this.user.password,
+                    "username": this.user.username,
+                    "avatarUrl":""
+                }
 
-                // this.$backendService
-                //     .register(this.user)
-                //     .then(() => {
+                this.$backendService
+                    .register(user)
+                    .then(() => {
                         this.processing = false;
                         this.alert(
                             "您的账户已创建成功，可尝试登录");
                         this.isLoggingIn = true;
-                    // })
-                    // .catch(() => {
-                    //     this.processing = false;
-                    //     this.alert(
-                    //         "Unfortunately we were unable to create your account."
-                    //     );
-                    // });
+                    })
+                    .catch(() => {
+                        this.processing = false;
+                        this.alert(
+                            "抱歉，创建账户是失败"
+                        );
+                    });
             },
 
             focusPassword() {

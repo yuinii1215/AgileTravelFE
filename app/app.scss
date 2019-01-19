@@ -91,3 +91,39 @@
 	height: 70;
 	margin-left: 5;
 }
+
+.item-open-status{
+	width:40;
+	text-align:center;
+	padding:2 5 2 5;
+	color:#000;
+	font-size:13;
+	margin-right:5;
+	border-radius: 2;
+}
+
+.ispublic-true{
+	background-color:rgb(143, 205, 255);
+}
+.ispublic-false{
+	background-color:rgb(255, 191, 138);
+}
+
+.state-going{
+	background-color:rgb(160, 204, 255);
+	width:50;
+}
+.state-unstart{
+	background-color:rgb(255, 143, 149);
+	width:50;
+}
+.state-finish{
+	background-color:rgb(197, 197, 197);
+	width:50;
+}
+
+.no-data{
+	font-size: 14;
+	font-weight: bold;
+	color: #828282;
+}
