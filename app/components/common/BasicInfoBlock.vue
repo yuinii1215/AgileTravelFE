@@ -89,7 +89,7 @@ export default {
                 .then(res => {
                     this.inviteCode = res
                 })
-                .catch(err=>{})
+                .catch(err=>{this.generateInviteCode()})
         },
         generateInviteCode(){
                 //请求：重新请求InviteCode更新之

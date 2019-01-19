@@ -14,7 +14,7 @@
                     <StackLayout orientation="horizontal" class="">
                         <GridLayout v-for="image in comment.imageUrls" :key="image.id" rows="auto"
                             columns="*">
-                            <Image class="comment-image" row="0" col="0" :src="image.src"
+                            <Image class="comment-image" row="0" col="0" :src="image"
                                 stretch="aspectFill" />
                         </GridLayout>
                     </StackLayout>

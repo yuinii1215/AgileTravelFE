@@ -16,15 +16,18 @@
                                 <TextView row="1" v-model="comment.content" hint="请输入活动描述信息..." class="input activity-attribute-content description-area" />
                             </GridLayout>
                             <GridLayout rows="auto,auto" columns="*" class="activity-attribute">
-                                <Label row="0" text="评论图片" horizontalAlignment="left" class="activity-attribute-title"/>
+                                <StackLayout  row="0"  orientation="horizontal">
+                                    <Label text="评论图片" horizontalAlignment="left" class="activity-attribute-title"/>
+                                    <Label text="最多上传5张" horizontalAlignment="left"   verticalAlignment="bottom"  class="no-data"/>
+                                </StackLayout>
                                 <GridLayout row="1" rows="*, auto" class="activity-attribute-content images-area">
                                     <WrapLayout row="0"  columns="auto" height="100%" class="images-show" >
-                                        <GridLayout v-for="item in comment.imageUrls" :key="item.id"  width="30%"
+                                        <GridLayout v-for="item in imagesShow" :key="item.id"  width="30%"
                                                 rows="auto" columns="auto" class="image-item" horizontalAlignment="center">
                                             <Image class="image-pic" :src="item" stretch="aspectFill" horizontalAlignment="center"/>
                                         </GridLayout>
                                     </WrapLayout>
-                                    <Button class="btn btn-primary date-btn" row="1" text="请选择评论图片并上传..." @tap="onSelectMultipleTap" horizontalAlignment="left" />
+                                    <Button class="btn btn-primary date-btn" row="1" :text="uploadState?'图片上传中...':'请选择评论图片并上传...'" @tap="onSelectMultipleTap" horizontalAlignment="left" />
                                 </GridLayout>
                             </GridLayout>
                             
@@ -46,8 +49,6 @@ const fs = require("file-system");
  import { isIOS, isAndroid } from "tns-core-modules/platform";
 
  import ItemDetails from "./ItemDetails";
- var imageName;
- var counter = 0;
  
 export default {
     props:{
@@ -62,12 +63,15 @@ export default {
                 content:"",
                 imageUrls:[]
             },
+            imagesShow:[],
             isSingleMode:false,
             previewSize: 300,
             thumbSize: 80,
             thumbSize: null,
             session: bgHttp.session("image-upload"),
-           
+            uploadState:false,
+            uploadImageLen:0,
+            imageCount:0,
         }   
     },
     methods:{
@@ -76,31 +80,27 @@ export default {
             this.getDetailInfo()
         },
         submitComment(){
-            //请求：提交评论
-            if(this.comment.content==""&&this.comment.imageUrls.length<=0){
-                this.alert("请填写评论内容")
+            if(this.uploadState){
+                 this.alert("请等待图片上传结束！")
             }else{
-                this.comment.imageUrls=[
-                    "http://agile-travel.oss-cn-shanghai.aliyuncs.com/images/Jt2jNR2jxF.jpg",
-                    "http://agile-travel.oss-cn-shanghai.aliyuncs.com/images/j5RfdnpZQ5.png",
-                    "http://agile-travel.oss-cn-shanghai.aliyuncs.com/images/rsRsRYT7Y8.jpg",
-                    "http://agile-travel.oss-cn-shanghai.aliyuncs.com/images/t5JXn4hdxP.jpg",
-                    "http://agile-travel.oss-cn-shanghai.aliyuncs.com/images/KZRPx4tzkJ.jpg",
-                    "http://agile-travel.oss-cn-shanghai.aliyuncs.com/images/weBsP25bwW.png",
-                    "http://agile-travel.oss-cn-shanghai.aliyuncs.com/images/X82kwb5N2N.png"]
-                console.log(JSON.stringify(this.comment))
-                this.$backendService
-                    .commentActivity(this.activityId,this.comment)
-                    .then(res => {
-                        this.alert("评论成功")
-                    })
-                    .catch(err => {
-                        this.alert("评论失败！")
-                    })
+                //请求：提交评论
+                if(this.comment.content==""&&this.comment.imageUrls.length<=0){
+                    this.alert("请填写评论内容")
+                }else{
+                    console.log(JSON.stringify(this.comment))
+                    this.$backendService
+                        .commentActivity(this.activityId,this.comment)
+                        .then(res => {
+                            this.alert("评论成功")
+                        })
+                        .catch(err => {
+                            this.alert("评论失败！")
+                        })
 
-                // this.$navigateBack();
-                    this.getDetailInfo()
-                
+                    // this.$navigateBack();
+                        this.getDetailInfo()
+                    
+                }
             }
         },
         getDetailInfo(){
@@ -138,39 +138,41 @@ export default {
         },
         onSelectMultipleTap(){
             let context = imagepicker.create({
-                    mode: "multiple"
+                    mode: "multiple",
+                    maximumNumberOfSelection:5
             });
             this.startSelection(context);
         },
         startSelection(context) {
-            let _self =this;
             context
                 .authorize()
                     .then(() => {
                         this.comment.imageUrls = [];
+                        this.imagesShow =[];
+                        this.imageCount = 0;
                         return context.present();
                     })
                     .then((selection) => {
                         let imageAsset = null;
+                        this.uploadImageLen = selection.length;
                         if(selection.length > 0){
                            selection.forEach(selected_item => {
+                                this.uploadState = true;
                                 this.getImageFilePath(selected_item).then(path => {
-                                    console.log(`path: ${path}`);
-                                    this.comment.imageUrls.push(path)
-                                    console.log(JSON.stringify(this.comment.imageUrls))
                                     this.uploadImage(path);
                                 });
                                 selected_item.options.width = this.isSingleMode ? this.previewSize : this.thumbSize;
                                 selected_item.options.height = this.isSingleMode ? this.previewSize : this.thumbSize;
                             });
-                        }
-                        // this.comment.imageUrls = selection;
-                        console.log(JSON.stringify(this.comment.imageUrls))
+                        }else
+                            this.uploadState = false;
+                        this.imagesShow = selection;
                     }).catch(function (e) {
                         console.log(e);
                     });
         },
         uploadImage(path) {
+                this.uploadState = true;
                 let file = fs.File.fromPath(path);
                 this.currentFileNameBeingUploaded = file.path.substr(
                     file.path.lastIndexOf("/") + 1
@@ -178,34 +180,23 @@ export default {
                 let request = this.createNewRequest();
                 request.description = "uploading image " + file.path;
                 request.headers["File-Name"] = this.currentFileNameBeingUploaded;
-                // var params = [{
-                //         name: "test",
-                //         value: "value"
-                //     },
-                //     {
-                //         name: "fileToUpload",
-                //         filename: file.path,
-                //         mimeType: "image/jpeg"
-                //     }
-                // ];
-                // var task = this.session.multipartUpload(params, request);
-                let task = this.session.uploadFile(file.path, request);
-                // task.on("progress", this.logEvent);
-                // task.on("error", this.logEvent);
-                task.on("responded",this.logEvent);
-                // task.on("complete", this.logEvent);
+                
+                var params = [{
+                        name: "test",
+                        value: "value"
+                    },
+                    {
+                        name: "fileToUpload",
+                        filename:file.path,
+                        mimeType: "image/jpeg"
+                    }
+                ];
+                var task = this.session.multipartUpload(params, request);
+                task.on("responded",this.logEvent); 
             },
-            createNewRequest() {
-                let url;
-                // NOTE: using https://httpbin.org/post for testing purposes,
-                // you'll need to use your own service in real-world app
-                if (isIOS) {
-                    url = "https://httpbin.org/post";
-                } else {
-                    url = "http://www.csm-testcenter.org/test";
-                }
+            createNewRequest(data) {
                 let request = {
-                    url: url,
+                    url: this.$backendService.getBackEndUrl()+"/upload/images",
                     method: "POST",
                     headers: {
                         "Content-Type": "application/octet-stream"
@@ -251,10 +242,20 @@ export default {
                 });
             },
             logEvent(e) {
+                this.imageCount+=1;
+
+                if(this.imageCount==this.uploadImageLen){
+                    this.uploadState = false;
+                }
                 console.log(JSON.stringify(e))
-                console.log("currentBytes: " + e.currentBytes);
-                console.log("totalBytes: " + e.totalBytes);
-                console.log("eventName: " + e.eventName);
+                if(e.responseCode==200){
+                     this.alert("第"+this.imageCount+"张图片上传成功！")
+                    console.log(e.data)
+                    this.comment.imageUrls.push('http://'+e.data)
+                }else{
+                    this.alert("第"+this.imageCount+"张图片上传失败！")
+
+                }
             }
 
     

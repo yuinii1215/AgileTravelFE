@@ -1,17 +1,23 @@
 import http from './api'
 import store from '../store';
+
+
 // import { Kinvey } from "kinvey-nativescript-sdk";
-const backend_url = "http://118.25.105.127:8080";
 
 
 export default class BackendService {
 
     constructor() {
         this.user = {}
+        this.backend_url = "http://118.25.105.127:8080";
     }
 
     setUser(userInfo) {
         this.user = userInfo
+    }
+
+    getBackEndUrl(){
+        return this.backend_url;
     }
 
     isLoggedIn(){
@@ -34,119 +40,119 @@ export default class BackendService {
      * 登录
      */
     login (params) {
-        return http.fetchPost(backend_url+'/user/login', params);
+        return http.fetchPost(this.backend_url+'/user/login', params);
     }
 
     /**
      * 注册
      */
     register (params) {
-        return http.fetchPost(backend_url+'/user/register', params);
+        return http.fetchPost(this.backend_url+'/user/register', params);
     }
 
     /**
      * 获得分享列表
      */
     getShareList () {
-        return http.fetchGet(backend_url+'/user/'+this.user.id+'/share');
+        return http.fetchGet(this.backend_url+'/user/'+this.user.id+'/share');
     }
 
     /**
      * 分享活动
      */
     shareActivity (params) {
-        return http.fetchPost(backend_url+'/user/'+this.user.id+'/share',params);
+        return http.fetchPost(this.backend_url+'/user/'+this.user.id+'/share',params);
     }
 
     /**
      * 点赞分享
      */
     likeActivity (activityId) {
-        return http.fetchPost(backend_url+'/user/'+this.user.id+'/share/'+activityId+'/star');
+        return http.fetchPost(this.backend_url+'/user/'+this.user.id+'/share/'+activityId+'/star');
     }
 
     /**
      * 获得活动评论列表
      */
     getCommentList (activityId) {
-        return http.fetchGet(backend_url+'/activity/'+activityId+'/post');
+        return http.fetchGet(this.backend_url+'/activity/'+activityId+'/post');
     }
 
     /**
      * 评论活动
      */
     commentActivity (activityId,params){
-        return http.fetchPost(backend_url+'/user/'+this.user.id+'/activity/'+activityId+'/post',params);
+        return http.fetchPost(this.backend_url+'/user/'+this.user.id+'/activity/'+activityId+'/post',params);
     }
 
     /**
      * 按页查询公开活动
      */
     getAllActivityListWithPage (pageId) {
-        return http.fetchGet(backend_url+'/user/'+this.user.id+'/activity/public/page/'+pageId);
+        return http.fetchGet(this.backend_url+'/user/'+this.user.id+'/activity/public/page/'+pageId);
     }
 
     /**
      * 获得用户创建活动列表
      */
     getMyCreateActivityList () {
-        return http.fetchGet(backend_url+'/user/'+this.user.id+'/activity/created');
+        return http.fetchGet(this.backend_url+'/user/'+this.user.id+'/activity/created');
     }
 
     /**
      * 获得用户加入活动列表
      */
     getMyJoinActivityList (){
-        return http.fetchGet(backend_url+'/user/'+this.user.id+'/activity/joined');
+        return http.fetchGet(this.backend_url+'/user/'+this.user.id+'/activity/joined');
     }
 
     /**
      * 获得活动具体信息
      */
     getActivityDetailInfo (activityId) {
-        return http.fetchGet(backend_url+'/user/'+this.user.id+'/activity/'+activityId);
+        return http.fetchGet(this.backend_url+'/user/'+this.user.id+'/activity/'+activityId);
     }
 
     /**
      * 创建活动
      */
     createActivity (params) {
-        return http.fetchPost(backend_url+'/user/'+this.user.id+'/activity',params);
+        return http.fetchPost(this.backend_url+'/user/'+this.user.id+'/activity',params);
     }
 
     /**
      * 编辑活动
      */
     modifyActivity (activityId,params){
-        return http.fetchPost(backend_url+'/user/'+this.user.id+'/activity/'+activityId,params);
+        return http.fetchPost(this.backend_url+'/user/'+this.user.id+'/activity/'+activityId,params);
     }
 
     /**
      * 生成邀请码
      */
     generateInviteCode (activityId) {
-        return http.fetchGet(backend_url+'/user/'+this.user.id+'/activity/'+activityId+'/invite/generate');
+        return http.fetchGet(this.backend_url+'/user/'+this.user.id+'/activity/'+activityId+'/invite/generate');
     }
 
     /**
      * 获得邀请码
      */
     getInviteCode (activityId) {
-        return http.fetchGet(backend_url+'/user/'+this.user.id+'/activity/'+activityId+'/invite/get');
+        return http.fetchGet(this.backend_url+'/user/'+this.user.id+'/activity/'+activityId+'/invite/get');
     }
 
     /**
      * 通过邀请码加入活动
      */
     joinWithInviteCode (code){
-        return http.fetchGet(backend_url+'/user/'+this.user.id+'/accept/'+code);
+        return http.fetchGet(this.backend_url+'/user/'+this.user.id+'/accept/'+code);
     }
 
     /** 
      *  获得活动参与者 
      */
     getActivityParticipants (activityId){
-        return http.fetchGet(backend_url+'/user/'+this.user.id+'/activity/'+activityId+'/participants');
+        return http.fetchGet(this.backend_url+'/user/'+this.user.id+'/activity/'+activityId+'/participants');
     }
 
 
@@ -154,47 +160,55 @@ export default class BackendService {
      * 移除活动成员
      */
     removeActivityParticipant (activityId,participantId) {
-        return http.fetchPost(backend_url+'/user/'+this.user.id+'/activity/'+activityId+'/participants/'+participantId+'/remove');
+        return http.fetchPost(this.backend_url+'/user/'+this.user.id+'/activity/'+activityId+'/participants/'+participantId+'/remove');
     }
 
     /**
      * 申请加入活动
      */
     applyAddActivity (activityId) {
-        return http.fetchPost(backend_url+'/user/'+this.user.id+'/activity/'+activityId+'/apply');
+        return http.fetchPost(this.backend_url+'/user/'+this.user.id+'/activity/'+activityId+'/apply');
     }
 
     /**
      * 申请退出活动
      */
     applyExitActivity (activityId) {
-        return http.fetchPost(backend_url+'/user/'+this.user.id+'/activity/'+activityId+'/exit');
+        return http.fetchPost(this.backend_url+'/user/'+this.user.id+'/activity/'+activityId+'/exit');
     }
 
     /**
      *  获得活动申请
      */
     getActivityAddApply (){
-        return http.fetchGet(backend_url+'/user/'+this.user.id+'/message/applicants');
+        return http.fetchGet(this.backend_url+'/user/'+this.user.id+'/message/applicants');
     }
 
     /**
      * 同意加入活动申请
      */
     approveAddActivityApply (activityId,participantId) {
-        return http.fetchPost(backend_url+'/user/'+this.user.id+'/activity/'+activityId+'/applicants/'+participantId+'/approve');
+        return http.fetchPost(this.backend_url+'/user/'+this.user.id+'/activity/'+activityId+'/applicants/'+participantId+'/approve');
     }
 
     /**
      * 拒绝加入活动请求
      */
     rejectAddActivityApply (activityId,participantId) {
-        return http.fetchPost(backend_url+'/user/'+this.user.id+'/activity/'+activityId+'/applicants/'+participantId+'/refuse');
+        return http.fetchPost(this.backend_url+'/user/'+this.user.id+'/activity/'+activityId+'/applicants/'+participantId+'/refuse');
     }
 
-    uploadToOSS(){
-        return http.doUpLoad()
+    uploadToOSS(data){
+        return http.doUpLoad(this.backend_url+"/upload/images",data)
     }
+
+    uploadSimpleToOSS(data){
+        return http.fetchPost(this.backend_url+"/upload/images",data)
+    }
+
+    uploadImageToOSS(data){  
+        return http.doUpLoadImage(this.backend_url+"/upload/images",data)
+    }  
 }
 
 export const timeChange= (datetime)=>{
