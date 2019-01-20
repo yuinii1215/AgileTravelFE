@@ -1,12 +1,14 @@
 <template>
     <Page actionBarHidden="true" >
+        <ScrollView class="main-body">
         <FlexboxLayout class="page">
             <StackLayout class="form">
                 <!-- <Label class="logo" >🐳</Label> -->
+
                 <Image class="logo" src="~/assets/images/logo.png"></Image>
                 <Label class="header" text="去玩吧"></Label>
-
                 <GridLayout rows="auto, auto, auto, auto">
+                    
                     <StackLayout row="0" class="input-field" v-show="!isLoggingIn" >
                         <TextField class="input" hint="昵称" :isEnabled="!processing"
                             autocorrect="false"
@@ -38,13 +40,15 @@
                     </StackLayout>
 
                     <ActivityIndicator rowSpan="4" :busy="processing"></ActivityIndicator>
+                    
                 </GridLayout>
-
                 <Button :text="isLoggingIn ? '登录' : '注册'" :isEnabled="!processing"
                     @tap="submit" class="btn btn-primary m-t-20"></Button>
                 <!-- <Label *v-show="isLoggingIn" text="Forgot your password?"
                     class="login-label" @tap="forgotPassword()"></Label> -->
+                
             </StackLayout>
+           
 
             <Label class="login-label sign-up-label" @tap="toggleForm">
                 <FormattedString>
@@ -53,6 +57,7 @@
                 </FormattedString>
             </Label>
         </FlexboxLayout>
+         </ScrollView>
     </Page>
 </template>
 
@@ -195,7 +200,7 @@
     .header {
         font-size: 25;
         font-weight: 600;
-        margin-bottom: 70;
+        margin-bottom: 50;
         text-align: center;
         color: #3d7def;
     }
