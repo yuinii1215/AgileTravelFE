@@ -71,10 +71,10 @@
                 isLoggingIn: true,
                 processing: false,
                 user: {
-                    username: "shaodong",
-                    email: "mf1832136@smail.nju.edu.cn",
-                    password: "123456",
-                    confirmPassword: "123456"
+                    username: "",
+                    email: "",
+                    password: "",
+                    confirmPassword: ""
                 }
             }
         },
@@ -83,9 +83,9 @@
                 this.isLoggingIn = !this.isLoggingIn;
             },
             submit() {
-                if (!this.user.username || !this.user.password) {
+                if (!this.user.email || !this.user.password) {
                     this.alert(
-                        "请输入用户名和密码"
+                        "请输入邮箱和密码"
                     );
                     return;
                 }
@@ -148,7 +148,7 @@
                     .catch(() => {
                         this.processing = false;
                         this.alert(
-                            "抱歉，创建账户失败"
+                            "抱歉，账户已存在"
                         );
                     });
             },
