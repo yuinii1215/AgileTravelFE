@@ -1,5 +1,6 @@
 <template>
     <Page actionBarHidden="true" >
+        <ScrollView>
         <FlexboxLayout class="page">
             <StackLayout class="form">
                 <!-- <Label class="logo" >🐳</Label> -->
@@ -53,6 +54,7 @@
                 </FormattedString>
             </Label>
         </FlexboxLayout>
+        </ScrollView>
     </Page>
 </template>
 
@@ -143,7 +145,7 @@
                     .catch(() => {
                         this.processing = false;
                         this.alert(
-                            "抱歉，创建账户是失败"
+                            "抱歉，创建账户失败"
                         );
                     });
             },
