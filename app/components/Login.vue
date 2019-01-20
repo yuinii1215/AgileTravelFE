@@ -80,9 +80,9 @@
                 this.isLoggingIn = !this.isLoggingIn;
             },
             submit() {
-                if (!this.user.username || !this.user.password) {
+                if (!this.user.email || !this.user.password) {
                     this.alert(
-                        "请输入用户名和密码"
+                        "请输入邮箱和密码"
                     );
                     return;
                 }
