@@ -1,13 +1,14 @@
 <template>
     <Page actionBarHidden="true" >
-        <ScrollView>
+        <ScrollView class="main-body">
         <FlexboxLayout class="page">
             <StackLayout class="form">
                 <!-- <Label class="logo" >🐳</Label> -->
+
                 <Image class="logo" src="~/assets/images/logo.png"></Image>
                 <Label class="header" text="去玩吧"></Label>
-
                 <GridLayout rows="auto, auto, auto, auto">
+                    
                     <StackLayout row="0" class="input-field" v-show="!isLoggingIn" >
                         <TextField class="input" hint="昵称" :isEnabled="!processing"
                             autocorrect="false"
@@ -39,13 +40,15 @@
                     </StackLayout>
 
                     <ActivityIndicator rowSpan="4" :busy="processing"></ActivityIndicator>
+                    
                 </GridLayout>
-
                 <Button :text="isLoggingIn ? '登录' : '注册'" :isEnabled="!processing"
                     @tap="submit" class="btn btn-primary m-t-20"></Button>
                 <!-- <Label *v-show="isLoggingIn" text="Forgot your password?"
                     class="login-label" @tap="forgotPassword()"></Label> -->
+                
             </StackLayout>
+           
 
             <Label class="login-label sign-up-label" @tap="toggleForm">
                 <FormattedString>
@@ -54,7 +57,7 @@
                 </FormattedString>
             </Label>
         </FlexboxLayout>
-        </ScrollView>
+         </ScrollView>
     </Page>
 </template>
 
@@ -68,10 +71,10 @@
                 isLoggingIn: true,
                 processing: false,
                 user: {
-                    username: "shaodong",
-                    email: "mf1832136@smail.nju.edu.cn",
-                    password: "123456",
-                    confirmPassword: "123456"
+                    username: "",
+                    email: "",
+                    password: "",
+                    confirmPassword: ""
                 }
             }
         },
@@ -80,9 +83,9 @@
                 this.isLoggingIn = !this.isLoggingIn;
             },
             submit() {
-                if (!this.user.username || !this.user.password) {
+                if (!this.user.email || !this.user.password) {
                     this.alert(
-                        "请输入用户名和密码"
+                        "请输入邮箱和密码"
                     );
                     return;
                 }
@@ -116,7 +119,7 @@
                     .catch((err) => {
                         this.processing = false;
                         this.alert(
-                            "很抱歉，并没有找到您的账号"
+                            "请检查您的邮箱和密码或等待您的邮箱验证通过"
                         );
                     });
             },
@@ -145,7 +148,7 @@
                     .catch(() => {
                         this.processing = false;
                         this.alert(
-                            "抱歉，创建账户失败"
+                            "抱歉，账户已存在"
                         );
                     });
             },
@@ -197,7 +200,7 @@
     .header {
         font-size: 25;
         font-weight: 600;
-        margin-bottom: 70;
+        margin-bottom: 50;
         text-align: center;
         color: #3d7def;
     }
