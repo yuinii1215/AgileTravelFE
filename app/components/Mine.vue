@@ -6,13 +6,13 @@
                         <Label col="0" row="0" text="我的" class="mine-title"/>
                     </GridLayout>
                     <GridLayout row="1" rows="auto,auto" columns="auto,*,auto" class="mine-info" width="100%">
-                        <Image row="0"  col="0"class="mine-profile" src="~/assets/images/me.jpg" 
+                        <Image row="0"  col="0"class="mine-profile" :src="user.avaUrl" 
                             horizontalAlignment="left" verticalAlignment="middle" stretch="aspectFill"  />
                         <StackLayout row="0" col="1" horizontalAlignment="left" verticalAlignment="middle" >
-                            <Label text="shaodong" class="mine-username"/>
+                            <Label :text="user.username" class="mine-username"/>
                             <StackLayout orientation="horizontal" class="mine-email">
                                 <Label class="fa email-icon" :text="'fa-envelope-o' | fonticon"/>
-                                <Label text="shaodong@edu.cn" />
+                                <Label :text="user.email" />
                             </StackLayout>
                         </StackLayout>
                         <StackLayout class="sign-out-btn" orientation="horizontal"  row="0" col="2" horizontalAlignment="right" verticalAlignment="middle" @tap="signOut">
@@ -42,19 +42,21 @@
 				    </GridLayout>
 
                     <GridLayout v-show="selectedTabview == 0" row="3" width="100%" backgroundColor="white">
+                        <Label v-if="createActivityList.length<=0" class="no-data mine-none" text="暂无活动，快快创建吧" width="100%"/>
                         <ScrollView >
-                            <StackLayout>
+                            <StackLayout  v-if="createActivityList.length>0">
                                 <GridLayout v-for="item in createActivityList" :key="item.id" 
                                                 rows="*" columns="*">
-                                    <item :item="item" @clicked="showItem(item)" @openShareDialogEvent="openShareDialog(item)"/>
+                                    <item :item="item" @clicked="showItem(item)" @modifyClick="modifyClick(item)" @openShareDialogEvent="openShareDialog(item)"/>
                                 </GridLayout>
                             </StackLayout>
 					    </ScrollView>
                     </GridLayout>
 
-                    <GridLayout v-show="selectedTabview == 1" row="3" width="100%" backgroundColor="white">		
+                    <GridLayout v-show="selectedTabview == 1" row="3" width="100%" backgroundColor="white">	
+                        <Label v-if="joinActivityList.length<=0" class="no-data mine-none" text="暂无活动，快快加入吧"/>
                         <ScrollView >
-                            <StackLayout>
+                            <StackLayout  v-if="joinActivityList.length>0">
                                 <GridLayout v-for="item in joinActivityList" :key="item.id" 
                                                 rows="*" columns="*">
                                     <item :item="item" @clicked="showItem(item)" @openShareDialogEvent="openShareDialog(item)"/>
@@ -94,88 +96,37 @@
         },
         data(){
             return{
+                user:{},
                 sharePayload:{},
                 shareDialogOpen:false,
                 selectedTab:2,
                 selectedTabview:0,
                 isActive: false, 
-                createActivityList:[
-                    {
-                    id:3000,
-                    title: "玄武公园一日游",
-                    startDateTime:"2019-01-10 10:00:00",
-                    endDateTime:"2019-01-10 20:00:00",
-                    address:"中国江苏省南京市玄武区玄武巷1号玄武湖公园",
-                    organizer:{
-                        id:3,
-                        username:"shaodong",
-                        email:"john@edu.cn",
-                        avaUrl:"~/assets/images/me.jpg"
-                    },
-                    cover:"~/assets/images/food/cake/cake1.jpg",
-                    comments:6,
-                    isMember:2,
-                    isPublic:false
-                    },
-			    {
-				id:4000,
-				title: "东南大学交流日交流日交流日交流日交流日交流日交流日交流日",
-				startDateTime:"2019-02-01 09:00:00",
-				endDateTime:"2019-02-01 20:30:00",
-				address:"中国江苏省南京市玄武区四牌楼2号",
-				organizer:{
-					id:3,
-					username:"shaodng",
-					email:"john@edu.cn",
-					avaUrl:"~/assets/images/me.jpg"
-				},
-				cover:"~/assets/images/food/pancake/pancake1.jpg",
-				comments:25,
-                isMember:2 ,
-                isPublic:true
-			}
-            ],
-            joinActivityList: [
-			    {
-				id:1000,
-				title: "湖滨轰趴",
-				startDateTime:"2019-01-01 20:00:00",
-				endDateTime:"2019-01-01 22:00:00",
-				address:"中国江苏省南京市栖霞区紫东路18-2-104号（原保利紫金山售楼处）",
-				organizer:{
-					id:1,
-					username:"王思爱",
-					email:"john@edu.cn",
-					avaUrl:"~/assets/images/johndoe.jpg"
-				},
-				cover:"~/assets/images/food/burger/burger1.jpg",
-				comments:10,
-                isMember:1, //isMember 0是申请中，1是已加入（参与者），2是已加入（创建者），3是非成员
-                isPublic:true
-			},
-			{
-				id:2000,
-				title:"上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游上海两日游",
-				startDateTime:"2019-01-19 08:00:00",
-				endDateTime:"2019-01-21 20:00:00",
-				address:"中国上海",
-				organizer:{
-					id:2,
-					username:"张鑫",
-					email:"john@edu.cn",
-					avaUrl:"~/assets/images/johndoe.jpg"
-				},
-				cover:"~/assets/images/food/nju/nju1.png",
-				comments:9,
-                isMember: 1,
-                isPublic:false
-			}
-			],  
+                createActivityList:[],
+                joinActivityList: [],  
             }
         },
         mounted(){
-            //请求：通过userID获得用户创建活动列表
-            //请求：通过userID获得用户参与活动列表
+            //获得个人信息
+            this.user = this.$backendService.getUser();
+            this.$nextTick(()=> {
+                //请求：通过userID获得用户创建活动列表
+                this.$backendService
+                    .getMyCreateActivityList()
+                    .then(res => {
+                        this.createActivityList = res
+                    })
+                    .catch(err => {
+                    })
+                //请求：通过userID获得用户参与活动列表
+                this.$backendService
+                    .getMyJoinActivityList()
+                    .then(res => {
+                        this.joinActivityList = res
+                    })
+                    .catch(err => {
+                    })
+            })
         },
         methods: {
             signOut(){
@@ -188,7 +139,8 @@
             onButtonTap() {
                 this.$navigateTo(ActivityCreate,{
                     props: {
-                        state:0
+                        state:0,
+                        from:3
                     },
                     animated: true,
                     transition: {
@@ -225,7 +177,8 @@
                 this.sharePayload = payload
                 this.$navigateTo(ItemDetails,{
                     props: {
-                        item: payload
+                        activityId: payload.id,
+                        from: 1
                     },
                     animated: true,
                     transition: {
@@ -235,6 +188,21 @@
                     }
                 })
             },
+            modifyClick(payload){
+			this.$navigateTo(ActivityCreate,{
+                    props: {
+                        state:1,
+                        item:payload,
+                        from:3
+                    },
+                    animated: true,
+                    transition: {
+                        name: "slideTop",
+                        duration: 380,
+                        curve: "easeIn"
+                    }
+			    })
+		    },
 
         }
     }
@@ -290,6 +258,10 @@
     .sign-out-btn{
         margin-right:10;
         font-size:16;
+    }
+    .mine-none{
+        margin-top:10;
+        text-align: center;
     }
 </style>
 

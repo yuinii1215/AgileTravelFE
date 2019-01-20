@@ -67,7 +67,7 @@
                 processing: false,
                 user: {
                     username: "shaodong",
-                    email: "sc89703312@qq.com",
+                    email: "mf1832136@smail.nju.edu.cn",
                     password: "123456",
                     confirmPassword: "123456"
                 }
@@ -125,30 +125,25 @@
                     this.processing = false;
                     return;
                 }
-
-
-                var user={
+                var user= {
                     "email": this.user.email,
                     "password": this.user.password,
                     "username": this.user.username,
                     "avatarUrl":""
                 }
 
-                console.log(JSON.stringify(user))
-
                 this.$backendService
                     .register(user)
-                    .then((res) => {
+                    .then(() => {
                         this.processing = false;
                         this.alert(
                             "您的账户已创建成功，可尝试登录");
                         this.isLoggingIn = true;
                     })
-                    .catch((err) => {
-                        console.log(JSON.stringify(err))
+                    .catch(() => {
                         this.processing = false;
                         this.alert(
-                            "抱歉，账户创建失败"
+                            "抱歉，创建账户失败"
                         );
                     });
             },
