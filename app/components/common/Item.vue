@@ -4,10 +4,10 @@
 
             <Image stretch="aspectFill" class="card-img" @tap="onClickButton()"
                 :src="item.cover" />
-            <basic-info-block hasMore=0 showMore=1 :item="item"/>
+            <basic-info-block hasMore=0 showMore=1 :activityId="item.id"/>
             <StackLayout width="100%" marginTop="5" class="line lineBasic" />
 
-            <ItemLike :item="item" @openShareDialogEvent="openShareDialogEvent"></ItemLike>
+            <ItemLike :item="item" @openShareDialogEvent="openShareDialogEvent" @modifyClick="modifyClick(item)"></ItemLike>
         </StackLayout>
 
         <StackLayout width="100%" class="lineBreak lineBasic" />
@@ -121,6 +121,9 @@
             },
             onClickButton() {
                 this.$emit("clicked", this.item);
+            },
+            modifyClick(){
+                this.$emit("modifyClick", this.item);
             }
         }
         

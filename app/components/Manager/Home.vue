@@ -35,7 +35,7 @@
         },
         methods: {
             logout(){
-                this.$backendService.logout();
+                // this.$backendService.logout();
                 this.$navigateTo(Login, {
                     clearHistory: true
                 });

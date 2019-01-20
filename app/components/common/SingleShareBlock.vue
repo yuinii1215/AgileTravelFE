@@ -8,10 +8,10 @@
                 horizontalAlignment="center"  verticalAlignment="bottom" textWrap="true" />
         </GridLayout>
         <GridLayout row="0" col="1" rows="*,auto,auto" columns="auto" width="100%" verticalAlignment="middle" horizontalAlignment="left">
-            <TextView row="0" v-if="shareInfo.contents.text" width="100%" editable="false" class="shareInfo-text" 
-                                   :text="shareInfo.contents.text" />
-            <GridLayout row="1" rows="auto" columns="auto,*" width="100%" height="100%" class="shareInfo-info" @tap="toItemDetail">
-                <Image row="0" col="0" class="shareInfo-image"  :src="shareInfo.activity.cover" stretch="aspectFill" />
+            <TextView row="0" v-if="shareInfo.contents" width="100%" editable="false" class="shareInfo-text" 
+                                   :text="shareInfo.contents" />
+            <GridLayout row="1" rows="auto" columns="auto,*" width="100%" height="100%" class="shareInfo-info" @tap="toItemDetail()">
+                <Image row="0" col="0" class="shareInfo-image"  :src="shareInfo.activity.cover" stretch="aspectFill"  />
                 <TextView row="0" col="1" editable="false" class="shareInfo-title" textWrap="true" :text="shareInfo.activity.title" verticalAlignment="middle" horizontalAlignment="left"/>
             </GridLayout>
             <GridLayout row="2" rows="auto" columns="auto,*" width="100%" class="bottom-wrap">
@@ -30,7 +30,7 @@
 </template>
 <script>
 import { isIOS, isAndroid } from "tns-core-modules/platform";
-import ItemDetails from "./ItemDetails";
+
 export default {
     props:["shareInfo"],
     data(){
@@ -77,25 +77,24 @@ export default {
         toggleLike(){
             this.animateLike();
             this.shareInfo.isLike = !this.shareInfo.isLike
-            if(this.shareInfo.isLike)
+            if(this.shareInfo.isLike){
                 this.shareInfo.likeNum += 1;
-            else 
+                this.$backendService
+                    .likeActivity(this.shareInfo.activity.id)
+                    .then(res => {console.log(res)})
+                    .catch(err=>{console.log(err)})
+            }
+            else {
                 this.shareInfo.likeNum -= 1;
+                this.$backendService
+                    .likeActivity(this.shareInfo.activity.id)
+                    .then(res => {console.log(res)})
+                    .catch(err=>{console.log(err)})
+            }
                 
         },
         toItemDetail(){
-            // 请求通过ID获得基本信息 this.shareInfo.activity.id
-            this.$navigateTo(ItemDetails,{
-				props: {
-                    item:{}
-				},
-				animated: true,
-				transition: {
-					name: "slideTop",
-					duration: 380,
-					curve: "easeIn"
-				}
-			})
+            this.$emit("clicked", this.shareInfo);
         }
     }
 }

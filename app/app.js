@@ -26,7 +26,7 @@ Vue.filter('fonticon', fonticon);
 new Vue({
     template: `
         <Frame>
-            <Home />
+           
         </Frame>`,
     store,
     routes,

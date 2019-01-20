@@ -10,10 +10,10 @@
         </GridLayout>
         
         <GridLayout :class="selectedTab==1?'active':''" @tap="info" rows="auto,auto"
-            cols="auto" class="nav" col="1" row="0" width="33%">
-            <Label :class="selectedTab==1?'active':''" row="0" class="fa navBottomIcon"
-                :text="'fa-comments-o' | fonticon"/>
-            <Label row="1" :class="selectedTab==1?'active':''"  text="消息" class="navText"></Label>
+            cols="auto" class="nav" col="1" row="0" width="33%" >
+            <Label :class="selectedTab==1?'active':''" row="0" class="fa navBottomIcon" 
+                :text="'fa-comments-o' | fonticon" />
+            <Label row="1" :class="selectedTab==1?'active':''"  text="指南&消息" class="navText"></Label>
         </GridLayout>
 
         <GridLayout :class="selectedTab==2?'active':''" @tap="me" rows="auto,auto"
@@ -65,7 +65,7 @@
     }
 
     .nav.active {
-        background-color: #0Dc43776;
+        /* background-color: #0Dc43776; */
         
     }
     .navBottomIcon {

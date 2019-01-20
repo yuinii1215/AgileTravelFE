@@ -13,33 +13,36 @@
                         <StackLayout class="activity-create-body" marginTop="10" marginBottom="10">
                             <GridLayout rows="auto,auto" columns="*"  class="activity-attribute" >
                                 <Label row="0" text="活动标题" horizontalAlignment="left" class="activity-attribute-title"/>
-                                <TextView row="1" v-model="activity.name" hint="请输入活动标题..." class="input activity-attribute-content" />
+                                <TextView row="1" v-model="activity.title" hint="请输入活动标题..." class="input activity-attribute-content" />
                             </GridLayout>
                             <GridLayout rows="auto,auto" columns="*" class="activity-attribute" >
                                 <Label row="0" text="活动描述" horizontalAlignment="left"  class="activity-attribute-title"/>
                                 <TextView row="1" v-model="activity.description" hint="请输入活动描述信息..." class="input activity-attribute-content description-area" />
                             </GridLayout>
                             <GridLayout rows="auto,auto" columns="*" class="activity-attribute">
-                                <Label row="0" text="活动图片" horizontalAlignment="left" class="activity-attribute-title"/>
-                                <GridLayout row="1" rows="*, auto" class="activity-attribute-content images-area">
+                                <StackLayout  row="0"  orientation="horizontal">
+                                    <Label text="活动图片" horizontalAlignment="left" class="activity-attribute-title"/>
+                                    <Label text="最多上传9张" horizontalAlignment="left"   verticalAlignment="bottom"  class="no-data"/>
+                                </StackLayout>
+                                 <GridLayout row="1" rows="*, auto" class="activity-attribute-content images-area">
                                     <WrapLayout row="0"  columns="auto" height="100%" class="images-show" >
-                                        <GridLayout v-for="item in activity.imageUrls" :key="item.id"  width="30%"
+                                        <GridLayout v-for="item in imagesShow" :key="item.id"  width="30%"
                                                 rows="auto" columns="auto" class="image-item" horizontalAlignment="center">
                                             <Image class="image-pic" :src="item" stretch="aspectFill" horizontalAlignment="center"/>
                                         </GridLayout>
                                     </WrapLayout>
-                                    <Button class="btn btn-primary date-btn" row="1" text="请选择相关图片上传..." @tap="onSelectMultipleTap" horizontalAlignment="left" />
+                                    <Button class="btn btn-primary date-btn" row="1" :text="uploadState?'图片上传中...':'请选择评论图片并上传...'" @tap="onSelectMultipleTap" horizontalAlignment="left" />
                                 </GridLayout>
                             </GridLayout>
                             <GridLayout rows="auto,auto" columns="*"  class="activity-attribute">
                                 <Label row="0" text="举办地址" horizontalAlignment="left" class="activity-attribute-title"/>
-                                <TextView row="1" v-model="activity.location" hint="请填写实际有效地址，如：中国江苏省南京市玄武区玄武巷1号玄武湖公园" class="input  activity-attribute-content address-area" />
+                                <TextView row="1" v-model="activity.address" hint="请填写实际有效地址，如：中国江苏省南京市玄武区玄武巷1号玄武湖公园" class="input  activity-attribute-content address-area" />
                             </GridLayout>
                             <GridLayout rows="auto,auto" columns="*"  class="activity-attribute">
                                 <Label row="0" text="是否公开" horizontalAlignment="left" class="activity-attribute-title"/>
                                 <StackLayout  orientation="horizontal"  row="1" class="activity-attribute-content ispublic-area">
                                     <Label text="公开" horizontalAlignment="right" class="switch-label"/>
-                                    <Switch v-model="activity.isPublic" />
+                                    <Switch v-model="activity.public" />
                                     <Label text="私有" horizontalAlignment="left"  class="switch-label"/>
                                 </StackLayout>
                             </GridLayout>
@@ -60,7 +63,8 @@
 
                             <GridLayout v-if="state==1" rows="auto,auto" columns="*" class="activity-attribute">
                                 <Label row="0" text="活动成员" horizontalAlignment="left" class="activity-attribute-title"/>
-                                <GridLayout row="1" rows="*, auto" class="activity-attribute-content">
+                                <GridLayout row="1" rows="*, auto" class="activity-attribute-content">  
+                                    <Label v-if="participantsSize<=0" class="no-data no-participant" text="暂无成员" textWrap="true" />
                                     <ScrollView class="participant-list-scroll" :height="participantsSize>5?200:''">
                                         <StackLayout>
                                             <WrapLayout v-for="participant in participants" :key="participant.id"
@@ -94,7 +98,13 @@
 
 <script>
  import Mine from "../Mine";
+ import Info from "../Info";
+ import Home from "../Home";
+ import ItemDetails from "./ItemDetails";
  import * as imagepicker from "nativescript-imagepicker";
+ const bgHttp = require("nativescript-background-http");
+ const fs = require("file-system");
+ import { isIOS, isAndroid } from "tns-core-modules/platform";
 
 const startModalPicker = require("nativescript-modal-datetimepicker")
   .ModalDatetimepicker;
@@ -110,56 +120,23 @@ export default {
             type:Number,
             default:0//0表示创建 1表示修改
         },
-        item:Object
-    },
-    mounted(){
-        if(this.state==1){
-            this.activity = this.item
-            // 请求：通过id获得活动成员信息
-            this.participantsSize = this.participants.length
-        }
+        item:Object,
+        from:Number
     },
     data(){
         return{
             activity:{
                 title:"",
                 description:"",
-                imageUrls:[],
-                location:"",
-                startTime:"",
-                endTime:"",
-                isPublic:true
+                images:[],
+                address:"",
+                startDateTime:"",
+                endDateTime:"",
+                public:true
             },
-            participants: [
-                {
-                    "id": 7,
-                    "username": "echosheng",
-                    "email": "2271642660@qq.com",
-                    "avaUrl": "img_url",
-                    "weChat": ""
-                },
-                {
-                    "id": 2,
-                    "username": "sccc",
-                    "email": "141250107@smail.nju.edu.cn",
-                    "avaUrl": "1",
-                    "weChat": null
-                },
-                {
-                    "id": 3,
-                    "username": "test",
-                    "email": "test@edu.cn",
-                    "avaUrl": "1",
-                    "weChat": null
-                },
-                {
-                    "id": 9,
-                    "username": "echosheng",
-                    "email": "sc89703312@qq.com",
-                    "avaUrl": "img_url",
-                    "weChat": ""
-                }
-            ],
+            uploadState:false,
+            imagesShow:[],
+            participants: [],
             participantsSize:0,
             isSingleMode:false,
             previewSize: 300,
@@ -170,32 +147,140 @@ export default {
             selectedEndDate:"",
             selectedEndTime:"",
             startDate:"",
-            startTime:""
+            startTime:"",
+            uploadImageLen:0,
+            imageCount:0,
+            session: bgHttp.session("image-upload"),
         }   
     },
+    mounted(){
+        if(this.state==1){
+            //请求：通过id获得活动详细信息
+            this.$nextTick(()=> {
+             this.$backendService
+                    .getActivityDetailInfo(this.item.id)
+                    .then(res => {
+                        this.activity = res;
+                        this.imagesShow = this.activity.images;
+                        this.participants = this.activity.participants;
+                        this.participantsSize = this.participants.length;
+                      
+                        if(this.activity.startDateTime&&this.activity.startDateTime.split(" ").length>1){
+                            this.selectedStartDate = this.activity.startDateTime.split(" ")[0]
+                            this.selectedStartTime = this.activity.startDateTime.split(" ")[1]
+                        }
+                        if(this.activity.endDateTime&&this.activity.endDateTime.split(" ").length>1){
+                            this.selectedEndDate = this.activity.endDateTime.split(" ")[0]
+                            this.selectedEndTime = this.activity.endDateTime.split(" ")[1]
+                        }
+                    })
+                    .catch(err=>{
+                        console.log(res)
+                    })
+            })
+        }
+    },
     methods:{
+        getBack(){
+            console.log(this.from)
+            if(this.from ==0) this.getDetailInfo();
+            if(this.from ==1) this.gotoHomePage();
+            if(this.from ==2) this.gotoInfoPage();
+            if(this.from ==3) this.gotoMinePage();
+            //0:详细信息页面，1:Home页面，2:Info页面，3：Mine页面
+        },
         close() {
-            this.$navigateBack();
+            // this.$navigateBack();
+            this.getBack()
         },
         submitActivity(){
-            console.log(this.activity.name)
+             if(this.uploadState){
+                 this.alert("请等待图片上传结束！")
+                 return;
+            }
+            console.log(this.activity.title)
             console.log(this.activity.description)
-            console.log(this.activity.location)
-            console.log(this.activity.startTime)
-            console.log(this.activity.endTime)
-            console.log(this.activity.isPublic)
-            console.log(JSON.stringify(this.activity.imageUrls))
+            console.log(this.activity.address)
+            console.log(this.activity.startDateTime)
+            console.log(this.activity.endDateTime)
+            console.log(this.activity.public)
+            console.log(JSON.stringify(this.activity.images))
 
+            var info ={
+                "name": this.activity.title,
+                "description":  this.activity.description,
+                "location": this.activity.address,
+                "startTime": this.activity.startDateTime,
+                "endTime": this.activity.endDateTime,
+                "imageUrls":this.activity.images,
+                "isPublic": this.activity.public,
+            }
+        
             //请求：新建活动
-            this.$navigateTo(Mine)
+            if(this.state==0){
+                this.$backendService
+                    .createActivity(info)
+                    .then(res => {
+                        this.$navigateTo(Mine)
+                        this.alert("创建成功！")
+                        
+                    })
+                    .catch(err=>{
+                        this.alert("创建失败！")
+                    })
+            }
+            //请求：修改活动
+            if(this.state==1){
+                this.$backendService
+                    .modifyActivity(this.item.id,info)
+                    .then(res => {
+                        this.getBack();
+                        this.alert("编辑成功！");
+                        // this.$navigateBack();
+                        
+                    })
+                    .catch(err=>{
+                        this.alert("编辑失败！")
+                    })
+            }
+                
 
         },
         removeParticipant(userId){
-            console.log(userId)
+            //请求：删除成员
+            this.$backendService
+                    .removeActivityParticipant(this.item.id,userId)
+                    .then(res => {
+                        this.alert("移除成功！")
+                        //刷新列表
+                        this.getParticipant()
+                    })
+                    .catch(err=>{
+                        this.alert("移除失败！")
+                    })
+            
         },
+        getParticipant(){
+            this.$backendService
+                    .getActivityParticipants(this.item.id)
+                    .then(res => {
+                        this.participants = res;
+                         this.participantsSize = this.participants.length;
+                    })
+                    .catch(err=>{
+                    })
+        },
+        alert(message) {
+                return alert({
+                    title: "提示",
+                    okButtonText: "好的",
+                    message: message
+                });
+            },
         onSelectMultipleTap(){
             let context = imagepicker.create({
-                    mode: "multiple"
+                    mode: "multiple",
+                    maximumNumberOfSelection:9
             });
             this.startSelection(context);
         },
@@ -203,17 +288,26 @@ export default {
             context
                 .authorize()
                     .then(() => {
-                        this.activity.imageUrls = [];
+                        this.activity.images = [];
+                        this.imagesShow =[]
+                        this.imageCount = 0;
                         return context.present();
                     })
                     .then((selection) => {
-                        // console.log("Selection done: " + JSON.stringify(selection));
-                        // set the images to be loaded from the assets with optimal sizes (optimize memory usage)
-                        selection.forEach(element => {
-                            element.options.width = this.isSingleMode ? this.previewSize : this.thumbSize;
-                            element.options.height = this.isSingleMode ? this.previewSize : this.thumbSize;
-                        });
-                        this.activity.imageUrls = selection;
+                        let imageAsset = null;
+                        this.uploadImageLen = selection.length;
+                        if(selection.length > 0){
+                           selection.forEach(selected_item => {
+                                this.uploadState = true;
+                                this.getImageFilePath(selected_item).then(path => {
+                                    this.uploadImage(path);
+                                });
+                                selected_item.options.width = this.isSingleMode ? this.previewSize : this.thumbSize;
+                                selected_item.options.height = this.isSingleMode ? this.previewSize : this.thumbSize;
+                            });
+                        }else
+                            this.uploadState = false;
+                        this.imagesShow = selection;
                     }).catch(function (e) {
                         console.log(e);
                     });
@@ -278,7 +372,7 @@ export default {
                 });
         },
         selectEndDate(){
-            if(!this.activity.startTime){
+            if(!this.activity.startDateTime){
                 alert({
                     title: "提示",
                     message: "请先选定活动开始时间",
@@ -376,8 +470,8 @@ export default {
                 this.selectedStartTime = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds(); 
                 this.startTime = new Date() 
             }
-            this.activity.startTime= this.selectedStartDate +" "+this.selectedStartTime;
-            // console.log(this.activity.startTime)
+            this.activity.startDateTime= this.selectedStartDate +" "+this.selectedStartTime;
+            // console.log(this.activity.startDateTime)
         },
         getEndDateTime(){
             if(!this.selectedEndDate){
@@ -387,9 +481,131 @@ export default {
             if(!this.selectedEndTime){
                 this.selectedEndTime = this.startTime.getHours() + ':' + this.startTime.getMinutes()+ ':' +  (this.startTime.getSeconds()+1);  
             }
-            this.activity.endTime= this.selectedEndDate +" "+this.selectedEndTime;
-            // console.log(this.activity.endTime)
-        }
+            this.activity.endDateTime= this.selectedEndDate +" "+this.selectedEndTime;
+            // console.log(this.activity.endDateTime)
+        },
+        getDetailInfo(){
+                // 请求：通过id获得详细信息
+                this.$backendService
+                    .getActivityDetailInfo(this.item.id)
+                    .then(res => {
+                        this.gotoDetailPage(res)
+                    })
+                    .catch(err=>{
+                        console.log(err)
+                        // this.$navigateBack();
+                    })
+        },
+        gotoDetailPage(payload){
+            this.$navigateTo(ItemDetails,{
+                props: {
+                    activityId: payload.id,
+                    from: 3
+				},
+				animated: true,
+				transition: {
+					name: "slideTop",
+					duration: 380,
+					curve: "easeIn"
+				}
+			})
+        },
+        gotoHomePage(){
+            this.$navigateTo(Home);
+        },
+        gotoInfoPage(){
+            this.$navigateTo(Info);
+        },
+        gotoMinePage(){
+            this.$navigateTo(Mine);
+        },
+        uploadImage(path) {
+             this.uploadState = true;
+                let file = fs.File.fromPath(path);
+              
+                this.currentFileNameBeingUploaded = file.path.substr(
+                    file.path.lastIndexOf("/") + 1
+                );
+                let request = this.createNewRequest();
+                request.description = "uploading image " + file.path;
+                request.headers["File-Name"] = this.currentFileNameBeingUploaded;
+                
+                var params = [{
+                        name: "test",
+                        value: "value"
+                    },
+                    {
+                        name: "fileToUpload",
+                        filename:file.path,
+                        mimeType: "image/jpeg"
+                    }
+                ];
+                var task = this.session.multipartUpload(params, request);
+                task.on("responded",this.logEvent); 
+        },
+        createNewRequest(data) {
+                let request = {
+                    url: this.$backendService.getBackEndUrl()+"/upload/images",
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/octet-stream"
+                    },
+                    description: "uploading file...",
+                    androidAutoDeleteAfterUpload: false,
+                    androidNotificationTitle: "NativeScript HTTP background"
+                };
+                return request;
+            },
+            getImageFilePath(imageAsset) {
+                return new Promise(resolve => {
+                    if (isIOS) {
+                        const options = PHImageRequestOptions.new();
+                        options.synchronous = true;
+                        options.version =
+                            PHImageRequestOptionsVersion.Current;
+                        options.deliveryMode =
+                            PHImageRequestOptionsDeliveryMode.HighQualityFormat;
+
+                        PHImageManager.defaultManager().requestImageDataForAssetOptionsResultHandler(
+                            imageAsset.ios,
+                            options,
+                            nsData => {
+                                // create file from image asset and return its path
+                                const tempFolderPath = fs.knownFolders
+                                    .temp()
+                                    .getFolder("nsimagepicker").path;
+                                const tempFilePath = fs.path.join(
+                                    tempFolderPath,
+                                    Date.now() + ".jpg"
+                                );
+
+                                nsData.writeToFileAtomically(
+                                    tempFilePath, true);
+                                resolve(tempFilePath);
+                            }
+                        );
+                    } else {
+                        // return imageAsset.android, since it 's the path of the file
+                        resolve(imageAsset.android);
+                    }
+                });
+            },
+            logEvent(e) {
+                this.imageCount+=1;
+                if(this.imageCount==this.uploadImageLen){
+                    this.uploadState = false;
+                }
+                console.log(JSON.stringify(e))
+                if(e.responseCode==200){
+                    // this.alert("第"+this.imageCount+"张图片上传成功！")
+                    console.log(e.data)
+                    this.activity.images.push('http://'+e.data)
+                }else{
+                    // this.alert("第"+this.imageCount+"张图片上传失败！")
+
+                }
+                
+            }
     }
 }
 </script>
@@ -484,5 +700,12 @@ export default {
     .participant-name-block{
         height:100%;
         vertical-align: middle;
+    }
+    .no-participant{
+        color:#999999;
+        font-size:16;
+        font-weight: 400;
+        margin-left:20;
+        margin-top:15;
     }
 </style>

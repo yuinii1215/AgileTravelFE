@@ -1,52 +1,105 @@
 <template>
-    <GridLayout width="100%" columns="*,auto" rows="auto,auto,auto,auto"
+    <GridLayout width="100%" columns="*,auto" rows="auto,auto,auto,auto,auto,auto"
                 verticalAlignment="center">
-                <GridLayout row="0" col="0" columns="auto,*" >
+                <GridLayout row="0" col="0" columns="auto,auto,*" >
                     <Label col="0" class="item-open-status" textwrap="true" 
-                    :text="item.isPublic?'公开':'私有'" :class="[item.isPublic?'ispublic-true':'ispublic-false']"/>
-                    <Label col="1" class="item-title" textwrap="true" 
-                        :text="item.title" @tap="showCompleteTitle()"/>
+                    :text="stateLabel" :class="{'state-unstart': state==0, 'state-going': state==1,'state-finish':state==2}"/>
+                    <Label col="1" class="item-open-status" textwrap="true" 
+                    :text="detailInfo.public?'公开':'私有'" :class="[detailInfo.public?'ispublic-true':'ispublic-false']"/>
+                    <Label col="2" class="item-title" textwrap="true" 
+                        :text="detailInfo.title" @tap="showCompleteTitle()"/>
                 </GridLayout>
                 <Label v-if="hasMore==1" row="0" col="1" class="fa show-more-btn" verticalAlignment="top" horizontalAlignment="right"
                         :text="'fa-list-ul' | fonticon" @tap="changeShowState()"/>
                 <TextView  row="1" col="0" v-if="hasMore==1&&showMore==1&&detailInfo" editable="false" 
                         class="item-block item-desc" :class="[hasMore==1?'anim-more':'']"
-                        textWrap="true" :text="detailInfo.descriptions.text" />
+                        textWrap="true" :text="detailInfo.description" />
                 <GridLayout row="2" col="0" width="100%" columns="auto,auto" rows="auto,auto" 
                     v-if="showMore==1" class="item-block" :class="[hasMore==1?'anim-more':'']"
                     verticalAlignment="top" horizontalAlignment="left">
                     <Label row="0" col="0"  textwrap="true" 
                             text="开始时间:" />
                     <Label row="0" col="1"  textwrap="true" 
-                            :text="item.startDateTime" />
+                            :text="detailInfo.startDateTime" />
                     <Label row="1" col="0"  textwrap="true" 
                             text="结束时间:" />
                     <Label row="1" col="1"  textwrap="true" 
-                            :text="item.endDateTime" />
+                            :text="detailInfo.endDateTime" />
                 </GridLayout>
-                <GridLayout row="3" col="0" rows="auto" columns="auto,*" v-if="showMore==1" :class="[hasMore==1?'anim-more':'']">
+                <GridLayout v-if="detailInfo.isMember==2&&inviteCode&&showMore==1" row="3" col="0" rows="auto"  class="item-block" :class="[hasMore==1?'anim-more':'']" columns="*" verticalAlignment="bottom"  @tap="showCompleteInviteCode()">
+                    <Label col="0" row="0" class="layout" :text="'邀  请  码:'+inviteCode"/>
+                </GridLayout>
+                <GridLayout v-if="detailInfo.isMember==2&&showMore==1" row="4" col="0" rows="auto"  class="item-block" :class="[hasMore==1?'anim-more':'']" columns="auto,auto,auto" verticalAlignment="bottom">
+                    <Button col="1" row="0" class="layout generate-code-btn" text="重新生成邀请码" verticalAlignment="bottom"  @tap="generateInviteCode()"/>
+                </GridLayout>
+                <GridLayout :row="detailInfo.isMember==2?5:4" col="0" rows="auto" columns="auto,*" v-if="showMore==1" :class="[hasMore==1?'anim-more':'']">
                     <Label row="0" col="0" class="fa location-icon" verticalAlignment="top" horizontalAlignment="left"
                         :text="'fa-location-arrow' | fonticon" @tap="goAddress()"/>
                     <Label row="0" col="1" class="item-address" textwrap="true"
-                        :text="item.address" :title="item.address" @tap="showCompleteAddress()"/>
+                        :text="detailInfo.address" :title="detailInfo.address" @tap="showCompleteAddress()"/>
                 </GridLayout>
         </GridLayout>
 </template>
 
 <script>
 var LocateAddress = require("nativescript-locate-address").LocateAddress;
+import Enum from '../../constants/enum'
+import {getState} from '../../constants/index'
+
 export default {
     props: {
-        "item":Object,
-        "detailInfo":Object,
+        "activityId":String,
         "hasMore":Number,
         "showMore":Number,
     },
+    data(){
+        return{
+            inviteCode:"",
+            state:0,
+            stateLabel:"",
+            detailInfo:{}
+        }
+    },
     mounted(){
-         this.locateAddress = new LocateAddress();
-        
+        this.locateAddress = new LocateAddress();
+        this.$nextTick(()=> {
+            this.getInviteCode();
+            this.getDetailInfo();
+        })
     },
     methods:{
+        getDetailInfo(){
+            // 请求：通过id获得详细信息
+                this.$backendService
+                    .getActivityDetailInfo(this.activityId)
+                    .then(res => {
+                        this.detailInfo = res;
+                        this.state = getState(this.detailInfo.startDateTime,this.detailInfo.endDateTime);
+                        this.stateLabel = Enum.activityState[this.state]
+                    })
+                    .catch(err=>{
+                        console.log(err)
+                        // this.$navigateBack();
+                    })
+        },
+        getInviteCode(){
+            //请求：获得inviteCode
+         this.$backendService
+                .getInviteCode(this.activityId)
+                .then(res => {
+                    this.inviteCode = res
+                })
+                .catch(err=>{this.generateInviteCode()})
+        },
+        generateInviteCode(){
+                //请求：重新请求InviteCode更新之
+                this.$backendService
+                    .generateInviteCode(this.activityId)
+                    .then(res => {
+                        this.inviteCode = res
+                    })
+                    .catch(err=>{})
+        },
         changeShowState(){
             if(this.showMore==0)
                 this.showMore = 1
@@ -55,17 +108,26 @@ export default {
         },
         goAddress(){
             this.locateAddress.locate({
-                address: this.item.address,
+                address: this.detailInfo.address,
             }).then(() => {
-                console.log(`Address: ${this.item.address} locateAddress launched!`);
+                console.log(`Address: ${this.detailInfo.address} locateAddress launched!`);
             }, (err) => {
                 alert(err);
+            });
+        },
+        showCompleteInviteCode(){
+            alert({
+                title: "邀请码",
+                message: this.inviteCode,
+                okButtonText: "好的"
+            }).then(() => {
+                console.log("Alert dialog closed");
             });
         },
         showCompleteTitle(){
             alert({
                 title: "活动主题",
-                message: this.item.title,
+                message: this.detailInfo.title,
                 okButtonText: "好的"
             }).then(() => {
                 console.log("Alert dialog closed");
@@ -74,12 +136,12 @@ export default {
         showCompleteAddress(){
             alert({
                 title: "活动地点",
-                message: this.item.address,
+                message: this.detailInfo.address,
                 okButtonText: "好的"
             }).then(() => {
                 console.log("Alert dialog closed");
             });
-        }
+        },
     }
 }
 </script>
@@ -137,19 +199,12 @@ export default {
         }
     }
 
-    .item-open-status{
-        width:40;
-        text-align:center;
+  
+
+    .generate-code-btn{
+        background-color:transparent;
+        border-color:#3e9edb;
+        border-width:0.5;
         padding:2 5 2 5;
-        color:#000;
-        font-size:13;
-        margin-right:5;
-        border-radius: 2;
-    }
-    .ispublic-true{
-        background-color:rgb(143, 205, 255);
-    }
-    .ispublic-false{
-        background-color:rgb(255, 191, 138);
     }
 </style>
