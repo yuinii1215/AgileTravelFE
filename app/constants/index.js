@@ -10,6 +10,66 @@ export default class BackendService {
     constructor() {
         this.user = {}
         this.backend_url = "http://118.25.105.127:8080";
+    //     this.items = [{
+    //         "id": 1,
+    //         "title": "上海二日游",
+    //         "description": "1.请大家在出发日在南京大学广州路校门口集合\n2.统一住宿\n3.大家注意安全，自己物品自行保管\n4.如有其他疑问，可在评论区提出",
+    //         "address": "中国上海",
+    //         "startDateTime": "2019-02-01 08:00:00",
+    //         "endDateTime": "2019-02-03 22:00:00",
+    //         "cover": "http://agile-travel.oss-cn-shanghai.aliyuncs.com/images/15478837257331547883725024.jpg",
+    //         "comments": 37,
+    //         "isMember": 2,
+    //         "organizer": {
+    //             "id": 1,
+    //             "username": "echo",
+    //             "email": "mf1832136@smail.nju.edu.cn",
+    //             "avaUrl": "https://agile-travel.oss-cn-shanghai.aliyuncs.com/avatar/IMG_2273.JPG",
+    //             "weChat": ""
+    //         },
+    //         "public": true
+    //     },
+    //     {
+    //         "id": 2,
+    //         "title": "南京博物院观光",
+    //         "description": "1.请大家在出发日在南京大学广州路校门口集合\n2.自行前往的同学课通过地铁2号线到达明故宫站 (1号口)，在那里回合\n3.大家注意安全，自己物品自行保管\n4.如有其他疑问，可在评论区提出",
+    //         "address": "中国江苏省南京市玄武区中山东路321号",
+    //         "startDateTime": "2019-01-19 10:00:00",
+    //         "endDateTime": "2019-01-19 22:00:00",
+    //         "cover": "http://agile-travel.oss-cn-shanghai.aliyuncs.com/images/15478837257331547883725024.jpg",
+    //         "comments": 37,
+    //         "isMember": 2,
+    //         "organizer": {
+    //             "id": 1,
+    //             "username": "echo",
+    //             "email": "mf1832136@smail.nju.edu.cn",
+    //             "avaUrl": "https://agile-travel.oss-cn-shanghai.aliyuncs.com/avatar/IMG_2273.JPG",
+    //             "weChat": ""
+    //         },
+    //         "public": false
+    //     },
+    //     {
+    //         "id": 3,
+    //         "title": "南京玄武区观光",
+    //         "description": "1.请大家在出发日在南京大学广州路校门口集合\n2.主要行程地点包括：玄武湖公园、鸡鸣寺\n3.大家注意安全，自己物品自行保管\n4.如有其他疑问，可在评论区提出",
+    //         "address": "中国江苏省南京市玄武区玄武巷1号(近洞庭路)",
+    //         "startDateTime": "2019-01-09 10:00:00",
+    //         "endDateTime": "2019-01-09 22:00:00",
+    //         "cover": "~/assets/images/lake/1.png",
+    //         "comments": 37,
+    //         "isMember": 2,
+    //         "organizer": {
+    //             "id": 1,
+    //             "username": "echo",
+    //             "email": "mf1832136@smail.nju.edu.cn",
+    //             "avaUrl": "https://agile-travel.oss-cn-shanghai.aliyuncs.com/avatar/IMG_2273.JPG",
+    //             "weChat": ""
+    //         },
+    //         "public": false
+    //     },
+
+    // ]
+
     }
 
     setUser(userInfo) {

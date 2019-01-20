@@ -119,7 +119,7 @@
                     .catch((err) => {
                         this.processing = false;
                         this.alert(
-                            "请检查您的邮箱和密码"
+                            "请检查您的邮箱和密码或等待您的邮箱验证通过"
                         );
                     });
             },

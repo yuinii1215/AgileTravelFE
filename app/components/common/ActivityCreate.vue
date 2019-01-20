@@ -182,7 +182,6 @@ export default {
     },
     methods:{
         getBack(){
-            console.log(this.from)
             if(this.from ==0) this.getDetailInfo();
             if(this.from ==1) this.gotoHomePage();
             if(this.from ==2) this.gotoInfoPage();
