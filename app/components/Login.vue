@@ -226,6 +226,7 @@
 
     .sign-up-label {
         margin-bottom: 20;
+        margin-top:20;
     }
 
     .bold {
