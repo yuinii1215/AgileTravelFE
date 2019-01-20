@@ -182,7 +182,7 @@ export default {
                 //请求：通过邀请码加入活动
                 if(result.result){
                     this.$backendService
-                        .joinWithInviteCode()
+                        .joinWithInviteCode(result.text)
                         .then(res => {
                             this.alert("加入活动请求已发出，待审核！")
                         })
@@ -190,7 +190,7 @@ export default {
                             this.alert("加入活动失败！")
                         })
                 }
-                console.log(`Dialog result: ${result.result}, text: ${result.text}`)
+                // console.log(`Dialog result: ${result.result}, text: ${result.text}`)
             });
         },
         showGuide(){
