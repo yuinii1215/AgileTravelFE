@@ -10,6 +10,7 @@ export default class BackendService {
     constructor() {
         this.user = {}
         this.backend_url = "http://118.25.105.127:8080";
+
     }
 
     setUser(userInfo) {
