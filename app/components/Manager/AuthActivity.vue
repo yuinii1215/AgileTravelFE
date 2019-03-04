@@ -16,8 +16,8 @@
                         <TextView editable="false"  row="0" col="1" class="item-title" textWrap="true" :text="info.email" verticalAlignment="middle" horizontalAlignment="left"/>       
                     </GridLayout>
                     <GridLayout rowSpan="2" row="1" col="1" rows="auto,auto" columns="*" class="btn-block">
-                        <Button class="info-btn acceept-btn" row="0" col="0" text="审批通过" @tap="acceptUser(info)"/>
-                        <Button class="info-btn" row="1" col="0" text="不通过" @tap="dismissUser(info)"/>
+                        <Button class="info-btn acceept-btn" row="0" col="0" text="审批通过" @tap="acceptActivity(info)"/>
+                        <Button class="info-btn" row="1" col="0" text="不通过" @tap="dismissActivity(info)"/>
                     </GridLayout>
                     <StackLayout row="3"  colSpan="2"  class="line lineBasic" width="100%" marginTop="2" />
                 </GridLayout>
@@ -47,24 +47,24 @@
         },
         mounted(){
             this.$nextTick(()=> {
-                this.getUserApplyList()
+                this.getActivityApplyList()
             })
         },
         methods: {
-        getUserApplyList(){
+        getActivityApplyList(){
             //获得用户审批列表
         },
-        acceptUser(info){
+        acceptActivity(info){
             // 请求：审批通过
             console.log("审批通过");
             //请求：消息列表（更
-            // this.getUserApplyList()
+            // this.getActivityApplyList()
         },
-        dismissUser(info){
+        dismissActivity(info){
             //请求：审批不通过
             console.log("审批不通过");
             //请求：消息列表（更新）
-            // this.getUserApplyList()
+            // this.getActivityApplyList()
         },
         }
     };
