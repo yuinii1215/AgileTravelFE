@@ -24,7 +24,7 @@
                             <Label row="0" text="活动创建" class="action-title"/>
                             <GridLayout  row="1" rows="auto,*" columns="*,*,*" class="action-body">
                                 <Button row="0" col="0" text="手动创建" @tap="createActivity" class="round-btn" horizontalAlignment="center"  />
-                                <Button row="0" col="1" text="我的模板" class="round-btn" horizontalAlignment="center" />
+                                <!-- <Button row="0" col="1" text="我的模板" class="round-btn" horizontalAlignment="center" /> -->
                             </GridLayout>
                         </GridLayout>
 

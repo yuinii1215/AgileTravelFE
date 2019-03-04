@@ -72,8 +72,8 @@
                 processing: false,
                 user: {
                     username: "",
-                    email: "",
-                    password: "",
+                    email: "admin@nju.edu.cn",
+                    password: "123456",
                     confirmPassword: ""
                 }
             }
@@ -103,6 +103,7 @@
                     "email": this.user.email,
 	                "password": this.user.password
                 }
+                //mf1832136@smail.nju.edu.cn  123456
                 this.$backendService
                     .login(user)
                     .then(res => {
@@ -110,7 +111,7 @@
                         //成功后 设置user信息
                         this.$backendService.setUser(res)
                         //如果是管理员，跳转至管理员页面
-                        if(this.user.username=="admin"&&this.user.password=="admin123")
+                        if(this.user.email=="admin@nju.edu.cn"&&this.user.password=="123456")
                             this.$navigateTo(ManagerHome, { clearHistory: true });
                         else
                             this.$navigateTo(Home, { clearHistory: true });

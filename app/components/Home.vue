@@ -6,10 +6,11 @@
 				<GridLayout row="0" ref="navStatusBar" class="navStatusBar" backgroundColor="#3d7def" verticalAlignment="top" height="40"
 				width="100%" rows="auto" columns="*,auto,auto,auto">
 					<Label col="0" row="0" text="社区" class="status-title"/>
-					<Image col="1" row="0" @tap="search" horizontalAlignment="right" class="status-img"
+					<TextView col="1" row="0" v-model="searchText" hint="搜索活动..." class="search-box" verticalAlignment="center"  />
+					<Image col="2" row="0" @tap="search" horizontalAlignment="right" class="status-img"
 							src="~/assets/images/search.png" />
-					<Image col="2" row="0" @tap="bell" horizontalAlignment="right" class="status-img"
-							src="~/assets/images/bell.png" />
+					<!-- <Image col="2" row="0" @tap="bell" horizontalAlignment="right" class="status-img"
+							src="~/assets/images/bell.png" /> -->
 					<Image horizontalAlignment="right" stretch="aspectFill" col="3"
 							row="0" class="status-profile" :src="this.user.avaUrl" />
 				</GridLayout>
@@ -101,7 +102,8 @@ export default {
 			selectedTabview: 0,
 			items: [],
 			shareInfos: [],
-			user:{}
+			user:{},
+			searchText:""
 		};
 	},
 	methods: {
@@ -111,6 +113,7 @@ export default {
 						.getAllActivityListWithPage(0)
 						.then(res => {
 							this.items = res
+							console.log(JSON.stringify(res));
 						})
 						.catch(err => {})
 		},
@@ -142,6 +145,13 @@ export default {
         },
 		search(){
 			console.log('search')
+			console.log(this.searchText)
+			if(this.searchText){
+				
+			}else{
+				this.getActivityList();
+			}
+
 		},
 		bell(){
 			console.log('bell')
@@ -226,5 +236,17 @@ export default {
 	margin-left: 15;
 	margin-top: 8;
 	vertical-align: center;
+}
+.search-box{
+	background-color:transparent;
+	border-radius: 5;
+	color:#fff;
+	font-size: 16;
+	line-height:16;
+	padding:5;
+	width:120;
+	height:28;
+	border-width: 0.5px;
+	border-color:#fff;
 }
 </style>
