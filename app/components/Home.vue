@@ -113,6 +113,7 @@ export default {
 						.getAllActivityListWithPage(0)
 						.then(res => {
 							this.items = res
+							console.log(JSON.stringify(res));
 						})
 						.catch(err => {})
 		},

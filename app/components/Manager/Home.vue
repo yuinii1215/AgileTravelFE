@@ -65,7 +65,6 @@
         },
         mounted(){
             this.user = this.$backendService.getUser()
-            console.log(JSON.stringify(this.user));
         },
         methods: {
             signOut(){

@@ -81,4 +81,20 @@
     .info-block{
         padding:2 20 2 20;
     }
+    .btn-block{
+        height:100%;
+        border-left-color:#e0e0e0;
+        border-left-width:1;
+    }
+    .info-btn{
+        text-align: center;
+        height:100%;
+        font-size:16;
+        padding:10 10;
+        vertical-align: middle;
+    }
+    .acceept-btn{
+        border-bottom-color:#e0e0e0;
+        border-bottom-width:1;
+    }
 </style>
