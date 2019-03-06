@@ -51,7 +51,7 @@ export default {
                         this.$emit("closeShareDialogEvent")
                     })
                     .catch(err=>{
-                        this.alert("分享失败！")
+                        this.alert("分享失败！私有活动不可分享或活动暂未通过审批！")
                     })
         },
         alert(message) {
