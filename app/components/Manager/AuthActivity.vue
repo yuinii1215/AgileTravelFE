@@ -16,9 +16,9 @@
                                     row="0" class="status-profile" :src="info.organizer.avaUrl" />
                         <TextView editable="false"  row="0" col="1" class="item-title" textWrap="true" :text="info.organizer.email" verticalAlignment="middle" horizontalAlignment="left"/>       
                     </GridLayout>
-                    <GridLayout rowSpan="2" row="1" col="1" rows="auto,auto" columns="*" class="btn-block">
-                        <Button class="info-btn acceept-btn" row="0" col="0" text="审批通过" @tap="acceptActivity(info)"/>
-                        <Button class="info-btn" row="1" col="0" text="不通过" @tap="dismissActivity(info)"/>
+                    <GridLayout rowSpan="2" row="1" col="1" rows="auto" columns="*" class="btn-block">
+                        <Button v-if="info.check==0" class="info-btn" row="0" col="0" text="审批通过" @tap="handleActivity(info)"/>
+                        <Button v-if="info.check==1" class="info-btn" row="1" col="0" text="不通过" @tap="handleActivity(info)"/>
                     </GridLayout>
                     <StackLayout row="3"  colSpan="2"  class="line lineBasic" width="100%" marginTop="2" />
                 </GridLayout>
@@ -32,21 +32,21 @@
         data() {
             return {
                 infoList:[
-                    {"id":1,"title":"上海二日游，来玩吧","description":"1.请大家在出发日在南京大学广州路校门口集合 \
-                        2.统一住宿 \
-                        3.大家注意安全，自己物品自行保管 \
-                        4.如有其他疑问，可在评论区提出\
-                        5.好\
-                        ",
-                        "address":"中国上海",
-                        "startDateTime":"2019-01-20 23:38:00",
-                        "endDateTime":"2019-01-21 10:38:00",
-                        "cover":"http://agile-travel.oss-cn-shanghai.aliyuncs.com/images/15479986764441547998676339.jpg",
-                        "comments":9,
-                        "isMember":2,
-                        "organizer":{"id":1,"username":"echo","email":"mf1832136@smail.nju.edu.cn","avaUrl":"https://agile-travel.oss-cn-shanghai.aliyuncs.com/images/aiyX2HYWYr.png","weChat":""},
-                        "public":true
-                    },
+                    // {"id":1,"title":"上海二日游，来玩吧","description":"1.请大家在出发日在南京大学广州路校门口集合 \
+                    //     2.统一住宿 \
+                    //     3.大家注意安全，自己物品自行保管 \
+                    //     4.如有其他疑问，可在评论区提出\
+                    //     5.好\
+                    //     ",
+                    //     "address":"中国上海",
+                    //     "startDateTime":"2019-01-20 23:38:00",
+                    //     "endDateTime":"2019-01-21 10:38:00",
+                    //     "cover":"http://agile-travel.oss-cn-shanghai.aliyuncs.com/images/15479986764441547998676339.jpg",
+                    //     "comments":9,
+                    //     "isMember":2,
+                    //     "organizer":{"id":1,"username":"echo","email":"mf1832136@smail.nju.edu.cn","avaUrl":"https://agile-travel.oss-cn-shanghai.aliyuncs.com/images/aiyX2HYWYr.png","weChat":""},
+                    //     "public":true
+                    // },
 
             ]
             };
@@ -58,20 +58,25 @@
         },
         methods: {
         getActivityApplyList(){
-            //获得用户审批列表
+            //获得活动列表
+             this.$backendService.getActivityListForManager()
+            .then(res=>{
+                this.infoList = res;
+            }).catch(res=>{
+
+            })
         },
-        acceptActivity(info){
-            // 请求：审批通过
-            console.log("审批通过");
+        handleActivity(info){
+            // 请求：审批
+            this.$backendService.applyActivityForManager(info.id)
+            .then(res=>{
+                this.getActivityApplyList();
+            }).catch(res=>{
+
+            })
             //请求：消息列表（更
             // this.getActivityApplyList()
-        },
-        dismissActivity(info){
-            //请求：审批不通过
-            console.log("审批不通过");
-            //请求：消息列表（更新）
-            // this.getActivityApplyList()
-        },
+        }
         }
     };
 </script>

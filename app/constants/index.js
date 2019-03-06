@@ -199,6 +199,36 @@ export default class BackendService {
         return http.fetchPost(this.backend_url+'/user/'+this.user.id+'/activity/'+activityId+'/applicants/'+participantId+'/refuse');
     }
 
+
+    /**
+     * 管理员获得用户列表
+     */
+    getUserListForManager () {
+        return http.fetchGet(this.backend_url+'/check/users');
+    }
+
+    /**
+     * 管理员获得活动列表
+     */
+    getActivityListForManager () {
+        return http.fetchGet(this.backend_url+'/check/activities');
+    }
+
+     /**
+     * 管理员审批用户
+     */
+    applyUserForManager (params) {
+        return http.fetchPost(this.backend_url+'/check/user/'+params);
+    }
+
+     /**
+     * 管理员审批活动
+     */
+    applyActivityForManager (params) {
+        return http.fetchPost(this.backend_url+'/check/activity/'+params);
+    }
+
+
     uploadToOSS(data){
         return http.doUpLoad(this.backend_url+"/upload/images",data)
     }

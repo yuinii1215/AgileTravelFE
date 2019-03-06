@@ -15,9 +15,9 @@
                         <!-- <Image row="0" col="0" class="item-image"  :src="info.activity.cover" stretch="aspectFill" /> -->
                         <TextView editable="false"  row="0" col="1" class="item-title" textWrap="true" :text="info.email" verticalAlignment="middle" horizontalAlignment="left"/>       
                     </GridLayout>
-                    <GridLayout rowSpan="2" row="1" col="1" rows="auto,auto" columns="*" class="btn-block">
-                        <Button class="info-btn acceept-btn" row="0" col="0" text="审批通过" @tap="acceptUser(info)"/>
-                        <Button class="info-btn" row="1" col="0" text="不通过" @tap="dismissUser(info)"/>
+                    <GridLayout rowSpan="2" row="1" col="1" rows="auto" columns="*" class="btn-block">
+                        <Button v-if="info.check==0"  class="info-btn" row="0" col="0" text="审批通过" @tap="handleUser(info)"/>
+                        <Button v-if="info.check==1" class="info-btn" row="0" col="0" text="不通过" @tap="handleUser(info)"/>
                     </GridLayout>
                     <StackLayout row="3"  colSpan="2"  class="line lineBasic" width="100%" marginTop="2" />
                 </GridLayout>
@@ -31,17 +31,17 @@
         data() {
             return {
                 infoList:[
-                    {"id":19,"username":"user1","email":"user1@nju.edu.cn","avaUrl":"https://agile-travel.oss-cn-shanghai.aliyuncs.com/avatar/IMG_2273.JPG","weChat":""},
-                    {"id":10,"username":"user2","email":"user2@nju.edu.cn","avaUrl":"https://agile-travel.oss-cn-shanghai.aliyuncs.com/avatar/IMG_2273.JPG","weChat":""},
-                    {"id":11,"username":"user3","email":"user3@nju.edu.cn","avaUrl":"https://agile-travel.oss-cn-shanghai.aliyuncs.com/avatar/IMG_2273.JPG","weChat":""},
-                    {"id":11,"username":"user3","email":"user3@nju.edu.cn","avaUrl":"https://agile-travel.oss-cn-shanghai.aliyuncs.com/avatar/IMG_2273.JPG","weChat":""},
-                    {"id":11,"username":"user3","email":"user3@nju.edu.cn","avaUrl":"https://agile-travel.oss-cn-shanghai.aliyuncs.com/avatar/IMG_2273.JPG","weChat":""},
-                    {"id":11,"username":"user3","email":"user3@nju.edu.cn","avaUrl":"https://agile-travel.oss-cn-shanghai.aliyuncs.com/avatar/IMG_2273.JPG","weChat":""},
-                    {"id":11,"username":"user3","email":"user3@nju.edu.cn","avaUrl":"https://agile-travel.oss-cn-shanghai.aliyuncs.com/avatar/IMG_2273.JPG","weChat":""},
-                    {"id":11,"username":"user3","email":"user3@nju.edu.cn","avaUrl":"https://agile-travel.oss-cn-shanghai.aliyuncs.com/avatar/IMG_2273.JPG","weChat":""},
-                    {"id":11,"username":"user3","email":"user3@nju.edu.cn","avaUrl":"https://agile-travel.oss-cn-shanghai.aliyuncs.com/avatar/IMG_2273.JPG","weChat":""},
-                    {"id":11,"username":"user3","email":"user3@nju.edu.cn","avaUrl":"https://agile-travel.oss-cn-shanghai.aliyuncs.com/avatar/IMG_2273.JPG","weChat":""},
-                    {"id":11,"username":"user3","email":"user3@nju.edu.cn","avaUrl":"https://agile-travel.oss-cn-shanghai.aliyuncs.com/avatar/IMG_2273.JPG","weChat":""},
+                    // {"id":19,"username":"user1","email":"user1@nju.edu.cn","avaUrl":"https://agile-travel.oss-cn-shanghai.aliyuncs.com/avatar/IMG_2273.JPG","weChat":""},
+                    // {"id":10,"username":"user2","email":"user2@nju.edu.cn","avaUrl":"https://agile-travel.oss-cn-shanghai.aliyuncs.com/avatar/IMG_2273.JPG","weChat":""},
+                    // {"id":11,"username":"user3","email":"user3@nju.edu.cn","avaUrl":"https://agile-travel.oss-cn-shanghai.aliyuncs.com/avatar/IMG_2273.JPG","weChat":""},
+                    // {"id":11,"username":"user3","email":"user3@nju.edu.cn","avaUrl":"https://agile-travel.oss-cn-shanghai.aliyuncs.com/avatar/IMG_2273.JPG","weChat":""},
+                    // {"id":11,"username":"user3","email":"user3@nju.edu.cn","avaUrl":"https://agile-travel.oss-cn-shanghai.aliyuncs.com/avatar/IMG_2273.JPG","weChat":""},
+                    // {"id":11,"username":"user3","email":"user3@nju.edu.cn","avaUrl":"https://agile-travel.oss-cn-shanghai.aliyuncs.com/avatar/IMG_2273.JPG","weChat":""},
+                    // {"id":11,"username":"user3","email":"user3@nju.edu.cn","avaUrl":"https://agile-travel.oss-cn-shanghai.aliyuncs.com/avatar/IMG_2273.JPG","weChat":""},
+                    // {"id":11,"username":"user3","email":"user3@nju.edu.cn","avaUrl":"https://agile-travel.oss-cn-shanghai.aliyuncs.com/avatar/IMG_2273.JPG","weChat":""},
+                    // {"id":11,"username":"user3","email":"user3@nju.edu.cn","avaUrl":"https://agile-travel.oss-cn-shanghai.aliyuncs.com/avatar/IMG_2273.JPG","weChat":""},
+                    // {"id":11,"username":"user3","email":"user3@nju.edu.cn","avaUrl":"https://agile-travel.oss-cn-shanghai.aliyuncs.com/avatar/IMG_2273.JPG","weChat":""},
+                    // {"id":11,"username":"user3","email":"user3@nju.edu.cn","avaUrl":"https://agile-travel.oss-cn-shanghai.aliyuncs.com/avatar/IMG_2273.JPG","weChat":""},
                 ]
             };
         },
@@ -52,20 +52,22 @@
         },
         methods: {
         getUserApplyList(){
-            //获得用户审批列表
+            //获得用户列表
+            this.$backendService.getUserListForManager()
+            .then(res=>{
+                this.infoList = res;
+            }).catch(res=>{
+            })
         },
-        acceptUser(info){
-            // 请求：审批通过
-            console.log("审批通过");
-            //请求：消息列表（更
+        handleUser(info){
+            // 请求：审批
+            this.$backendService.applyUserForManager(info.id)
+            .then(res=>{
+                this.getUserApplyList();
+            }).catch(res=>{
+            })
             // this.getUserApplyList()
-        },
-        dismissUser(info){
-            //请求：审批不通过
-            console.log("审批不通过");
-            //请求：消息列表（更新）
-            // this.getUserApplyList()
-        },
+        }
         }
     };
 </script>
