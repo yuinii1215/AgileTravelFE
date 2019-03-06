@@ -120,7 +120,7 @@
                     .catch((err) => {
                         this.processing = false;
                         this.alert(
-                            "请检查您的邮箱和密码或等待您的邮箱验证通过"
+                            "请检查您的邮箱和密码或等待您的审批通过"
                         );
                     });
             },
