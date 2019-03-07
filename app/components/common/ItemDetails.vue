@@ -87,7 +87,7 @@
                     </GridLayout>
 
                     <StackLayout row="1" height="100%" marginTop="10">
-                        <Label  v-if="detailInfo.isMember==1||detailInfo.isMember==2&&comments.length<=0" class="no-data" text="暂无评论，快来评论吧！"
+                        <Label  v-if="(detailInfo.isMember==1||detailInfo.isMember==2)&&comments.length<=0" class="no-data" text="暂无评论，快来评论吧！"
                             textWrap="true" />
                         <Label  v-if="detailInfo.isMember==3||detailInfo.isMember==0" class="no-data" text="快快加入活动，查看所有评论！"
                             textWrap="true" />

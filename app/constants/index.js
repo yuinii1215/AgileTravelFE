@@ -228,6 +228,22 @@ export default class BackendService {
         return http.fetchPost(this.backend_url+'/check/activity/'+params);
     }
 
+    /**
+     * 搜索
+     */
+    searchByText (text) {
+        return http.fetchPost(this.backend_url+'/user/'+this.user.id+'/activity/search/'+text);
+    }
+
+     /**
+     * 获得用户消息
+     */
+    getUserMessage () {
+        return http.fetchGet(this.backend_url+'/user/'+this.user.id+'/messages');
+    }
+
+    
+
 
     uploadToOSS(data){
         return http.doUpLoad(this.backend_url+"/upload/images",data)

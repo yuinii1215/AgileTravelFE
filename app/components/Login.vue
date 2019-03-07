@@ -72,7 +72,7 @@
                 processing: false,
                 user: {
                     username: "",
-                    email: "admin@nju.edu.cn",
+                    email: "mf1832136@smail.nju.edu.cn",
                     password: "123456",
                     confirmPassword: ""
                 }
