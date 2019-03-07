@@ -231,9 +231,18 @@ export default class BackendService {
     /**
      * 搜索
      */
-    searchByText (userId,text) {
-        return http.fetchPost(this.backend_url+'/user/'+userId+'/activity/search/'+text);
+    searchByText (text) {
+        return http.fetchPost(this.backend_url+'/user/'+this.user.id+'/activity/search/'+text);
     }
+
+     /**
+     * 获得用户消息
+     */
+    getUserMessage () {
+        return http.fetchGet(this.backend_url+'/user/'+this.user.id+'/messages');
+    }
+
+    
 
 
     uploadToOSS(data){

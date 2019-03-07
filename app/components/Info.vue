@@ -41,8 +41,8 @@
                 </GridLayout>
 
                 <GridLayout  v-if="selectedTabview==1" row="1"  width="100%" class="message-body">
-                    <GridLayout rows="auto,*"  class="action-block">
-                            <Label  row="0" text="系统消息"  class="action-title"/>
+                    <GridLayout rows="auto,auto,auto,*"  class="action-block">
+                            <Label  row="0" text="待处理消息"  class="action-title"/>
                             <GridLayout  row="1"  class="action-body">
                                 <Label v-if="infoList.length<=0" class="no-data" horizontalAlignment="center" text="暂无消息"/>
                                 <ScrollView width="100%">
@@ -66,6 +66,50 @@
                                             </GridLayout>
                                             <StackLayout row="4"  colSpan="2"  class="line lineBasic" width="100%" marginTop="2" />
                                         </GridLayout>
+
+                                    </StackLayout>
+                                </ScrollView>
+                            </GridLayout>
+                             <Label  row="2" text="系统消息"  class="action-title"/>
+                             <GridLayout  row="3"  class="action-body">
+                                <Label v-if="messageList.length<=0" class="no-data" horizontalAlignment="center" text="暂无消息"/>
+                                <ScrollView width="100%">
+                                    <StackLayout class="">
+                                        <GridLayout v-for="msg in messageList" :key="msg.id" 
+                                            rows="auto" columns="auto" class="info-block" width="100%">
+                                            <GridLayout rows="auto,auto,auto,auto"  v-if="msg.type==0||msg.type==1||msg.type==4||msg.type==5"  width="100%">
+                                                <StackLayout row="0"  colSpan="2"  class="line lineBasic" width="100%" marginTop="4" marginBottom="15"/>
+                                                <Label v-if="msg.type==0" row="1" col="0" text="活动已通过审批" class="info-block-title"/>
+                                                <Label v-if="msg.type==1" row="1" col="0" text="活动未通过审批" class="info-block-title"/>
+                                                <Label v-if="msg.type==5" row="1" col="0" text="活动加入失败" class="info-block-title"/>
+                                                <Label v-if="msg.type==4" row="1" col="0" text="活动加入成功" class="info-block-title"/>
+                                                <!-- <GridLayout  row="2" col="0" rows="auto" columns="auto,*" width="100%">
+                                                    <Image horizontalAlignment="right" stretch="aspectFill" col="0"
+                                                            row="0" class="status-profile" :src="msg.activity.organizer.avaUrl" />
+                                                    <TextView editable="false"  row="0" col="1" class="item-title" textWrap="true" :text="msg.activity.organizer.username" verticalAlignment="middle" horizontalAlignment="left"/>       
+                                                </GridLayout> -->
+                                                <GridLayout  row="2" col="0" rows="auto" columns="auto,*" width="100%" class="item-info">
+                                                    <Image row="0" col="0" class="item-image"  :src="msg.activity.cover" stretch="aspectFill" />
+                                                    <TextView editable="false"  row="0" col="1" class="item-title" textWrap="true" :text="msg.activity.title" verticalAlignment="middle" horizontalAlignment="left"/>       
+                                                </GridLayout>
+                                                <StackLayout row="3"  class="line lineBasic" width="100%" marginTop="15" />
+                                            </GridLayout>
+                                            <GridLayout rows="auto,auto,auto,auto,auto"  v-if="msg.type==6" width="100%">
+                                                <StackLayout row="0"  colSpan="2"  class="line lineBasic" width="100%" marginTop="4" marginBottom="15"/>
+                                                <Label  row="1" col="0" text="活动参与者退出" class="info-block-title"/>
+                                                <GridLayout  row="2" col="0" rows="auto" columns="auto,*" width="100%">
+                                                    <Image horizontalAlignment="right" stretch="aspectFill" col="0"
+                                                            row="0" class="status-profile" :src="msg.user.avaUrl" />
+                                                    <TextView editable="false"  row="0" col="1" class="item-title" textWrap="true" :text="msg.user.username" verticalAlignment="middle" horizontalAlignment="left"/>       
+                                                </GridLayout>
+                                                <GridLayout  row="3" col="0" rows="auto" columns="auto,*" width="100%" class="item-info" >
+                                                    <Image row="0" col="0" class="item-image"  :src="msg.activity.cover" stretch="aspectFill" marginTop="10" />
+                                                    <TextView editable="false"  row="0" col="1" class="item-title" textWrap="true" :text="msg.activity.title" verticalAlignment="middle" horizontalAlignment="left"/>       
+                                                </GridLayout>
+                                                <StackLayout row="4"  colSpan="2"  class="line lineBasic" width="100%" marginTop="15" />
+                                            </GridLayout>
+                                        </GridLayout>
+
                                     </StackLayout>
                                 </ScrollView>
                             </GridLayout>
@@ -93,13 +137,15 @@ export default {
         return{
             selectedTab:1,
             selectedTabview:0,
-            infoList:[]
+            infoList:[],
+            messageList:[]
         }
     },
     mounted(){
         //请求：获得审批信息
         this.$nextTick(()=> {
             this.getApplyList()
+            this.getMessageList()
         });
     },
     methods: {
@@ -140,7 +186,16 @@ export default {
                     .catch(err=>{
                     })
         },
-		bottomTabChangeEvent(index){
+        getMessageList(){
+            this.$backendService.getUserMessage()
+            .then(res=>{
+                this.messageList = res;
+            })
+            .catch(err=>{
+
+            })        
+        },
+        bottomTabChangeEvent(index){
 			this.selectedTab = index
 			if(this.selectedTab==0){
                 this.$navigateTo(Home,{animated: false})
@@ -306,7 +361,7 @@ export default {
         border-bottom-width:1;
     }
     .info-block-title{
-        margin-bottom:2;
+        margin-bottom:10;
         font-size:17;
         padding-left:10
     }
