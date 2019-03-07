@@ -36,6 +36,7 @@
 				</GridLayout>
 
 				<GridLayout v-show="selectedTabview == 0" row="2" width="100%" backgroundColor="white">
+					<Label v-if="items.length<=0" class="no-data" horizontalAlignment="center" text="无相关活动"/>
 					<ScrollView >
 						<StackLayout>
 							<GridLayout v-for="item in items" :key="item.id" 
@@ -112,8 +113,7 @@ export default {
 			this.$backendService
 						.getAllActivityListWithPage(0)
 						.then(res => {
-							this.items = res
-							console.log(JSON.stringify(res));
+							this.items = res;
 						})
 						.catch(err => {})
 		},
@@ -144,10 +144,14 @@ export default {
 			this.getShareList();
         },
 		search(){
-			console.log('search')
-			console.log(this.searchText)
 			if(this.searchText){
-				
+				this.$backendService.searchByText(this.user.id,encodeURI(this.searchText))
+				.then(res=>{
+					this.items = res;
+				})
+				.catch(res=>{
+					
+				})
 			}else{
 				this.getActivityList();
 			}

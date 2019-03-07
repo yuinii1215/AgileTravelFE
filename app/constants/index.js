@@ -228,6 +228,13 @@ export default class BackendService {
         return http.fetchPost(this.backend_url+'/check/activity/'+params);
     }
 
+    /**
+     * 搜索
+     */
+    searchByText (userId,text) {
+        return http.fetchPost(this.backend_url+'/user/'+userId+'/activity/search/'+text);
+    }
+
 
     uploadToOSS(data){
         return http.doUpLoad(this.backend_url+"/upload/images",data)
