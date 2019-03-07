@@ -144,9 +144,6 @@ export default {
 			this.getShareList();
         },
 		search(){
-			console.log('search')
-			console.log(this.searchText)
-			console.log(encodeURI(this.searchText))
 			if(this.searchText){
 				this.$backendService.searchByText(this.user.id,encodeURI(this.searchText))
 				.then(res=>{
