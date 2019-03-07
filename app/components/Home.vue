@@ -145,7 +145,7 @@ export default {
         },
 		search(){
 			if(this.searchText){
-				this.$backendService.searchByText(this.user.id,encodeURI(this.searchText))
+				this.$backendService.searchByText(encodeURI(this.searchText))
 				.then(res=>{
 					this.items = res;
 				})
